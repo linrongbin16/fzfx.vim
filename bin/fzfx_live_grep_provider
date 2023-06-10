@@ -1,0 +1,17 @@
+#!/bin/sh
+
+set -x
+
+argc=$#
+argv=("$@")
+
+echo "argc:$#"
+echo "argv:$@"
+
+query=''
+option=()
+
+for $arg in "$@"
+do
+    echo "[$arg]"
+done
