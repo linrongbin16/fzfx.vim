@@ -1,6 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 
+echo cmd
 echo argv:%*
 
 set argCount=0

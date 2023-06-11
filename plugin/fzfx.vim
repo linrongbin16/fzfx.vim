@@ -1,10 +1,10 @@
 " loaded
-if exists('g:loaded_fzfx_vim')
+if exists('g:loaded_fzfx')
     finish
 endif
-let g:loaded_fzfx_vim = 1
+let g:loaded_fzfx=1
 
-
+" command
 command! -bang -nargs=? -complete=dir FzfxFiles call fzfx#vim#files(<q-args>, <bang>0)
 command! -bang -nargs=? -complete=dir FzfxUnrestrictedFiles call fzfx#vim#unrestricted_files(<q-args>, <bang>0)
 
