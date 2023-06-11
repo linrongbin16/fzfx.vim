@@ -9,43 +9,50 @@ else
   let s:base_dir = expand('<sfile>:h:h')
 endif
 
+if s:is_win
+    let s:fzfx_bin=s:base_dir.'\bin'
+else
+    let s:fzfx_bin=s:base_dir.'/bin'
+endif
+
 function! s:append_path()
     if s:is_win
-        let s:fzfx_bin=s:base_dir.'\bin'
         let $PATH .= ';' . s:fzfx_bin
     else
-        let s:fzfx_bin=s:base_dir.'/bin'
         let $PATH .= ':' . s:fzfx_bin
     endif
 endfunction
 
 " defaults
 " `rg --column --line-number --no-heading --color=always --smart-case`
-let s:grep_command=get(g:, 'fzfx_grep_command', "rg --column -n --no-heading --color=always -S -g '!*.git/'")
-let s:unrestricted_grep_command=get(g:, 'fzfx_unrestricted_grep_command', "rg --column -n --no-heading --color=always -S -uu")
+let s:fzfx_grep_command=get(g:, 'fzfx_grep_command', "rg --column -n --no-heading --color=always -S -g '!*.git/'")
+let s:fzfx_unrestricted_grep_command=get(g:, 'fzfx_unrestricted_grep_command', "rg --column -n --no-heading --color=always -S -uu")
 
 " `fd --color=never --type f --type symlink --follow --exclude .git`
 if executable('fd')
-    let s:files_command='fd -cnever -tf -tl -L -E .git'
-    let s:unrestricted_files_command='fd -cnever -tf -tl -L -u'
+    let s:fzfx_find_command=get(g:, 'fzfx_find_command', 'fd -cnever -tf -tl -L -E .git')
+    let s:fzfx_unrestricted_find_command=get(g:, 'fzfx_unrestricted_find_command', 'fd -cnever -tf -tl -L -u')
 elseif executable('fdfind')
-    let s:files_command='fdfind -cnever -tf -tl -L -E .git'
-    let s:unrestricted_files_command='fdfind -cnever -tf -tl -L -u'
+    let s:fzfx_find_command=get(g:, 'fzfx_find_command', 'fdfind -cnever -tf -tl -L -E .git')
+    let s:fzfx_unrestricted_find_command=get(g:, 'fzfx_unrestricted_find_command', 'fdfind -cnever -tf -tl -L -u')
 endif
+
+" `git branch -a --color --list`
+let s:fzfx_git_branch_command=get(g:, 'fzfx_git_branch_command', 'git branch -a --color --list')
 
 " providers
 let s:live_grep_provider='fzfx_live_grep_provider'
 let s:unrestricted_live_grep_provider='fzfx_unrestricted_live_grep_provider'
-let s:grep_word_provider=s:grep_command.' -w'
-let s:unrestricted_grep_word_provider=s:unrestricted_grep_command.' -w'
-let s:files_provider=s:files_command
-let s:unrestricted_files_provider=s:unrestricted_files_command
-let s:word_files_provider=s:files_command
-let s:unrestricted_word_files_provider=s:unrestricted_files_command
-let s:git_branches_provider='git branch -a --color --list'
+let s:grep_word_provider=s:fzfx_grep_command.' -w'
+let s:unrestricted_grep_word_provider=s:fzfx_unrestricted_grep_command.' -w'
+let s:files_provider=s:fzfx_find_command
+let s:unrestricted_files_provider=s:fzfx_unrestricted_find_command
+let s:word_files_provider=s:fzfx_find_command
+let s:unrestricted_word_files_provider=s:fzfx_unrestricted_find_command
+let s:git_branches_provider=s:fzfx_git_branch_command
 
 " previewers
-let s:git_branches_previewer='fzfx_git_branches_previewer'
+let s:git_branches_previewer=s:fzfx_git_branch_command
 
 function! s:live_grep(query, provider, fullscreen)
     try
