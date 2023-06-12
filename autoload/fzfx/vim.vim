@@ -3,30 +3,22 @@ let s:is_win = has('win32') || has('win64')
 
 if s:is_win && &shellslash
   set noshellslash
-  let s:base_dir = expand('<sfile>:h:h')
+  let s:base_dir = expand('<sfile>:p:h:h:h')
   set shellslash
 else
-  let s:base_dir = expand('<sfile>:h:h')
+  let s:base_dir = expand('<sfile>:p:h:h:h')
 endif
 
 if s:is_win
-    let s:fzfx_bin=s:base_dir.'\bin'
+    let s:fzfx_bin=s:base_dir.'\bin\'
 else
-    let s:fzfx_bin=s:base_dir.'/bin'
+    let s:fzfx_bin=s:base_dir.'/bin/'
 endif
-
-function! s:append_path()
-    if s:is_win
-        let $PATH .= ';' . s:fzfx_bin
-    else
-        let $PATH .= ':' . s:fzfx_bin
-    endif
-endfunction
 
 " defaults
 " `rg --column --line-number --no-heading --color=always --smart-case`
 let s:fzfx_grep_command=get(g:, 'fzfx_grep_command', "rg --column -n --no-heading --color=always -S -g '!*.git/'")
-let s:fzfx_unrestricted_grep_command=get(g:, 'fzfx_unrestricted_grep_command', "rg --column -n --no-heading --color=always -S -uu")
+let s:fzfx_unrestricted_grep_command=get(g:, 'fzfx_unrestricted_grep_command', 'rg --column -n --no-heading --color=always -S -uu')
 
 " `fd --color=never --type f --type symlink --follow --exclude .git`
 if executable('fd')
@@ -41,8 +33,8 @@ endif
 let s:fzfx_git_branch_command=get(g:, 'fzfx_git_branch_command', 'git branch -a --color --list')
 
 " providers
-let s:live_grep_provider='fzfx_live_grep_provider'
-let s:unrestricted_live_grep_provider='fzfx_unrestricted_live_grep_provider'
+let s:live_grep_provider=s:fzfx_bin.'fzfx_live_grep_provider'
+let s:unrestricted_live_grep_provider=s:fzfx_bin.'fzfx_unrestricted_live_grep_provider'
 let s:grep_word_provider=s:fzfx_grep_command.' -w'
 let s:unrestricted_grep_word_provider=s:fzfx_unrestricted_grep_command.' -w'
 let s:files_provider=s:fzfx_find_command
@@ -55,28 +47,23 @@ let s:git_branches_provider=s:fzfx_git_branch_command
 let s:git_branches_previewer=s:fzfx_git_branch_command
 
 function! s:live_grep(query, provider, fullscreen)
-    try
-        let prev_path=$PATH
-        call s:append_path()
-        let fuzzy_search_header=':: <ctrl-g> to Fuzzy Search'
-        let regex_search_header=':: <ctrl-r> to Regex Search'
-        let command_fmt = a:provider.' %s'
-        let initial_command = printf(command_fmt, shellescape(a:query))
-        let reload_command = printf('sleep 0.1;'.command_fmt, '{q}')
-        let spec = {'options': [
-                    \ '--disabled',
-                    \ '--query', a:query,
-                    \ '--bind', 'ctrl-g:unbind(change,ctrl-g)+change-prompt(Rg> )+enable-search+change-header('.regex_search_header.')+rebind(ctrl-r)',
-                    \ '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(*Rg> )+disable-search+change-header('.fuzzy_search_header.')+reload('.reload_command.')+rebind(change,ctrl-g)',
-                    \ '--bind', 'change:reload:'.reload_command,
-                    \ '--header', fuzzy_search_header,
-                    \ '--prompt', '*Rg> '
-                    \ ]}
-        let spec = fzf#vim#with_preview(spec)
-        call fzf#vim#grep(initial_command, spec, a:fullscreen)
-    finally
-        let $PATH=prev_path
-    endtry
+    let fuzzy_search_header=':: <ctrl-g> to Fuzzy Search'
+    let regex_search_header=':: <ctrl-r> to Regex Search'
+    let command_fmt = a:provider.' %s'
+    let initial_command = printf(command_fmt, shellescape(a:query))
+    let reload_command = printf('sleep 0.1;'.command_fmt, '{q}')
+    let spec = {'options': [
+                \ '--disabled',
+                \ '--print-query',
+                \ '--query', a:query,
+                \ '--bind', 'ctrl-g:unbind(change,ctrl-g)+change-prompt(Rg> )+enable-search+change-header('.regex_search_header.')+rebind(ctrl-r)',
+                \ '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(*Rg> )+disable-search+change-header('.fuzzy_search_header.')+reload('.reload_command.')+rebind(change,ctrl-g)',
+                \ '--bind', 'change:reload:'.reload_command,
+                \ '--header', fuzzy_search_header,
+                \ '--prompt', '*Rg> '
+                \ ]}
+    let spec = fzf#vim#with_preview(spec)
+    call fzf#vim#grep(initial_command, spec, a:fullscreen)
 endfunction
 
 function! fzfx#vim#live_grep(query, fullscreen)
