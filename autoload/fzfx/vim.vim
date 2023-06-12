@@ -44,7 +44,7 @@ let s:unrestricted_word_files_provider=s:fzfx_unrestricted_find_command
 let s:git_branches_provider=s:fzfx_git_branch_command
 
 " previewers
-let s:git_branches_previewer=s:fzfx_git_branch_command
+let s:git_branches_previewer=s:fzfx_bin.'fzfx_git_branches_previewer'
 
 function! s:live_grep(query, provider, fullscreen)
     let fuzzy_search_header=':: <ctrl-g> to Fuzzy Search'
@@ -75,23 +75,18 @@ function! fzfx#vim#unrestricted_live_grep(query, fullscreen)
 endfunction
 
 function! s:grep_word(query, provider, fullscreen)
-    try
-        let prev_path=$PATH
-        call s:append_path()
-        let command_fmt = a:provider.' %s || true'
-        let initial_command = printf(command_fmt, shellescape(a:query))
-        let reload_command = printf('sleep 0.1;'.command_fmt, '{q}')
-        let spec = {'options': [
-                    \ '--disabled',
-                    \ '--query', a:query,
-                    \ '--bind', 'change:reload:'.reload_command,
-                    \ '--prompt', '*Word> ',
-                    \ ]}
-        let spec = fzf#vim#with_preview(spec)
-        call fzf#vim#grep(initial_command, spec, a:fullscreen)
-    finally
-        let $PATH=prev_path
-    endtry
+    let command_fmt = a:provider.' %s || true'
+    let initial_command = printf(command_fmt, shellescape(a:query))
+    let reload_command = printf('sleep 0.1;'.command_fmt, '{q}')
+    let spec = {'options': [
+                \ '--disabled',
+                \ '--print-query',
+                \ '--query', a:query,
+                \ '--bind', 'change:reload:'.reload_command,
+                \ '--prompt', '*Word> ',
+                \ ]}
+    let spec = fzf#vim#with_preview(spec)
+    call fzf#vim#grep(initial_command, spec, a:fullscreen)
 endfunction
 
 function! fzfx#vim#grep_word(query, fullscreen)
@@ -103,17 +98,11 @@ function! fzfx#vim#unrestricted_grep_word(query, fullscreen)
 endfunction
 
 function! s:files(query, provider, fullscreen)
-    try
-        let prev_path=$PATH
-        call s:append_path()
-        let command_fmt = a:provider.' %s || true'
-        let initial_command = printf(command_fmt, shellescape(a:query))
-        let spec = { 'source': initial_command, }
-        let spec = fzf#vim#with_preview(spec)
-        call fzf#vim#files(a:query, spec, a:fullscreen)
-    finally
-        let $PATH=prev_path
-    endtry
+    let command_fmt = a:provider.' %s || true'
+    let initial_command = printf(command_fmt, shellescape(a:query))
+    let spec = { 'source': initial_command, }
+    let spec = fzf#vim#with_preview(spec)
+    call fzf#vim#files(a:query, spec, a:fullscreen)
 endfunction
 
 function! fzfx#vim#files(query, fullscreen)
@@ -125,19 +114,15 @@ function! fzfx#vim#unrestricted_files(query, fullscreen)
 endfunction
 
 function! fzfx#vim#git_branches(query, fullscreen)
-    try
-        let prev_path=$PATH
-        call s:append_path()
-        let command_fmt = s:git_branches_provider.' %s || true'
-        let initial_command = printf(command_fmt, shellescape(a:query))
-        let spec = { 'source': initial_command,
+    let command_fmt = s:git_branches_provider.' %s || true'
+    let initial_command = printf(command_fmt, shellescape(a:query))
+    let spec = { 'source': initial_command,
                     \ 'options': [
+                    \ '--print-query',
+                    \ '--query', a:query,
                     \ '--prompt', 'GitBranches> ',
                     \ '--preview', s:git_branches_previewer.' {}',
                     \ ]}
-        let spec = fzf#vim#with_preview(spec, a:fullscreen)
-        call fzf#run(fzf#wrap(spec))
-    finally
-        let $PATH=prev_path
-    endtry
+    let spec = fzf#vim#with_preview(spec, a:fullscreen)
+    call fzf#run(fzf#wrap(spec))
 endfunction
