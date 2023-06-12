@@ -1,2 +1,0 @@
-[workspace]
-members = ["fzfx_live_grep_provider"]

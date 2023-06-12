@@ -2,17 +2,25 @@
 
 set -x
 
-argc=$#
-argv=("$@")
-
-echo "sh"
-echo "argc:$#"
-echo "argv:$@"
-
-query=''
-option=()
-
-for $arg in "$@"
+query=""
+option=""
+content=$1
+content_len=${#content}
+has_option=0
+for (( i=0; i<content_len; i++))
 do
-    echo "[$arg]"
+    if (( i+1<content_len )) && [[ "${content:i:2}" = "--" ]]
+    then
+        has_option=1
+        query=${content:0:i}
+        option_len=$(( content_len-i-2 ))
+        option=${content:i+2:option_len}
+        break
+    fi
 done
+
+if [ $has_option -gt 0 ]; then
+    rg --column -n --no-heading --color=always -S -g '!*.git/' $option -- $query || true
+else
+    rg --column -n --no-heading --color=always -S -g '!*.git/' -- $content || true
+fi

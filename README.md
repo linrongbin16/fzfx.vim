@@ -1,3 +1,3 @@
 # fzfx.vim
 
-E(x)tended fzf plugin for Vim.
+The e(x)tended commands missing in fzf.vim.
