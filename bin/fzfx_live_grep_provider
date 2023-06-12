@@ -1,7 +1,5 @@
 #!/bin/sh
 
-set -x
-
 query=""
 option=""
 content=$1
