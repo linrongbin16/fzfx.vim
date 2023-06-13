@@ -49,7 +49,7 @@ let s:git_branches_previewer=s:fzfx_bin.'fzfx_git_branches_previewer'
 function! s:live_grep(query, provider, fullscreen)
     let fuzzy_search_header=':: <ctrl-g> to Fuzzy Search'
     let regex_search_header=':: <ctrl-r> to Regex Search'
-    let command_fmt = a:provider.' %s'
+    let command_fmt = a:provider.' %s || true'
     let initial_command = printf(command_fmt, shellescape(a:query))
     let reload_command = printf('sleep 0.1;'.command_fmt, '{q}')
     let spec = {'options': [

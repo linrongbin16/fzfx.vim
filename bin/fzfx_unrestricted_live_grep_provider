@@ -1,24 +1,15 @@
 #!/bin/sh
 
-query=""
-option=""
-content=$1
-content_len=${#content}
-has_option=0
-for (( i=0; i<content_len; i++))
-do
-    if (( i+1<content_len )) && [[ "${content:i:2}" = "--" ]]
-    then
-        has_option=1
-        query=${content:0:i}
-        option_len=$(( content_len-i-2 ))
-        option=${content:i+2:option_len}
-        break
-    fi
-done
+# set -x
 
-if [ $has_option -gt 0 ]; then
-    rg --column -n --no-heading --color=always -S -g -uu $option -- $query || true
+content=$1
+flag="--"
+option=${content#*$flag}
+
+if [ ${#option} -gt 0 ] && [ "$option" != "$content" ]; then
+	query_len=$((${#content} - ${#option} - ${#flag}))
+    query=${content:0:query_len}
+	rg --column -n --no-heading --color=always -S -uu $option -- $query
 else
-    rg --column -n --no-heading --color=always -S -g -uu -- $content || true
+	rg --column -n --no-heading --color=always -S -uu -- $content
 fi
