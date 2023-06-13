@@ -79,6 +79,8 @@ return {
   2. it allows user add rg's raw options by parsing `--` flag, treat the left part
      as query content, the right side as rg's raw options. A most commonly used
      case is searching by file type, see below screen recording:
+     
+     https://github.com/linrongbin16/fzfx.vim/assets/6496887/57d914f9-7def-4f2d-ae25-187c9cbb8d1c
 
 - `FzfxUnrestrictedLiveGrep` is a variant version, it also searches the hidden and
   ignored files with `--unrestricted --hidden`:
