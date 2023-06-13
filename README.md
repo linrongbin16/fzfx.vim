@@ -1,6 +1,6 @@
 # fzfx.vim
 
-The e(x)tended fzf plugin with rg and fd.
+The e(x)tended fzf commands missing in fzf.vim.
 
 ## Dependency
 
