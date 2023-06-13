@@ -46,7 +46,7 @@ let s:git_branches_provider=s:fzfx_git_branch_command
 " previewers
 let s:git_branches_previewer=s:fzfx_bin.'fzfx_git_branches_previewer'
 
-function! s:live_grep(query, provider, fullscreen)
+function! s:live_grep(query, provider, fullscreen) abort
     let fuzzy_search_header=':: <ctrl-g> to Fuzzy Search'
     let regex_search_header=':: <ctrl-r> to Regex Search'
     let command_fmt = a:provider.' %s || true'
@@ -66,15 +66,15 @@ function! s:live_grep(query, provider, fullscreen)
     call fzf#vim#grep(initial_command, spec, a:fullscreen)
 endfunction
 
-function! fzfx#vim#live_grep(query, fullscreen)
+function! fzfx#vim#live_grep(query, fullscreen) abort
     call s:live_grep(a:query, s:live_grep_provider, a:fullscreen)
 endfunction
 
-function! fzfx#vim#unrestricted_live_grep(query, fullscreen)
+function! fzfx#vim#unrestricted_live_grep(query, fullscreen) abort
     call s:live_grep(a:query, s:unrestricted_live_grep_provider, a:fullscreen)
 endfunction
 
-function! s:grep_word(query, provider, fullscreen)
+function! s:grep_word(query, provider, fullscreen) abort
     let command_fmt = a:provider.' %s || true'
     let initial_command = printf(command_fmt, shellescape(a:query))
     let reload_command = printf('sleep 0.1;'.command_fmt, '{q}')
@@ -89,15 +89,15 @@ function! s:grep_word(query, provider, fullscreen)
     call fzf#vim#grep(initial_command, spec, a:fullscreen)
 endfunction
 
-function! fzfx#vim#grep_word(query, fullscreen)
+function! fzfx#vim#grep_word(query, fullscreen) abort
     call s:grep_word(a:query, s:grep_word_provider, a:fullscreen)
 endfunction
 
-function! fzfx#vim#unrestricted_grep_word(query, fullscreen)
+function! fzfx#vim#unrestricted_grep_word(query, fullscreen) abort
     call s:grep_word(a:query, s:unrestricted_grep_word_provider, a:fullscreen)
 endfunction
 
-function! s:files(query, provider, fullscreen)
+function! s:files(query, provider, fullscreen) abort
     let command_fmt = a:provider.' %s || true'
     let initial_command = printf(command_fmt, shellescape(a:query))
     let spec = { 'source': initial_command, }
@@ -105,15 +105,15 @@ function! s:files(query, provider, fullscreen)
     call fzf#vim#files(a:query, spec, a:fullscreen)
 endfunction
 
-function! fzfx#vim#files(query, fullscreen)
+function! fzfx#vim#files(query, fullscreen) abort
     call s:files(a:query, s:files_provider, a:fullscreen)
 endfunction
 
-function! fzfx#vim#unrestricted_files(query, fullscreen)
+function! fzfx#vim#unrestricted_files(query, fullscreen) abort
     call s:files(a:query, s:unrestricted_files_provider, a:fullscreen)
 endfunction
 
-function! fzfx#vim#git_branches(query, fullscreen)
+function! fzfx#vim#git_branches(query, fullscreen) abort
     let command_fmt = s:git_branches_provider.' %s || true'
     let initial_command = printf(command_fmt, shellescape(a:query))
     let spec = { 'source': initial_command,
