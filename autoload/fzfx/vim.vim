@@ -15,15 +15,6 @@ else
     let s:fzfx_bin=s:base_dir.'/bin/'
 endif
 
-let s:ansi_color={
-            \ 'red': { 'fg' : '0;31', 'bg': '41' },
-            \ 'green': { 'fg' : '0;32', 'bg': '42' },
-            \ 'yellow': { 'fg' : '0;33', 'bg': '43' },
-            \ }
-function! s:set_ansi_color(content, color)
-    return '\\e['.a:color.'m'.a:content.'\\e[0m'
-endfunction
-
 " defaults
 " `rg --column --line-number --no-heading --color=always --smart-case`
 let s:fzfx_grep_command=get(g:, 'fzfx_grep_command', "rg --column -n --no-heading --color=always -S -g '!*.git/'")
@@ -56,8 +47,6 @@ let s:git_branches_provider=s:fzfx_git_branch_command
 let s:git_branches_previewer=s:fzfx_bin.'fzfx_git_branches_previewer'
 
 function! s:live_grep(query, provider, fullscreen)
-    " let fuzzy_search_header=s:set_ansi_color(':: <ctrl-g> to Fuzzy Search', s:ansi_color['yellow']['fg'])
-    " let regex_search_header=s:set_ansi_color(':: <ctrl-r> to Regex Search', s:ansi_color['yellow']['fg'])
     let fuzzy_search_header=':: <ctrl-g> to Fuzzy Search'
     let regex_search_header=':: <ctrl-r> to Regex Search'
     let command_fmt = a:provider.' %s || true'
