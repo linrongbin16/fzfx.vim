@@ -2,14 +2,27 @@
 
 # set -x
 
+fzfx_trim() {
+    var="$*"
+    # remove leading whitespace characters
+    var="${var#"${var%%[![:space:]]*}"}"
+    # remove trailing whitespace characters
+    var="${var%"${var##*[![:space:]]}"}"   
+    printf '%s' "$var"
+}
+
 content=$1
 flag="--"
 option=${content#*$flag}
 
 if [ ${#option} -gt 0 ] && [ "$option" != "$content" ]; then
 	query_len=$((${#content} - ${#option} - ${#flag}))
-    query=${content:0:query_len}
-	rg --column -n --no-heading --color=always -S -uu $option -- $query
+    option=$(fzfx_trim $option)
+    query=$(fzfx_trim ${content:0:query_len})
+    # echo "option:[$option], query:[$query]"
+	rg --column -n --no-heading --color=always -S -uu $option -- "$query"
 else
-	rg --column -n --no-heading --color=always -S -uu -- $content
+    content=$(fzfx_trim $content)
+    # echo "content:[$content]"
+	rg --column -n --no-heading --color=always -S -uu -- "$content"
 fi
