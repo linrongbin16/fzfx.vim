@@ -1,0 +1,3 @@
+policies:
+  ProhibitNoAbortFunction:
+    enabled: false
