@@ -1,6 +1,6 @@
 # fzfx.vim
 
-The e(x)tended fzf commands missing in fzf.vim.
+The e(x)tended commands missing in fzf.vim.
 
 TODO: support Windows.
 
