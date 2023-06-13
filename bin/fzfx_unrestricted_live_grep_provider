@@ -16,7 +16,7 @@ flag="--"
 option=${content#*$flag}
 
 if [ ${#option} -gt 0 ] && [ "$option" != "$content" ]; then
-	query_len=$((${#content} - ${#option} - ${#flag}))
+    query_len=$((${#content} - ${#option} - ${#flag}))
     option=$(fzfx_trim $option)
     query=$(fzfx_trim ${content:0:query_len})
     # echo "option:[$option], query:[$query]"
