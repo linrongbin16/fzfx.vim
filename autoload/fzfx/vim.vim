@@ -35,8 +35,8 @@ let s:fzfx_git_branch_command=get(g:, 'fzfx_git_branch_command', 'git branch -a 
 " providers
 let s:live_grep_provider=s:fzfx_bin.'fzfx_live_grep_provider'
 let s:unrestricted_live_grep_provider=s:fzfx_bin.'fzfx_unrestricted_live_grep_provider'
-let s:grep_word_provider=s:fzfx_grep_command.' -w'
-let s:unrestricted_grep_word_provider=s:fzfx_unrestricted_grep_command.' -w'
+let s:grep_word_provider=s:fzfx_grep_command
+let s:unrestricted_grep_word_provider=s:fzfx_unrestricted_grep_command
 let s:files_provider=s:fzfx_find_command
 let s:unrestricted_files_provider=s:fzfx_unrestricted_find_command
 let s:word_files_provider=s:fzfx_find_command
@@ -74,27 +74,12 @@ function! fzfx#vim#unrestricted_live_grep(query, fullscreen)
     call s:live_grep(a:query, s:unrestricted_live_grep_provider, a:fullscreen)
 endfunction
 
-function! s:grep_word(query, provider, fullscreen)
-    let command_fmt = a:provider.' %s || true'
-    let initial_command = printf(command_fmt, shellescape(a:query))
-    let reload_command = printf('sleep 0.1;'.command_fmt, '{q}')
-    let spec = {'options': [
-                \ '--disabled',
-                \ '--print-query',
-                \ '--query', a:query,
-                \ '--bind', 'change:reload:'.reload_command,
-                \ '--prompt', '*Word> ',
-                \ ]}
-    let spec = fzf#vim#with_preview(spec)
-    call fzf#vim#grep(initial_command, spec, a:fullscreen)
+function! fzfx#vim#grep_word(fullscreen)
+    call s:live_grep(expand('<cword>'), s:live_grep_provider, a:fullscreen)
 endfunction
 
-function! fzfx#vim#grep_word(query, fullscreen)
-    call s:grep_word(a:query, s:grep_word_provider, a:fullscreen)
-endfunction
-
-function! fzfx#vim#unrestricted_grep_word(query, fullscreen)
-    call s:grep_word(a:query, s:unrestricted_grep_word_provider, a:fullscreen)
+function! fzfx#vim#unrestricted_grep_word(fullscreen)
+    call s:live_grep(expand('<cword>'), s:unrestricted_live_grep_provider, a:fullscreen)
 endfunction
 
 function! s:files(query, provider, fullscreen)
