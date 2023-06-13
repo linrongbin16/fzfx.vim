@@ -113,6 +113,14 @@ function! fzfx#vim#unrestricted_files(query, fullscreen) abort
     call s:files(a:query, s:unrestricted_files_provider, a:fullscreen)
 endfunction
 
+function! fzfx#vim#files_by_word(fullscreen) abort
+    call s:files(expand('<cword>'), s:files_provider, a:fullscreen)
+endfunction
+
+function! fzfx#vim#unrestricted_files_by_word(fullscreen) abort
+    call s:files(expand('<cword>'), s:unrestricted_files_provider, a:fullscreen)
+endfunction
+
 function! fzfx#vim#git_branches(query, fullscreen) abort
     let command_fmt = s:git_branches_provider.' %s || true'
     let initial_command = printf(command_fmt, shellescape(a:query))

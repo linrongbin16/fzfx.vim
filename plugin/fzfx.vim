@@ -8,6 +8,9 @@ let g:loaded_fzfx=1
 command! -bang -nargs=? -complete=dir FzfxFiles call fzfx#vim#files(<q-args>, <bang>0)
 command! -bang -nargs=? -complete=dir FzfxUnrestrictedFiles call fzfx#vim#unrestricted_files(<q-args>, <bang>0)
 
+command! -bang FzfxFilesByWord call fzfx#vim#files_by_word(<bang>0)
+command! -bang FzfxUnrestrictedFilesByWord call fzfx#vim#unrestricted_files_by_word(<bang>0)
+
 command! -bang -nargs=* FzfxLiveGrep call fzfx#vim#live_grep(<q-args>, <bang>0)
 command! -bang -nargs=* FzfxUnrestrictedLiveGrep call fzfx#vim#unrestricted_live_grep(<q-args>, <bang>0)
 
