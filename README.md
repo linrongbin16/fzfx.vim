@@ -55,7 +55,7 @@ fd -cnever -tf -tl -L -E .git
 fd --color=never --type f --type symlink --follow --exclude .git
 ```
 
-`FzfxUnrestrictedFiles` is a variant version, it also searches the hidden and
+`FzfxUnrestrictedFiles` is a variant of `FzfxFiles`, it also searches the hidden and
 ignored files with `--unrestricted`:
 
 ```bash
@@ -65,7 +65,7 @@ fd -cnever -tf -tl -L -u
 fd --color=never --type f --type symlink --follow --unrestricted
 ```
 
-### `Fzfx(Unrestricted)LiveGrep`
+### `Fzfx(Unrestricted)LiveGrep` and `Fzfx(Unrestricted)GrepWord`
 
 `FzfxLiveGrep` is almost the same with (`Fzf`)`RG`, except:
 
@@ -83,8 +83,8 @@ fd --color=never --type f --type symlink --follow --unrestricted
 
    https://github.com/linrongbin16/fzfx.vim/assets/6496887/57d914f9-7def-4f2d-ae25-187c9cbb8d1c
 
-`FzfxUnrestrictedLiveGrep` is a variant version, it also searches the hidden and
-ignored files with `--unrestricted --hidden`:
+`FzfxUnrestrictedLiveGrep` is a variant of `FzfxLiveGrep`, it also searches the
+hidden and ignored files with `--unrestricted --hidden`:
 
 ```bash
 # short version
@@ -92,6 +92,14 @@ rg --column -n --no-heading --color=always -S -uu
 # e.g.
 rg --column --line-number --no-heading --color=always --smart-case --unrestricted --hidden
 ```
+
+### `Fzfx(Unrestricted)GrepWord`
+
+`FzfxGrepWord` is a variant of `FzfxLiveGrep`, except it searches by word under cursor,
+e.g. `expand('<cword>')`.
+
+`FzfxUnrestrictedGrepWord` is a variant of `FzfxUnrestrictedLiveGrep`, except it
+searches by word under cursor, e.g. `expand('<cword>')`.
 
 ### (TODO) `FzfxBuffers`
 
