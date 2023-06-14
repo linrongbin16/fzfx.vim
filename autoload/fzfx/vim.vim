@@ -31,38 +31,38 @@ let s:default_action = {
             \ }
 
 " `rg --column --line-number --no-heading --color=always --smart-case`
-let s:fzfx_grep_command=get(g:, 'fzfx_grep_command', "rg --column -n --no-heading --color=always -S -g '!*.git/'")
-let s:fzfx_unrestricted_grep_command=get(g:, 'fzfx_unrestricted_grep_command', 'rg --column -n --no-heading --color=always -S -uu')
+let s:grep_command=get(g:, 'fzfx_grep_command', "rg --column -n --no-heading --color=always -S -g '!*.git/'")
+let s:unrestricted_grep_command=get(g:, 'fzfx_unrestricted_grep_command', 'rg --column -n --no-heading --color=always -S -uu')
 
 " `fd --color=never --type f --type symlink --follow --exclude .git`
 if executable('fd')
-    let s:fzfx_find_command=get(g:, 'fzfx_find_command', 'fd -cnever -tf -tl -L -E .git')
-    let s:fzfx_unrestricted_find_command=get(g:, 'fzfx_unrestricted_find_command', 'fd -cnever -tf -tl -L -u')
+    let s:find_command=get(g:, 'fzfx_find_command', 'fd -cnever -tf -tl -L -E .git')
+    let s:unrestricted_find_command=get(g:, 'fzfx_unrestricted_find_command', 'fd -cnever -tf -tl -L -u')
 elseif executable('fdfind')
-    let s:fzfx_find_command=get(g:, 'fzfx_find_command', 'fdfind -cnever -tf -tl -L -E .git')
-    let s:fzfx_unrestricted_find_command=get(g:, 'fzfx_unrestricted_find_command', 'fdfind -cnever -tf -tl -L -u')
+    let s:find_command=get(g:, 'fzfx_find_command', 'fdfind -cnever -tf -tl -L -E .git')
+    let s:unrestricted_find_command=get(g:, 'fzfx_unrestricted_find_command', 'fdfind -cnever -tf -tl -L -u')
 endif
 
 " `git branch -a --color --list`
-let s:fzfx_git_branch_command=get(g:, 'fzfx_git_branch_command', 'git branch -a --color')
+let s:git_branch_command=get(g:, 'git_branch_command', 'git branch -a --color')
 
 " providers
-let s:live_grep_provider=s:fzfx_bin.'fzfx_live_grep_provider'
-let s:unrestricted_live_grep_provider=s:fzfx_bin.'fzfx_unrestricted_live_grep_provider'
-let s:grep_word_provider=s:fzfx_grep_command
-let s:unrestricted_grep_word_provider=s:fzfx_unrestricted_grep_command
-let s:files_provider=s:fzfx_find_command
-let s:unrestricted_files_provider=s:fzfx_unrestricted_find_command
-let s:word_files_provider=s:fzfx_find_command
-let s:unrestricted_word_files_provider=s:fzfx_unrestricted_find_command
-let s:git_branches_provider=s:fzfx_git_branch_command
+let s:live_grep_provider=s:fzfx_bin.'live_grep_provider'
+let s:unrestricted_live_grep_provider=s:fzfx_bin.'unrestricted_live_grep_provider'
+let s:grep_word_provider=s:grep_command
+let s:unrestricted_grep_word_provider=s:unrestricted_grep_command
+let s:files_provider=s:find_command
+let s:unrestricted_files_provider=s:unrestricted_find_command
+let s:word_files_provider=s:find_command
+let s:unrestricted_word_files_provider=s:unrestricted_find_command
+let s:git_branches_provider=s:git_branch_command
 
 " previewers
-let s:git_branches_previewer=s:fzfx_bin.'fzfx_git_branches_previewer'
+let s:git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
 
 function! s:live_grep(query, provider, fullscreen)
-    let fuzzy_search_header=':: Press CTRL-G to Fuzzy Search'
-    let regex_search_header=':: Press CTRL-R to Regex Search'
+    let fuzzy_search_header=':: Press CTRL-G to fuzzy search'
+    let regex_search_header=':: Press CTRL-R to regex search'
     let command_fmt = a:provider.' %s || true'
     let initial_command = printf(command_fmt, shellescape(a:query))
     if s:is_win
@@ -118,7 +118,7 @@ function! fzfx#vim#unrestricted_files(query, fullscreen)
 endfunction
 
 function! fzfx#vim#git_branches(query, fullscreen)
-    let checkout_branch_header=':: Press ENTER to Switch Branch'
+    let git_branch_header=':: Press ENTER to switch branch'
     if len(a:query) > 0
         let command_fmt = s:git_branches_provider.' --list %s'
         let initial_command = printf(command_fmt, shellescape(a:query))
@@ -136,7 +136,7 @@ function! fzfx#vim#git_branches(query, fullscreen)
                 \   '--preview-window', 'right,50%',
                 \   '--prompt', 'Branches> ',
                 \   '--preview', s:git_branches_previewer.' {}',
-                \   '--header', checkout_branch_header,
+                \   '--header', git_branch_header,
                 \ ]}
 
     " spec sink

@@ -23,8 +23,8 @@ raw=${content#*$arrow}
 if [ ${#raw} -gt 0 ] && [ "$raw" != "$content" ]; then
     raw=$(fzfx_trim $raw)
     # echo "raw:[$raw], content:[$content]"
-    git log --graph --pretty=oneline --abbrev-commit --color $raw
+    git log --graph --abbrev-commit --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $raw
 else
     # echo "content:[$content]"
-    git log --graph --pretty=oneline --abbrev-commit --color $content
+    git log --graph --abbrev-commit --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $content
 fi
