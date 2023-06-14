@@ -1,7 +1,3 @@
 @echo off
-setlocal enabledelayedexpansion
 
-echo cmd
-
-set content=%1
-echo content:%content%
+sh %~dp0\fzfx_live_grep_provider %*
