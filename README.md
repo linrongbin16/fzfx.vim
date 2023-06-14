@@ -2,19 +2,31 @@
 
 The e(x)tended fzf commands missing in fzf.vim.
 
+- [Dependency](#dependency)
+  - [Install Git for Windows](#install-git-for-windows)
+- [Install](#install)
+  - [vim-plug](#vim-plug)
+  - [lazy.nvim](#lazy-nvim)
+- [Usage](#usage)
+  - [Key Mapping](#key-mapping)
+- [Commands](#commands)
+  - [Fzfx(Unrestricted)Files](#fzfx-unrestricted-files)
+  - [Fzfx(Unrestricted)LiveGrep](#fzfx-unrestricted-livegrep)
+  - [Fzfx(Unrestricted)GrepWord](#fzfx-unrestricted-grepword)
+  - [FzfxBranches](#fzfxbranches)
+
 ## Dependency
 
-- Performant modern rust commands:
-  [ripgrep(rg)](https://github.com/BurntSushi/ripgrep) and [fd](https://github.com/sharkdp/fd).
-- For Windows: [Git for Windows](https://git-scm.com/download/win).
+- [ripgrep(rg)](https://github.com/BurntSushi/ripgrep) and [fd](https://github.com/sharkdp/fd).
+- (For windows) [Git for Windows](https://git-scm.com/download/win).
 
 ### Install Git for Windows
 
-Since the implementation of fzf providers on Windows are actually forwarding
-user input to shell scripts, so we depend on the embeded shell installed with
+Since the fzf scripts on Windows are actually implemented by forwarding
+user input to linux shell scripts, so we depend on the embeded shell installed with
 [Git for Windows](https://git-scm.com/download/win).
 
-Install Git for Windows Setup with the below 3 options:
+Install with the below 3 options:
 
 1. In **Select Components**, select **Associate .sh files to be run with Bash**.
    <!-- ![install-windows-git1](https://github.com/linrongbin16/fzfx.vim/assets/6496887/6e1065f4-9d94-4564-848f-3f505e3e5b0c) -->
@@ -44,7 +56,7 @@ After this step, **git.exe** and Linux built-in commands(**sh.exe**, **cp.exe**,
 
 ## Install
 
-For [vim-plug](https://github.com/junegunn/vim-plug):
+### [vim-plug](https://github.com/junegunn/vim-plug)
 
 ```vim
 call plug#begin()
@@ -56,7 +68,7 @@ Plug 'linrongbin16/fzfx.vim'
 call plug#end()
 ```
 
-For [lazy.nvim](https://github.com/folke/lazy.nvim):
+### [lazy.nvim](https://github.com/folke/lazy.nvim)
 
 ```lua
 return {
@@ -77,7 +89,13 @@ return {
 
 ## Usage
 
-### `Fzfx(Unrestricted)Files`
+### Key Mapping
+
+TODO
+
+## Commands
+
+### Fzfx(Unrestricted)Files
 
 `FzfxFiles` is almost the same with (`Fzf`)`Files`, except it's using fd command:
 
@@ -88,8 +106,8 @@ fd -cnever -tf -tl -L -E .git
 fd --color=never --type f --type symlink --follow --exclude .git
 ```
 
-`FzfxUnrestrictedFiles` is a variant of `FzfxFiles`, it also searches the hidden and
-ignored files with `--unrestricted`:
+`FzfxUnrestrictedFiles` is a variant of `FzfxFiles`, it also searches the hidden
+and ignored files with `--unrestricted`:
 
 ```bash
 # short version
@@ -98,7 +116,7 @@ fd -cnever -tf -tl -L -u
 fd --color=never --type f --type symlink --follow --unrestricted
 ```
 
-### `Fzfx(Unrestricted)LiveGrep` and `Fzfx(Unrestricted)GrepWord`
+### Fzfx(Unrestricted)LiveGrep
 
 `FzfxLiveGrep` is almost the same with (`Fzf`)`RG`, except:
 
@@ -126,7 +144,7 @@ rg --column -n --no-heading --color=always -S -uu
 rg --column --line-number --no-heading --color=always --smart-case --unrestricted --hidden
 ```
 
-### `Fzfx(Unrestricted)GrepWord`
+### Fzfx(Unrestricted)GrepWord
 
 `FzfxGrepWord` is a variant of `FzfxLiveGrep`, except it searches by word under cursor,
 e.g. `expand('<cword>')`.
@@ -134,6 +152,11 @@ e.g. `expand('<cword>')`.
 `FzfxUnrestrictedGrepWord` is a variant of `FzfxUnrestrictedLiveGrep`, except it
 searches by word under cursor, e.g. `expand('<cword>')`.
 
-### (TODO) `FzfxBuffers`
+### FzfxBranches
 
-### (TODO) `FzfxGitBranches`
+`FzfxBranches` can search git branches, and use `ENTER` to switch to the
+selected branch:
+
+### FzfxBuffers
+
+TODO
