@@ -18,9 +18,6 @@ The e(x)tended fzf commands missing in fzf.vim.
 
 ## Dependency
 
-- [ripgrep(rg)](https://github.com/BurntSushi/ripgrep) and [fd](https://github.com/sharkdp/fd).
-- (For windows) [Git for Windows](https://git-scm.com/download/win).
-
 ### Rust commands
 
 We recommand to install [rust](https://www.rust-lang.org/) and install via cargo:
