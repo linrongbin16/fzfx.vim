@@ -3,24 +3,38 @@
 The e(x)tended fzf commands missing in fzf.vim.
 
 - [Dependency](#dependency)
-  - [Install Git for Windows](#install-git-for-windows)
+  - [Rust commands](#rust-commands)
+  - [Git for Windows (for Windows)](#git-for-windows-for-windows)
 - [Install](#install)
   - [vim-plug](#vim-plug)
-  - [lazy.nvim](#lazy-nvim)
+  - [lazy.nvim](#lazynvim)
 - [Usage](#usage)
-  - [Key Mapping](#key-mapping)
+  - [Key mapping](#key-mapping)
 - [Commands](#commands)
-  - [Fzfx(Unrestricted)Files](#fzfx-unrestricted-files)
-  - [Fzfx(Unrestricted)LiveGrep](#fzfx-unrestricted-livegrep)
-  - [Fzfx(Unrestricted)GrepWord](#fzfx-unrestricted-grepword)
+  - [Fzfx(Unrestricted)Files](#fzfxunrestrictedfiles)
+  - [Fzfx(Unrestricted)LiveGrep](#fzfxunrestrictedlivegrep)
+  - [Fzfx(Unrestricted)GrepWord](#fzfxunrestrictedgrepword)
   - [FzfxBranches](#fzfxbranches)
 
 ## Dependency
 
-- [ripgrep(rg)](https://github.com/BurntSushi/ripgrep) and [fd](https://github.com/sharkdp/fd).
-- (For windows) [Git for Windows](https://git-scm.com/download/win).
+### Rust commands
 
-### Install Git for Windows
+We recommand to install [rust](https://www.rust-lang.org/) and install via cargo:
+
+```bash
+cargo install ripgrep
+cargo install fd-find
+```
+
+Optionally, you can install [bat](https://github.com/sharkdp/bat) and [git-delta](https://dandavison.github.io/delta/installation.html) for better preview:
+
+```bash
+cargo install --locked bat
+cargo install git-delta
+```
+
+### Git for Windows (for Windows)
 
 Since the fzf scripts on Windows are actually implemented by forwarding
 user input to linux shell scripts, so we depend on the embeded shell installed with
@@ -89,7 +103,7 @@ return {
 
 ## Usage
 
-### Key Mapping
+### Key mapping
 
 TODO
 
@@ -156,6 +170,8 @@ searches by word under cursor, e.g. `expand('<cword>')`.
 
 `FzfxBranches` can search git branches, and use `ENTER` to switch to the
 selected branch:
+
+https://github.com/linrongbin16/fzfx.vim/assets/6496887/9717bdd3-ec64-4014-a254-533d0cae4528
 
 ### FzfxBuffers
 
