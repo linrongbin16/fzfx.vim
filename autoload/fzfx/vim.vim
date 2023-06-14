@@ -44,7 +44,13 @@ let s:ansi_colors = {
               \ }
 
 function! s:set_ansi_color(content)
-    return "\x1b".s:ansi_colors.red.a:content."\x1b".s:ansi_colors.clear
+    let special_fg=synIDattr(synIDtrans(hlID('Special')), 'fg#')
+    let normal_fg=synIDattr(synIDtrans(hlID('Normal')), 'fg#')
+    if special_fg[0:1]==?'#' && len(special_fg)==7 && normal_fg[0:1]==?'#' && len(normal_fg)==7
+        return "\x1b".special_fg.a:content."\x1b".normal_fg
+    else
+        return "\x1b".s:ansi_colors.magenta.a:content."\x1b".s:ansi_colors.clear
+    endif
 endfunction
 
 " defaults
