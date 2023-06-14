@@ -17,19 +17,30 @@ user input to shell scripts, so we depend on the embeded shell installed with
 Install Git for Windows Setup with the below 3 options:
 
 1. In **Select Components**, select **Associate .sh files to be run with Bash**.
-   ![install-windows-git1](https://github.com/linrongbin16/fzfx.vim/assets/6496887/6e1065f4-9d94-4564-848f-3f505e3e5b0c)
-
+   <!-- ![install-windows-git1](https://github.com/linrongbin16/fzfx.vim/assets/6496887/6e1065f4-9d94-4564-848f-3f505e3e5b0c) -->
+   <p align="center" width="70%">
+       <img alt="install-windows-git1.png" src="https://github.com/linrongbin16/fzfx.vim/assets/6496887/6e1065f4-9d94-4564-848f-3f505e3e5b0c"
+           width="70%" />
+   </p>
 
 2. In **Adjusting your PATH environment**, select **Use Git and optional Unix
    tools from the Command Prompt**.
-   ![install-windows-git2](https://github.com/linrongbin16/fzfx.vim/assets/6496887/d1b73beb-c95f-4fba-83c7-2eaf369db692)
+   <!-- ![install-windows-git2](https://github.com/linrongbin16/fzfx.vim/assets/6496887/d1b73beb-c95f-4fba-83c7-2eaf369db692) -->
+   <p align="center" width="70%">
+       <img alt="install-windows-git2.png" src="https://github.com/linrongbin16/fzfx.vim/assets/6496887/d1b73beb-c95f-4fba-83c7-2eaf369db692"
+           width="70%" />
+   </p>
 
 3. In **Configuring the terminal emulator to use with Git Bash**, select **Use
    Windows's default console window**.
-   ![install-windows-git3](https://github.com/linrongbin16/fzfx.vim/assets/6496887/1b05584f-a030-4555-b588-f344f933a523)
+   <!-- ![install-windows-git3](https://github.com/linrongbin16/fzfx.vim/assets/6496887/1b05584f-a030-4555-b588-f344f933a523) -->
+   <p align="center" width="70%">
+       <img alt="install-windows-git3.png" src="https://github.com/linrongbin16/fzfx.vim/assets/6496887/1b05584f-a030-4555-b588-f344f933a523"
+           width="70%" />
+   </p>
 
-After this step, git.exe and Linux built-in commands(such as sh.exe, cp.exe,
-mv.exe, ls.exe) will be available in **%PATH%**.
+After this step, **git.exe** and Linux built-in commands(**sh.exe**, **cp.exe**,
+**mv.exe**, **ls.exe**, etc) will be available in **%PATH%**.
 
 ## Install
 
