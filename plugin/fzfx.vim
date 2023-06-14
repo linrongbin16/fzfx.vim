@@ -14,4 +14,4 @@ command! -bang -nargs=* FzfxUnrestrictedLiveGrep call fzfx#vim#unrestricted_live
 command! -bang FzfxGrepWord call fzfx#vim#grep_word(<bang>0)
 command! -bang FzfxUnrestrictedGrepWord call fzfx#vim#unrestricted_grep_word(<bang>0)
 
-command! -bang -nargs=* FzfxGitBranches call fzfx#vim#git_branches(<q-args>, <bang>0)
+command! -bang -nargs=* FzfxBranches call fzfx#vim#git_branches(<q-args>, <bang>0)
