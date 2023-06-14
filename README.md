@@ -11,9 +11,9 @@ The e(x)tended fzf commands missing in fzf.vim.
 - [Usage](#usage)
   - [Key mapping](#key-mapping)
 - [Commands](#commands)
-  - [Fzfx(Unrestricted)Files](#fzfx-unrestricted-files)
-  - [Fzfx(Unrestricted)LiveGrep](#fzfx-unrestricted-livegrep)
-  - [Fzfx(Unrestricted)GrepWord](#fzfx-unrestricted-grepword)
+  - [Fzfx(Unrestricted)Files](#fzfxunrestrictedfiles)
+  - [Fzfx(Unrestricted)LiveGrep](#fzfxunrestrictedlivegrep)
+  - [Fzfx(Unrestricted)GrepWord](#fzfxunrestrictedgrepword)
   - [FzfxBranches](#fzfxbranches)
 
 ## Dependency
