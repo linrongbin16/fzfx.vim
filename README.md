@@ -7,7 +7,7 @@ The e(x)tended fzf commands missing in fzf.vim.
   - [Git for Windows (for Windows)](#git-for-windows-for-windows)
 - [Install](#install)
   - [vim-plug](#vim-plug)
-  - [lazy.nvim](#lazy-nvim)
+  - [lazy.nvim](#lazynvim)
 - [Usage](#usage)
   - [Key mapping](#key-mapping)
 - [Commands](#commands)
