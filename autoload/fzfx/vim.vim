@@ -2,11 +2,11 @@
 let s:is_win = has('win32') || has('win64')
 
 if s:is_win && &shellslash
-  set noshellslash
-  let s:base_dir = expand('<sfile>:p:h:h:h')
-  set shellslash
+    set noshellslash
+    let s:base_dir=expand('<sfile>:p:h:h:h')
+    set shellslash
 else
-  let s:base_dir = expand('<sfile>:p:h:h:h')
+    let s:base_dir=expand('<sfile>:p:h:h:h')
 endif
 
 if s:is_win
@@ -51,7 +51,11 @@ function! s:live_grep(query, provider, fullscreen)
     let regex_search_header=':: <ctrl-r> to Regex Search'
     let command_fmt = a:provider.' %s || true'
     let initial_command = printf(command_fmt, shellescape(a:query))
-    let reload_command = printf('sleep 0.1;'.command_fmt, '{q}')
+    if s:is_win
+        let reload_command = printf('sleep 0.1 && '.command_fmt, '{q}')
+    else
+        let reload_command = printf('sleep 0.1;'.command_fmt, '{q}')
+    endif
     let spec = {'options': [
                 \ '--disabled',
                 \ '--print-query',
