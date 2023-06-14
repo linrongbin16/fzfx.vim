@@ -103,7 +103,7 @@ return {
 
 ## Usage
 
-### Key Mapping
+### Key mapping
 
 TODO
 
