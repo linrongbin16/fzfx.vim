@@ -61,8 +61,8 @@ let s:git_branches_provider=s:fzfx_git_branch_command
 let s:git_branches_previewer=s:fzfx_bin.'fzfx_git_branches_previewer'
 
 function! s:live_grep(query, provider, fullscreen)
-    let fuzzy_search_header=':: <ctrl-g> to Fuzzy Search'
-    let regex_search_header=':: <ctrl-r> to Regex Search'
+    let fuzzy_search_header=':: Press CTRL-G to Fuzzy Search'
+    let regex_search_header=':: Press CTRL-R to Regex Search'
     let command_fmt = a:provider.' %s || true'
     let initial_command = printf(command_fmt, shellescape(a:query))
     if s:is_win
@@ -118,6 +118,7 @@ function! fzfx#vim#unrestricted_files(query, fullscreen)
 endfunction
 
 function! fzfx#vim#git_branches(query, fullscreen)
+    let checkout_branch_header=':: Press ENTER to Switch Branch'
     if len(a:query) > 0
         let command_fmt = s:git_branches_provider.' --list %s'
         let initial_command = printf(command_fmt, shellescape(a:query))
@@ -135,6 +136,7 @@ function! fzfx#vim#git_branches(query, fullscreen)
                 \   '--preview-window', 'right,50%',
                 \   '--prompt', 'Branches> ',
                 \   '--preview', s:git_branches_previewer.' {}',
+                \   '--header', checkout_branch_header,
                 \ ]}
 
     " spec sink
