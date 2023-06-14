@@ -1,13 +1,31 @@
 # fzfx.vim
 
-The e(x)tended commands missing in fzf.vim.
-
-TODO: support Windows.
+The e(x)tended fzf commands missing in fzf.vim.
 
 ## Dependency
 
-- [ripgrep(rg)](https://github.com/BurntSushi/ripgrep).
-- [fd](https://github.com/sharkdp/fd).
+- Performant modern rust commands:
+  [ripgrep(rg)](https://github.com/BurntSushi/ripgrep) and [fd](https://github.com/sharkdp/fd).
+- For Windows: [Git for Windows](https://git-scm.com/download/win).
+
+### Install Git for Windows
+
+Since the implementation of fzf providers on Windows are actually forwarding
+user input to shell scripts, so we depend on the embeded shell installed with
+[Git for Windows](https://git-scm.com/download/win).
+
+Install Git for Windows Setup with the below 3 options:
+
+1. In **Select Components**, select **Associate .sh files to be run with Bash**.
+
+2. In **Adjusting your PATH environment**, select **Use Git and optional Unix
+   tools from the Command Prompt**.
+
+3. In **Configuring the terminal emulator to use with Git Bash**, select **Use
+   Windows's default console window**.
+
+After this step, git.exe and Linux built-in commands(such as sh.exe, cp.exe,
+mv.exe, ls.exe) will be available in **%PATH%**.
 
 ## Install
 
