@@ -44,7 +44,7 @@ let s:ansi_colors = {
               \ }
 
 function! s:set_ansi_color(content)
-    return '\x1b'.s:ansi_colors.red.a:content.'\x1b'.s:ansi_colors.clear
+    return "\x1b".s:ansi_colors.red.a:content."\x1b".s:ansi_colors.clear
 endfunction
 
 " defaults
