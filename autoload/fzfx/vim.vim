@@ -23,6 +23,30 @@ function! s:trim(s)
     endif
 endfunction
 
+" the "\x1b" esc sequence causes issues
+" with older Lua versions
+" clear    = "\x1b[0m",
+let s:ansi_colors = {
+              \ 'clear': '[0m',
+              \ 'bold': '[1m',
+              \ 'italic': '[3m',
+              \ 'underline': '[4m',
+              \ 'black': '[0;30m',
+              \ 'red': '[0;31m',
+              \ 'green': '[0;32m',
+              \ 'yellow': '[0;33m',
+              \ 'blue': '[0;34m',
+              \ 'magenta': '[0;35m',
+              \ 'cyan': '[0;36m',
+              \ 'white': '[0;37m',
+              \ 'grey': '[0;90m',
+              \ 'dark_grey': '[0;97m',
+              \ }
+
+function! s:set_ansi_color(content)
+    return s:ansi_colors.red.a:content.s:ansi_colors.clear
+endfunction
+
 " defaults
 let s:default_action = {
             \ 'ctrl-t': 'tab split',
@@ -61,8 +85,8 @@ let s:git_branches_provider=s:git_branch_command
 let s:git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
 
 function! s:live_grep(query, provider, fullscreen)
-    let fuzzy_search_header=':: Press CTRL-G to fuzzy search'
-    let regex_search_header=':: Press CTRL-R to regex search'
+    let fuzzy_search_header=':: Press '.s:set_ansi_color('CTRL-G').' to fuzzy search'
+    let regex_search_header=':: Press '.s:set_ansi_color('CTRL-R').' to regex search'
     let command_fmt = a:provider.' %s || true'
     let initial_command = printf(command_fmt, shellescape(a:query))
     if s:is_win
@@ -118,7 +142,7 @@ function! fzfx#vim#unrestricted_files(query, fullscreen)
 endfunction
 
 function! fzfx#vim#git_branches(query, fullscreen)
-    let git_branch_header=':: Press ENTER to switch branch'
+    let git_branch_header=':: Press '.s:set_ansi_color('ENTER').' to switch branch'
     if len(a:query) > 0
         let command_fmt = s:git_branches_provider.' --list %s'
         let initial_command = printf(command_fmt, shellescape(a:query))
