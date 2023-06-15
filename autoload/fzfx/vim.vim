@@ -15,6 +15,19 @@ else
     let s:fzfx_bin=s:base_dir.'/bin/'
 endif
 
+let s:TYPE = {'bool': type(0), 'dict': type({}), 'funcref': type(function('call')), 'string': type(''), 'list': type([])}
+
+if v:version >= 704
+    function! s:function(name)
+        return function(a:name)
+    endfunction
+else
+    function! s:function(name)
+        " By Ingo Karkat
+        return function(substitute(a:name, '^s:', matchstr(expand('<sfile>'), '<SNR>\d\+_\zefunction$'), ''))
+    endfunction
+endif
+
 function! s:trim(s)
     if has('nvim') || v:versionlong >= 8001630
         return trim(a:s)
@@ -23,6 +36,19 @@ function! s:trim(s)
     endif
 endfunction
 
+" action
+let s:default_action = {
+            \ 'ctrl-t': 'tab split',
+            \ 'ctrl-x': 'split',
+            \ 'ctrl-v': 'vsplit' }
+
+function! s:action_for(key, ...)
+    let default = a:0 ? a:1 : ''
+    let Cmd = get(get(g:, 'fzf_action', s:default_action), a:key, default)
+    return type(Cmd) == s:TYPE.string ? Cmd : default
+endfunction
+
+" color
 " see: https://github.com/ibhagwan/fzf-lua/blob/e3b317cea385b0a471e7e06aed759f5cd8546b89/lua/fzf-lua/utils.lua#L390
 function! s:hex2rgb(hex)
     let r=a:hex[1:2]
@@ -117,6 +143,8 @@ let s:git_branches_provider=s:git_branch_command
 let s:git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
 
 " ======== implementations ========
+
+" live grep
 function! s:live_grep(query, provider, fullscreen)
     let fuzzy_search_header=':: Press '.s:set_color('CTRL-F').' to fzf mode'
     let regex_search_header=':: Press '.s:set_color('CTRL-R').' to rg mode'
@@ -149,6 +177,7 @@ function! fzfx#vim#unrestricted_live_grep(query, fullscreen)
     call s:live_grep(a:query, s:unrestricted_live_grep_provider, a:fullscreen)
 endfunction
 
+" grep word
 function! fzfx#vim#grep_word(fullscreen)
     call s:live_grep(expand('<cword>'), s:live_grep_provider, a:fullscreen)
 endfunction
@@ -157,6 +186,7 @@ function! fzfx#vim#unrestricted_grep_word(fullscreen)
     call s:live_grep(expand('<cword>'), s:unrestricted_live_grep_provider, a:fullscreen)
 endfunction
 
+" files
 function! s:files(query, provider, fullscreen)
     let command_fmt = a:provider.' %s || true'
     let initial_command = printf(command_fmt, shellescape(a:query))
@@ -174,7 +204,78 @@ function! fzfx#vim#unrestricted_files(query, fullscreen)
     call s:files(a:query, s:unrestricted_files_provider, a:fullscreen)
 endfunction
 
-function! fzfx#vim#git_branches(query, fullscreen)
+" buffers
+function! s:find_open_window(b)
+    let [tcur, tcnt] = [tabpagenr() - 1, tabpagenr('$')]
+    for toff in range(0, tabpagenr('$') - 1)
+        let t = (tcur + toff) % tcnt + 1
+        let buffers = tabpagebuflist(t)
+        for w in range(1, len(buffers))
+            let b = buffers[w - 1]
+            if b == a:b
+                return [t, w]
+            endif
+        endfor
+    endfor
+    return [0, 0]
+endfunction
+
+function! s:jump(t, w)
+    execute a:t.'tabnext'
+    execute a:w.'wincmd w'
+endfunction
+
+function! s:buffers_sink(lines, query, fullscreen)
+    if len(a:lines) < 3
+        " echo "lines0:".string(a:lines)
+        return
+    endif
+    let b = matchstr(a:lines[2], '\[\zs[0-9]*\ze\]')
+    let bufname=split(a:lines[2])[-1]
+    let action = a:lines[1]
+    echo "lines0.5:".string(a:lines).",b:".b."(".string(bufname).")"
+    if empty(action)
+        " echo "lines1:".string(a:lines).",bdelete:".b."(".bufname.")"
+        let [t, w] = s:find_open_window(b)
+        if t
+            call s:jump(t, w)
+            return
+        endif
+        execute 'buffer' b
+        echo "Switch to '".bufname."'"
+        return
+    endif
+    if action==?'ctrl-d'
+        execute 'bdelete' b
+        " echo "lines2:".string(a:lines).",bdelete:".b."(".bufname.")"
+        call fzfx#vim#buffers(a:query, a:fullscreen)
+    else
+        let cmd = s:action_for(action)
+        " echo "lines3:".string(a:lines).",cmd:".string(cmd).",b:".b."(".string(bufname).")"
+        if !empty(cmd)
+            execute 'silent' cmd
+        endif
+        execute 'buffer' b
+    endif
+endfunction
+
+function! fzfx#vim#buffers(query, fullscreen)
+    let close_buffer_header=':: Press '.s:set_color('CTRL-D').' to close buffer'
+    let spec = { 'sink*': {lines -> s:buffers_sink(lines, a:query, a:fullscreen)},
+                \ 'options': [
+                \   '--print-query',
+                \   '--header', close_buffer_header,
+                \   '--prompt', 'Buffer> '
+                \ ],
+                \ 'placeholder': '{1}'
+                \ }
+    let spec._action = get(g:, 'fzf_action', s:default_action)
+    call add(spec.options, '--expect=ctrl-d,'.join(keys(spec._action), ','))
+    call fzf#vim#buffers(a:query, fzf#vim#with_preview(spec), a:fullscreen)
+endfunction
+
+" branches
+function! fzfx#vim#branches(query, fullscreen)
     let git_branch_header=':: Press '.s:set_color('ENTER').' to switch branch'
     if len(a:query) > 0
         let command_fmt = s:git_branches_provider.' --list %s'
@@ -198,7 +299,7 @@ function! fzfx#vim#git_branches(query, fullscreen)
 
     " spec sink
     let spec._action = get(g:, 'fzf_action', s:default_action)
-    call add(spec.options, '--expect='.join(keys(spec._action), ','))
+    call add(spec.options, '--expect=enter,'.join(keys(spec._action), ','))
     function! spec.sinklist(lines) abort
         echo "lines:".string(a:lines)
         let action=a:lines[1]
