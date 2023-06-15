@@ -1,3 +1,5 @@
 policies:
   ProhibitNoAbortFunction:
     enabled: false
+  ProhibitUnnecessaryDoubleQuote:
+    enabled: false
