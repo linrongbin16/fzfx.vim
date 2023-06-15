@@ -1,4 +1,4 @@
-" utils
+" ======== utils ========
 let s:is_win = has('win32') || has('win64')
 
 if s:is_win && &shellslash
@@ -23,31 +23,63 @@ function! s:trim(s)
     endif
 endfunction
 
-" the "\x1b" esc sequence causes issues
-" with older Lua versions
-" clear    = "\x1b[0m",
-let s:ansi_colors = {
-              \ 'clear': '[0m',
-              \ 'bold': '[1m',
-              \ 'italic': '[3m',
-              \ 'underline': '[4m',
-              \ 'black': '[0;30m',
-              \ 'red': '[0;31m',
-              \ 'green': '[0;32m',
-              \ 'yellow': '[0;33m',
-              \ 'blue': '[0;34m',
-              \ 'magenta': '[0;35m',
-              \ 'cyan': '[0;36m',
-              \ 'white': '[0;37m',
-              \ 'grey': '[0;90m',
-              \ 'dark_grey': '[0;97m',
-              \ }
-
-function! s:set_ansi_color(content)
-    return "\x1b".s:ansi_colors.red.a:content."\x1b".s:ansi_colors.clear
+" see: https://github.com/ibhagwan/fzf-lua/blob/e3b317cea385b0a471e7e06aed759f5cd8546b89/lua/fzf-lua/utils.lua#L390
+function! s:hex2rgb(hex)
+    let r=a:hex[1:2]
+    let g=a:hex[3:4]
+    let b=a:hex[5:6]
+    return [str2nr(r, 16), str2nr(g, 16), str2nr(b, 16)]
 endfunction
 
-" defaults
+function! s:translate_hl_color_code(hl)
+    if hlexists(a:hl)
+        let hex = synIDattr(synIDtrans(hlID(a:hl)), 'fg#')
+        if len(hex)==7 && hex[0:0]==?'#'
+            let [r, g, b] = s:hex2rgb(hex)
+            if r isnot v:null && g isnot v:null && b isnot v:null
+                " fg=38, bg=48
+                return printf("[%d;2;%d;%d;%dm", 38, r, g, b)
+            endif
+        endif
+    endif
+    return v:null
+endfunction
+
+let s:ansi_color_codes = {
+              \ "clear": "[0m",
+              \ "bold": "[1m",
+              \ "italic": "[3m",
+              \ "underline": "[4m",
+              \ "black": "[0;30m",
+              \ "red": "[0;31m",
+              \ "green": "[0;32m",
+              \ "yellow": "[0;33m",
+              \ "blue": "[0;34m",
+              \ "magenta": "[0;35m",
+              \ "cyan": "[0;36m",
+              \ "white": "[0;37m",
+              \ "grey": "[0;90m",
+              \ "dark_grey": "[0;97m",
+              \ }
+
+let s:hl_color_codes = {
+            \ "special": s:translate_hl_color_code("Special"),
+            \ }
+
+function! s:set_color(content)
+    let clear_color=s:ansi_color_codes.clear
+    if s:hl_color_codes.special isnot v:null
+        let special_color=s:hl_color_codes.special
+        echo "special:".special_color.",clear:".clear_color
+        return "\x1b".special_color.a:content."\x1b".clear_color
+    else
+        let magenta_color=s:ansi_color_codes.magenta
+        echo "magenta:".magenta_color.",clear:".clear_color
+        return "\x1b".s:ansi_color_codes.magenta.a:content."\x1b".clear_color
+    endif
+endfunction
+
+" ======== defaults ========
 let s:default_action = {
             \ 'ctrl-t': 'tab split',
             \ 'ctrl-x': 'split',
@@ -70,7 +102,7 @@ endif
 " `git branch -a --color --list`
 let s:git_branch_command=get(g:, 'git_branch_command', 'git branch -a --color')
 
-" providers
+" ======== providers ========
 let s:live_grep_provider=s:fzfx_bin.'live_grep_provider'
 let s:unrestricted_live_grep_provider=s:fzfx_bin.'unrestricted_live_grep_provider'
 let s:grep_word_provider=s:grep_command
@@ -81,12 +113,13 @@ let s:word_files_provider=s:find_command
 let s:unrestricted_word_files_provider=s:unrestricted_find_command
 let s:git_branches_provider=s:git_branch_command
 
-" previewers
+" ======== previewers ========
 let s:git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
 
+" ======== implementations ========
 function! s:live_grep(query, provider, fullscreen)
-    let fuzzy_search_header=':: Press '.s:set_ansi_color('CTRL-G').' to fuzzy search'
-    let regex_search_header=':: Press '.s:set_ansi_color('CTRL-R').' to regex search'
+    let fuzzy_search_header=':: Press '.s:set_color('CTRL-G').' to fuzzy search'
+    let regex_search_header=':: Press '.s:set_color('CTRL-R').' to regex search'
     let command_fmt = a:provider.' %s || true'
     let initial_command = printf(command_fmt, shellescape(a:query))
     if s:is_win
@@ -142,7 +175,7 @@ function! fzfx#vim#unrestricted_files(query, fullscreen)
 endfunction
 
 function! fzfx#vim#git_branches(query, fullscreen)
-    let git_branch_header=':: Press '.s:set_ansi_color('ENTER').' to switch branch'
+    let git_branch_header=':: Press '.s:set_color('ENTER').' to switch branch'
     if len(a:query) > 0
         let command_fmt = s:git_branches_provider.' --list %s'
         let initial_command = printf(command_fmt, shellescape(a:query))
