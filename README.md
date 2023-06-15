@@ -180,7 +180,3 @@ searches by word under cursor, e.g. `expand('<cword>')`.
 selected branch:
 
 https://github.com/linrongbin16/fzfx.vim/assets/6496887/9717bdd3-ec64-4014-a254-533d0cae4528
-
-### FzfxBuffers
-
-TODO
