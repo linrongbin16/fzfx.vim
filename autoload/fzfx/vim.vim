@@ -230,6 +230,7 @@ function! s:buffers_sink(lines, query, fullscreen)
     if action==?'ctrl-d'
         execute 'bdelete' b
         " echo "lines2:".string(a:lines).",bdelete:".b."(".bufname.")"
+        echo "Close '".bufname."'"
         call fzfx#vim#buffers(a:query, a:fullscreen)
     else
         let cmd = s:action_for(action)

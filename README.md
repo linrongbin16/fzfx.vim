@@ -12,6 +12,7 @@ E(x)tended fzf commands missing in fzf.vim.
   - [Key mapping](#key-mapping)
 - [Commands](#commands)
   - [Fzfx(Unrestricted)Files](#fzfxunrestrictedfiles)
+  - [FzfxBuffers](#fzfxbuffers)
   - [Fzfx(Unrestricted)LiveGrep](#fzfxunrestrictedlivegrep)
   - [Fzfx(Unrestricted)GrepWord](#fzfxunrestrictedgrepword)
   - [FzfxBranches](#fzfxbranches)
@@ -129,6 +130,11 @@ fd -cnever -tf -tl -L -u
 # e.g.
 fd --color=never --type f --type symlink --follow --unrestricted
 ```
+
+### FzfxBuffers
+
+`FzfxBuffers` is almost the same with (`Fzf`)`Files`, except it's using `ctrl-d`
+to close other buffers:
 
 ### Fzfx(Unrestricted)LiveGrep
 
