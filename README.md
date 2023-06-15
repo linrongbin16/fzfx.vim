@@ -20,14 +20,14 @@ The e(x)tended fzf commands missing in fzf.vim.
 
 ### Rust commands
 
-We recommand to install [rust](https://www.rust-lang.org/) and install via cargo:
+Recommand to install [rust](https://www.rust-lang.org/) and install the commands via cargo:
 
 ```bash
 cargo install ripgrep
 cargo install fd-find
 ```
 
-Optionally, you can install [bat](https://github.com/sharkdp/bat) and [git-delta](https://dandavison.github.io/delta/installation.html) for better preview:
+Optionally install [bat](https://github.com/sharkdp/bat) and [git-delta](https://dandavison.github.io/delta/installation.html) for better preview:
 
 ```bash
 cargo install --locked bat
