@@ -4,7 +4,7 @@ E(x)tended fzf commands missing in fzf.vim.
 
 - [Dependency](#dependency)
   - [Rust commands](#rust-commands)
-  - [Git for Windows (for Windows)](#git-for-windows-for-windows)
+  - [Git (for Windows)](#git-for-windows)
 - [Install](#install)
   - [vim-plug](#vim-plug)
   - [lazy.nvim](#lazynvim)
@@ -35,7 +35,7 @@ cargo install --locked bat
 cargo install git-delta
 ```
 
-### Git for Windows (for Windows)
+### Git (for Windows)
 
 Since the fzf scripts on Windows are actually implemented by forwarding
 user input to linux shell scripts, we are relying on the embeded shell installed with
