@@ -76,7 +76,7 @@ After this step, **git.exe** and Linux built-in commands(**sh.exe**, **cp.exe**,
 ```vim
 call plug#begin()
 
-Plug 'junegunn/fzf'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'linrongbin16/fzfx.vim'
 
