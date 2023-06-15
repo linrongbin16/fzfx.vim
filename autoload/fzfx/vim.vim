@@ -49,61 +49,43 @@ function! s:action_for(key, ...)
 endfunction
 
 " color
-" see: https://github.com/ibhagwan/fzf-lua/blob/e3b317cea385b0a471e7e06aed759f5cd8546b89/lua/fzf-lua/utils.lua#L390
-function! s:hex2rgb(hex)
-    let r=a:hex[1:2]
-    let g=a:hex[3:4]
-    let b=a:hex[5:6]
-    return [str2nr(r, 16), str2nr(g, 16), str2nr(b, 16)]
-endfunction
-
-function! s:translate_hl_color_code(hl)
-    if hlexists(a:hl)
-        let hex = synIDattr(synIDtrans(hlID(a:hl)), 'fg#')
-        if len(hex)==7 && hex[0:0]==?'#'
-            let [r, g, b] = s:hex2rgb(hex)
-            if r isnot v:null && g isnot v:null && b isnot v:null
-                " fg=38, bg=48
-                return printf("[%d;2;%d;%d;%dm", 38, r, g, b)
-            endif
+function! s:get_color(attr, ...)
+    let gui = has('termguicolors') && &termguicolors
+    let fam = gui ? 'gui' : 'cterm'
+    let pat = gui ? '^#[a-f0-9]\+' : '^[0-9]\+$'
+    for group in a:000
+        let code = synIDattr(synIDtrans(hlID(group)), a:attr, fam)
+        if code =~? pat
+            return code
         endif
-    endif
-    return v:null
+    endfor
+    return ''
 endfunction
 
-let s:ansi_color_codes = {
-              \ "clear": "[0m",
-              \ "bold": "[1m",
-              \ "italic": "[3m",
-              \ "underline": "[4m",
-              \ "black": "[0;30m",
-              \ "red": "[0;31m",
-              \ "green": "[0;32m",
-              \ "yellow": "[0;33m",
-              \ "blue": "[0;34m",
-              \ "magenta": "[0;35m",
-              \ "cyan": "[0;36m",
-              \ "white": "[0;37m",
-              \ "grey": "[0;90m",
-              \ "dark_grey": "[0;97m",
-              \ }
+let s:ansi = {'black': 30, 'red': 31, 'green': 32, 'yellow': 33, 'blue': 34, 'magenta': 35, 'cyan': 36}
 
-let s:hl_color_codes = {
-            \ "special": s:translate_hl_color_code("Special"),
-            \ }
-
-function! s:set_color(content)
-    let clear_color=s:ansi_color_codes.clear
-    if s:hl_color_codes.special isnot v:null
-        let special_color=s:hl_color_codes.special
-        " echo "special:".special_color.",clear:".clear_color
-        return "\x1b".special_color.a:content."\x1b".clear_color
-    else
-        let magenta_color=s:ansi_color_codes.magenta
-        " echo "magenta:".magenta_color.",clear:".clear_color
-        return "\x1b".s:ansi_color_codes.magenta.a:content."\x1b".clear_color
+function! s:csi(color, fg)
+    let prefix = a:fg ? '38;' : '48;'
+    if a:color[0] == '#'
+        return prefix.'2;'.join(map([a:color[1:2], a:color[3:4], a:color[5:6]], 'str2nr(v:val, 16)'), ';')
     endif
+    return prefix.'5;'.a:color
 endfunction
+
+function! s:ansi(str, group, default, ...)
+    let fg = s:get_color('fg', a:group)
+    let bg = s:get_color('bg', a:group)
+    let color = (empty(fg) ? s:ansi[a:default] : s:csi(fg, 1)) .
+                \ (empty(bg) ? '' : ';'.s:csi(bg, 0))
+    return printf("\x1b[%s%sm%s\x1b[m", color, a:0 ? ';1' : '', a:str)
+endfunction
+
+" note: s:magenta is here
+for s:color_name in keys(s:ansi)
+    execute "function! s:".s:color_name."(str, ...)\n"
+                \ "  return s:ansi(a:str, get(a:, 1, ''), '".s:color_name."')\n"
+                \ "endfunction"
+endfor
 
 " ======== defaults ========
 let s:default_action = {
@@ -146,8 +128,8 @@ let s:git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
 
 " live grep
 function! s:live_grep(query, provider, fullscreen)
-    let fuzzy_search_header=':: Press '.s:set_color('CTRL-F').' to fzf mode'
-    let regex_search_header=':: Press '.s:set_color('CTRL-R').' to rg mode'
+    let fuzzy_search_header=':: Press '.s:magenta('CTRL-F', 'Special').' to fzf mode'
+    let regex_search_header=':: Press '.s:magenta('CTRL-R', 'Special').' to rg mode'
     let command_fmt = a:provider.' %s || true'
     let initial_command = printf(command_fmt, shellescape(a:query))
     if s:is_win
@@ -260,7 +242,7 @@ function! s:buffers_sink(lines, query, fullscreen)
 endfunction
 
 function! fzfx#vim#buffers(query, fullscreen)
-    let close_buffer_header=':: Press '.s:set_color('CTRL-D').' to close buffer'
+    let close_buffer_header=':: Press '.s:magenta('CTRL-D', 'Special').' to close buffer'
     let spec = { 'sink*': {lines -> s:buffers_sink(lines, a:query, a:fullscreen)},
                 \ 'options': [
                 \   '--print-query',
@@ -276,7 +258,7 @@ endfunction
 
 " branches
 function! fzfx#vim#branches(query, fullscreen)
-    let git_branch_header=':: Press '.s:set_color('ENTER').' to switch branch'
+    let git_branch_header=':: Press '.s:magenta('ENTER', 'Special').' to switch branch'
     if len(a:query) > 0
         let command_fmt = s:git_branches_provider.' --list %s'
         let initial_command = printf(command_fmt, shellescape(a:query))
