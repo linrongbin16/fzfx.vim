@@ -71,7 +71,7 @@ function! s:set_color(content)
     if s:hl_color_codes.special isnot v:null
         let special_color=s:hl_color_codes.special
         echo "special:".special_color.",clear:".clear_color
-        return "\x1b:".special_color.a:content."\x1b".clear_color
+        return "\x1b".special_color.a:content."\x1b".clear_color
     else
         let magenta_color=s:ansi_color_codes.magenta
         echo "magenta:".magenta_color.",clear:".clear_color
