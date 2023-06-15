@@ -200,7 +200,11 @@ function! fzfx#vim#git_branches(query, fullscreen)
     let spec._action = get(g:, 'fzf_action', s:default_action)
     call add(spec.options, '--expect='.join(keys(spec._action), ','))
     function! spec.sinklist(lines) abort
-        " echo 'lines:'.string(a:lines)
+        echo "lines:".string(a:lines)
+        let action=a:lines[1]
+        if len(action)>0
+            return
+        endif
         let branch=s:trim(a:lines[2])
         if len(branch) > 0 && branch[0:1]==?'*'
             let branch=branch[1:]
