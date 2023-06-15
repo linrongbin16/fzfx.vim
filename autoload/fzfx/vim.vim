@@ -70,11 +70,11 @@ function! s:set_color(content)
     let clear_color=s:ansi_color_codes.clear
     if s:hl_color_codes.special isnot v:null
         let special_color=s:hl_color_codes.special
-        echo "special:".special_color.",clear:".clear_color
+        " echo "special:".special_color.",clear:".clear_color
         return "\x1b".special_color.a:content."\x1b".clear_color
     else
         let magenta_color=s:ansi_color_codes.magenta
-        echo "magenta:".magenta_color.",clear:".clear_color
+        " echo "magenta:".magenta_color.",clear:".clear_color
         return "\x1b".s:ansi_color_codes.magenta.a:content."\x1b".clear_color
     endif
 endfunction
@@ -200,7 +200,7 @@ function! fzfx#vim#git_branches(query, fullscreen)
     let spec._action = get(g:, 'fzf_action', s:default_action)
     call add(spec.options, '--expect='.join(keys(spec._action), ','))
     function! spec.sinklist(lines) abort
-        echo 'lines:'.string(a:lines)
+        " echo 'lines:'.string(a:lines)
         let branch=s:trim(a:lines[2])
         if len(branch) > 0 && branch[0:1]==?'*'
             let branch=branch[1:]
