@@ -118,8 +118,8 @@ let s:git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
 
 " ======== implementations ========
 function! s:live_grep(query, provider, fullscreen)
-    let fuzzy_search_header=':: Press '.s:set_color('CTRL-G').' to fuzzy search'
-    let regex_search_header=':: Press '.s:set_color('CTRL-R').' to regex search'
+    let fuzzy_search_header=':: Press '.s:set_color('CTRL-F').' to fzf mode'
+    let regex_search_header=':: Press '.s:set_color('CTRL-R').' to rg mode'
     let command_fmt = a:provider.' %s || true'
     let initial_command = printf(command_fmt, shellescape(a:query))
     if s:is_win
@@ -131,8 +131,8 @@ function! s:live_grep(query, provider, fullscreen)
                 \ '--disabled',
                 \ '--print-query',
                 \ '--query', a:query,
-                \ '--bind', 'ctrl-g:unbind(change,ctrl-g)+change-prompt(Rg> )+enable-search+change-header('.regex_search_header.')+rebind(ctrl-r)',
-                \ '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(*Rg> )+disable-search+change-header('.fuzzy_search_header.')+reload('.reload_command.')+rebind(change,ctrl-g)',
+                \ '--bind', 'ctrl-f:unbind(change,ctrl-f)+change-prompt(Rg> )+enable-search+change-header('.regex_search_header.')+rebind(ctrl-r)',
+                \ '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(*Rg> )+disable-search+change-header('.fuzzy_search_header.')+reload('.reload_command.')+rebind(change,ctrl-f)',
                 \ '--bind', 'change:reload:'.reload_command,
                 \ '--header', fuzzy_search_header,
                 \ '--prompt', '*Rg> '
