@@ -1,6 +1,6 @@
 # fzfx.vim
 
-The e(x)tended fzf commands missing in fzf.vim.
+E(x)tended fzf commands missing in fzf.vim.
 
 - [Dependency](#dependency)
   - [Rust commands](#rust-commands)
