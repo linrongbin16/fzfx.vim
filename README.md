@@ -37,8 +37,8 @@ cargo install git-delta
 
 ### Git (for Windows)
 
-Since the fzf scripts on Windows are actually implemented by forwarding
-user input to linux shell scripts, we are relying on the embeded shell installed with
+Since the cmd scripts on Windows are actually implemented by forwarding
+user input to linux shell scripts, thus we are relying on the embeded shell installed with
 [Git for Windows](https://git-scm.com/download/win).
 
 Install with the below 3 options:
