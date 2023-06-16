@@ -215,7 +215,7 @@ function! s:buffers_sink(lines, query, fullscreen)
     let b = matchstr(a:lines[2], '\[\zs[0-9]*\ze\]')
     let bufname=split(a:lines[2])[-1]
     let action = a:lines[1]
-    echo "lines0.5:".string(a:lines).",b:".b."(".string(bufname).")"
+    " echo "lines0.5:".string(a:lines).",b:".b."(".string(bufname).")"
     if empty(action)
         " echo "lines1:".string(a:lines).",bdelete:".b."(".bufname.")"
         let [t, w] = s:find_open_window(b)
@@ -284,7 +284,7 @@ function! fzfx#vim#branches(query, fullscreen)
     let spec._action = get(g:, 'fzf_action', s:default_action)
     call add(spec.options, '--expect=enter,'.join(keys(spec._action), ','))
     function! spec.sinklist(lines) abort
-        echo "lines:".string(a:lines)
+        " echo "lines:".string(a:lines)
         let action=a:lines[1]
         if len(action)>0
             return
