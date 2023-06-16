@@ -36,6 +36,32 @@ function! s:trim(s)
     endif
 endfunction
 
+" (non-block) visual mode
+function! s:in_visual_mode()
+    let m=mode()
+    " echo "mode:".m
+    return m==?"v" || m==?"V"
+endfunction
+
+function! s:get_visual_selection()
+    let [line_start, column_start] = getpos("v")[1:2]
+    let [line_end, column_end] = getpos(".")[1:2]
+    " echo "visual-ls:".line_start.",cs:".column_start.",le:".line_end.",ce:".column_end
+    if (line2byte(line_start)+column_start) > (line2byte(line_end)+column_end)
+        let [line_start, column_start, line_end, column_end] = [line_end, column_end, line_start, column_start]
+    end
+    let lines = getline(line_start, line_end)
+    if len(lines) == 0
+        return ''
+    endif
+    if mode()==#"v"
+        " for char visual, trim first line head and last line tail.
+        let lines[-1] = lines[-1][: column_end - (&selection==?'inclusive' ? 1 : 2)]
+        let lines[0] = lines[0][column_start - 1:]
+    endif
+    return join(lines, "\n")
+endfunction
+
 " action
 let s:default_action = {
             \ 'ctrl-t': 'tab split',
@@ -128,10 +154,14 @@ let s:git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
 
 " live grep
 function! s:live_grep(query, provider, fullscreen)
+    let query=a:query
+    if s:in_visual_mode()
+        let query=s:get_visual_selection()
+    endif
     let fuzzy_search_header=':: Press '.s:magenta('CTRL-F', 'Special').' to fzf mode'
     let regex_search_header=':: Press '.s:magenta('CTRL-R', 'Special').' to rg mode'
     let command_fmt = a:provider.' %s || true'
-    let initial_command = printf(command_fmt, shellescape(a:query))
+    let initial_command = printf(command_fmt, shellescape(query))
     if s:is_win
         let reload_command = printf('sleep 0.1 && '.command_fmt, '{q}')
     else
@@ -140,7 +170,7 @@ function! s:live_grep(query, provider, fullscreen)
     let spec = {'options': [
                 \ '--disabled',
                 \ '--print-query',
-                \ '--query', a:query,
+                \ '--query', query,
                 \ '--bind', 'ctrl-f:unbind(change,ctrl-f)+change-prompt(Rg> )+enable-search+change-header('.regex_search_header.')+rebind(ctrl-r)',
                 \ '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(*Rg> )+disable-search+change-header('.fuzzy_search_header.')+reload('.reload_command.')+rebind(change,ctrl-f)',
                 \ '--bind', 'change:reload:'.reload_command,
