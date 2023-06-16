@@ -21,7 +21,7 @@ E(x)tended fzf commands missing in fzf.vim.
 
 ### Rust commands
 
-Recommand to install [rust](https://www.rust-lang.org/) and install [ripgrep](https://github.com/BurntSushi/ripgrep) and [fd](https://github.com/sharkdp/fd) via cargo:
+Recommand to install [rust](https://www.rust-lang.org/), then install [ripgrep](https://github.com/BurntSushi/ripgrep) and [fd](https://github.com/sharkdp/fd) via cargo:
 
 ```bash
 cargo install ripgrep
@@ -151,10 +151,10 @@ https://github.com/linrongbin16/fzfx.vim/assets/6496887/15481554-dc09-471b-95fc-
    ```
 
 2. it allows user add rg's raw options by parsing `--` flag, treat the left part
-   as query content, the right side as rg's raw options. A most commonly used
-   case is searching by file type (via `--glob` or `--iglob` option):
+   as query content, the right side as rg's raw options. A most common use case
+   is searching by file type (via `--glob` or `--iglob` option):
 
-   https://github.com/linrongbin16/fzfx.vim/assets/6496887/57d914f9-7def-4f2d-ae25-187c9cbb8d1c
+   https://github.com/linrongbin16/fzfx.vim/assets/6496887/49c83edc-eb43-4e9c-9ea1-153e8de76f02
 
 `FzfxUnrestrictedLiveGrep` is a variant of `FzfxLiveGrep`, it also searches the
 hidden and ignored files with `--unrestricted --hidden`:
