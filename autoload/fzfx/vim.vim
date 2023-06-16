@@ -282,22 +282,21 @@ function! fzfx#vim#branches(query, fullscreen)
 
     " spec sink
     let spec._action = get(g:, 'fzf_action', s:default_action)
-    call add(spec.options, '--expect=enter,'.join(keys(spec._action), ','))
+    call add(spec.options, '--expect=enter,double-click,'.join(keys(spec._action), ','))
     function! spec.sinklist(lines) abort
         " echo "lines:".string(a:lines)
         let action=a:lines[1]
-        if len(action)>0
-            return
+        if action==?'enter' || action==?'double-click'
+            let branch=s:trim(a:lines[2])
+            if len(branch) > 0 && branch[0:1]==?'*'
+                let branch=branch[1:]
+            endif
+            let arrow_pos=stridx(branch, '->')
+            if arrow_pos > 0
+                let branch=s:trim(branch[arrow_pos+2:])
+            endif
+            execute '!git checkout '.branch
         endif
-        let branch=s:trim(a:lines[2])
-        if len(branch) > 0 && branch[0:1]==?'*'
-            let branch=branch[1:]
-        endif
-        let arrow_pos=stridx(branch, '->')
-        if arrow_pos > 0
-            let branch=s:trim(branch[arrow_pos+2:])
-        endif
-        execute '!git checkout '.branch
     endfunction
     let spec['sink*'] = spec.sinklist
 
