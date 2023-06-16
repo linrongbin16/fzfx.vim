@@ -155,7 +155,7 @@ let s:git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
 " live grep
 function! s:live_grep(query, provider, fullscreen)
     let query=a:query
-    if s:in_visual_mode()
+    if empty(query) && s:in_visual_mode()
         let query=s:get_visual_selection()
     endif
     let fuzzy_search_header=':: Press '.s:magenta('CTRL-F', 'Special').' to fzf mode'
