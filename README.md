@@ -113,7 +113,9 @@ nmap <space>f FzfxFiles
 nmap <space>uf FzfxUnrestrictedFiles
 nmap <space>b FzfxBuffers
 nmap <space>l FzfxLiveGrep
+xmap <space>l FzfxLiveGrep
 nmap <space>ul FzfxUnrestrictedLiveGrep
+xmap <space>ul FzfxUnrestrictedLiveGrep
 nmap <space>w FzfxGrepWord
 nmap <space>uw FzfxUnrestrictedGrepWord
 nmap <space>gb FzfxBranches
@@ -125,8 +127,8 @@ For Neovim:
 vim.keymap.set({'n'}, '<space>f', '<cmd>FzfxFiles<cr>', {silent=true, noremap=true, desc="Search files"})
 vim.keymap.set({'n'}, '<space>uf', '<cmd>FzfxUnrestrictedFiles<cr>', {silent=true, noremap=true, desc="Unrestricted search files"})
 vim.keymap.set({'n'}, '<space>b', '<cmd>FzfxBuffers<cr>', {silent=true, noremap=true, desc="Search buffers"})
-vim.keymap.set({'n'}, '<space>l', '<cmd>FzfxLiveGrep<cr>', {silent=true, noremap=true, desc="Live grep"})
-vim.keymap.set({'n'}, '<space>ul', '<cmd>FzfxUnrestrictedLiveGrep<cr>', {silent=true, noremap=true, desc="Unrestricted live grep"})
+vim.keymap.set({'n', 'x'}, '<space>l', '<cmd>FzfxLiveGrep<cr>', {silent=true, noremap=true, desc="Live grep"})
+vim.keymap.set({'n', 'x'}, '<space>ul', '<cmd>FzfxUnrestrictedLiveGrep<cr>', {silent=true, noremap=true, desc="Unrestricted live grep"})
 vim.keymap.set({'n'}, '<space>w', '<cmd>FzfxGrepWord<cr>', {silent=true, noremap=true, desc="Grep word under cursor"})
 vim.keymap.set({'n'}, '<space>uw', '<cmd>FzfxUnrestrictedGrepWord<cr>', {silent=true, noremap=true, desc="Unrestricted grep word under cursor"})
 vim.keymap.set({'n'}, '<space>gb', '<cmd>FzfxBranches<cr>', {silent=true, noremap=true, desc="Search git branches"})
@@ -179,6 +181,9 @@ https://github.com/linrongbin16/fzfx.vim/assets/6496887/1864fde1-0cba-40d2-8e53-
    is searching by file type (via `--glob` or `--iglob` option):
 
    https://github.com/linrongbin16/fzfx.vim/assets/6496887/49c83edc-eb43-4e9c-9ea1-153e8de76f02
+
+3. it allows user search visual selections by character and line (block-visual
+   not support).
 
 `FzfxUnrestrictedLiveGrep` is a variant of `FzfxLiveGrep`, it also searches the
 hidden and ignored files with `--unrestricted --hidden`:
