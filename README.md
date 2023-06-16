@@ -106,7 +106,31 @@ return {
 
 ### Key mapping
 
-TODO
+For Vim:
+
+```vim
+nmap <space>f FzfxFiles
+nmap <space>uf FzfxUnrestrictedFiles
+nmap <space>b FzfxBuffers
+nmap <space>l FzfxLiveGrep
+nmap <space>ul FzfxUnrestrictedLiveGrep
+nmap <space>w FzfxGrepWord
+nmap <space>uw FzfxUnrestrictedGrepWord
+nmap <space>gb FzfxBranches
+```
+
+For Neovim:
+
+```lua
+vim.keymap.set({'n'}, '<space>f', '<cmd>FzfxFiles<cr>', {silent=true, noremap=true, desc="Search files"})
+vim.keymap.set({'n'}, '<space>uf', '<cmd>FzfxUnrestrictedFiles<cr>', {silent=true, noremap=true, desc="Unrestricted search files"})
+vim.keymap.set({'n'}, '<space>b', '<cmd>FzfxBuffers<cr>', {silent=true, noremap=true, desc="Search buffers"})
+vim.keymap.set({'n'}, '<space>l', '<cmd>FzfxLiveGrep<cr>', {silent=true, noremap=true, desc="Live grep"})
+vim.keymap.set({'n'}, '<space>ul', '<cmd>FzfxUnrestrictedLiveGrep<cr>', {silent=true, noremap=true, desc="Unrestricted live grep"})
+vim.keymap.set({'n'}, '<space>w', '<cmd>FzfxGrepWord<cr>', {silent=true, noremap=true, desc="Grep word under cursor"})
+vim.keymap.set({'n'}, '<space>uw', '<cmd>FzfxUnrestrictedGrepWord<cr>', {silent=true, noremap=true, desc="Unrestricted grep word under cursor"})
+vim.keymap.set({'n'}, '<space>gb', '<cmd>FzfxBranches<cr>', {silent=true, noremap=true, desc="Search git branches"})
+```
 
 ## Commands
 
@@ -180,4 +204,3 @@ searches by word under cursor, e.g. `expand('<cword>')`.
 selected branch:
 
 https://github.com/linrongbin16/fzfx.vim/assets/6496887/e4b3e4b9-9b38-4fd7-bb8b-b7946fc49232
-
