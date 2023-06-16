@@ -179,4 +179,5 @@ searches by word under cursor, e.g. `expand('<cword>')`.
 `FzfxBranches` can search git branches, and use `ENTER` to switch to the
 selected branch:
 
-https://github.com/linrongbin16/fzfx.vim/assets/6496887/9717bdd3-ec64-4014-a254-533d0cae4528
+https://github.com/linrongbin16/fzfx.vim/assets/6496887/e4b3e4b9-9b38-4fd7-bb8b-b7946fc49232
+
