@@ -21,7 +21,7 @@ E(x)tended fzf commands missing in fzf.vim.
 
 ### Rust commands
 
-Recommand to install [rust](https://www.rust-lang.org/) and install the commands via cargo:
+Recommand to install [rust](https://www.rust-lang.org/) and install [ripgrep](https://github.com/BurntSushi/ripgrep) and [fd](https://github.com/sharkdp/fd) via cargo:
 
 ```bash
 cargo install ripgrep
