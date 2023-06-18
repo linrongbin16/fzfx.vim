@@ -159,8 +159,8 @@ fd --color=never --type f --type symlink --follow --unrestricted
 
 ### FzfxBuffers
 
-`FzfxBuffers` is almost the same with (`Fzf`)`Files`, except it's using `ctrl-d`
-to close other buffers:
+`FzfxBuffers` is almost the same with (`Fzf`)`Buffers`, except it's using `ctrl-d`
+to delete buffers:
 
 https://github.com/linrongbin16/fzfx.vim/assets/6496887/1864fde1-0cba-40d2-8e53-b72140fb7675
 
