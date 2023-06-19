@@ -13,7 +13,7 @@ E(x)tended fzf commands missing in fzf.vim.
 - [Commands](#commands)
   - [Fzfx(Unrestricted)Files](#fzfxunrestrictedfiles)
   - [FzfxBuffers](#fzfxbuffers)
-  - [Fzfx(Unrestricted)LiveGrep](#fzfxunrestrictedlivegrep)
+  - [Fzfx(Unrestricted)LiveGrep(Visual)](#fzfxunrestrictedlivegrepvisual)
   - [Fzfx(Unrestricted)GrepWord](#fzfxunrestrictedgrepword)
   - [FzfxBranches](#fzfxbranches)
 
@@ -211,7 +211,7 @@ to delete buffers:
 
 https://github.com/linrongbin16/fzfx.vim/assets/6496887/1864fde1-0cba-40d2-8e53-b72140fb7675
 
-### Fzfx(Unrestricted)LiveGrep
+### Fzfx(Unrestricted)LiveGrep(Visual)
 
 `FzfxLiveGrep` is almost the same with (`Fzf`)`RG`, except:
 
