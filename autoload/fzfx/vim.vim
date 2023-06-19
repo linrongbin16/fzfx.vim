@@ -221,7 +221,7 @@ endfunction
 " files
 function! s:files(query, provider, fullscreen, visualmode)
     let query=s:try_visual_select(a:query, a:visualmode)
-    echo "query:".a:query.",provider:".a:provider.",fullscreen:".a:fullscreen.",visualmode:".a:visualmode
+    " echo "query:".a:query.",provider:".a:provider.",fullscreen:".a:fullscreen.",visualmode:".a:visualmode
     let command_fmt = a:provider.' %s || true'
     let initial_command = printf(command_fmt, shellescape(query))
     let spec = { 'source': initial_command, }
