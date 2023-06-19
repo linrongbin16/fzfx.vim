@@ -36,12 +36,7 @@ function! s:trim(s)
     endif
 endfunction
 
-" visual mode
-function! s:is_visual_mode(mode)
-    return a:mode==?"v" || a:mode==?"\<C-V>"
-endfunction
-
-function! s:get_visual_selection(mode)
+function! s:get_visual_select(mode)
     " if a:mode==?"v"
     "     let [line_start, column_start] = getpos("v")[1:2]
     "     let [line_end, column_end] = getpos(".")[1:2]
@@ -72,6 +67,14 @@ function! s:get_visual_selection(mode)
         " echo "line-wise, mode:".a:mode
     endif
     return join(lines, "\n")
+endfunction
+
+function! s:try_visual_select(query, mode)
+    let query=a:query
+    if empty(query) && (a:mode==?"v" || a:mode==?"\<C-V>")
+        let query=s:get_visual_select(a:mode)
+    endif
+    return query
 endfunction
 
 " action
@@ -166,11 +169,7 @@ let s:git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
 
 " live grep
 function! s:live_grep(query, provider, fullscreen, visualmode)
-    let query=a:query
-    " echo "query:".a:query.",provider:".a:provider.",fullscreen:".a:fullscreen.",mode:".mode
-    if empty(query) && s:is_visual_mode(a:visualmode)
-        let query=s:get_visual_selection(a:visualmode)
-    endif
+    let query=s:try_visual_select(a:query, a:visualmode)
     let fuzzy_search_header=':: Press '.s:magenta('CTRL-F', 'Special').' to fzf mode'
     let regex_search_header=':: Press '.s:magenta('CTRL-R', 'Special').' to rg mode'
     let command_fmt = a:provider.' %s || true'
@@ -220,21 +219,30 @@ function! fzfx#vim#unrestricted_grep_word(fullscreen)
 endfunction
 
 " files
-function! s:files(query, provider, fullscreen)
+function! s:files(query, provider, fullscreen, visualmode)
+    let query=s:try_visual_select(a:query, a:visualmode)
     let command_fmt = a:provider.' %s || true'
-    let initial_command = printf(command_fmt, shellescape(a:query))
+    let initial_command = printf(command_fmt, shellescape(query))
     let spec = { 'source': initial_command, }
     let spec = fzf#vim#with_preview(spec)
     " echo 'a:query:'.string(shellescape(a:query)).',a:provider:'.string(a:provider).',a:fullscreen:'.string(a:fullscreen).',spec:'.string(spec)
-    call fzf#vim#files(a:query, spec, a:fullscreen)
+    call fzf#vim#files(query, spec, a:fullscreen)
 endfunction
 
 function! fzfx#vim#files(query, fullscreen)
-    call s:files(a:query, s:files_provider, a:fullscreen)
+    call s:files(a:query, s:files_provider, a:fullscreen, '')
 endfunction
 
 function! fzfx#vim#unrestricted_files(query, fullscreen)
-    call s:files(a:query, s:unrestricted_files_provider, a:fullscreen)
+    call s:files(a:query, s:unrestricted_files_provider, a:fullscreen, '')
+endfunction
+
+function! fzfx#vim#files_visual(query, fullscreen)
+    call s:files(a:query, s:files_provider, a:fullscreen, visualmode())
+endfunction
+
+function! fzfx#vim#unrestricted_files_visual(query, fullscreen)
+    call s:files(a:query, s:unrestricted_files_provider, a:fullscreen, visualmode())
 endfunction
 
 " buffers
