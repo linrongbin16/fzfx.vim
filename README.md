@@ -137,12 +137,31 @@ vim.keymap.set('n', '<space>uf', '<cmd>FzfxUnrestrictedFiles<cr>',
 -- buffers
 vim.keymap.set('n', '<space>b', '<cmd>FzfxBuffers<cr>',
         {silent=true, noremap=true, desc="Search buffers"})
+
 -- live grep
--- warning: must specify `:<C-U>` to let visual mode working correctly
-vim.keymap.set({'n', 'x'}, '<space>l', ':<C-U>FzfxLiveGrep<CR>',
+-- warning: must use one of below two methods to let visual selection working correctly:
+--
+-- method-1: speicify `vim.cmd.normal("<ESC>")` to exit visual mode first
+-- see: https://github.com/neovim/neovim/discussions/24055#discussioncomment-6213580
+vim.keymap.set({'n', 'x'}, '<space>l',
+        function()
+            vim.cmd.normal("<ESC>")
+            vim.cmd("FzfxLiveGrep")
+        end,
+        {silent=true, noremap=true, desc="Live grep"})
+vim.keymap.set({'n', 'x'}, '<space>ul',
+        function()
+            vim.cmd.normal("<ESC>")
+            vim.cmd("FzfxUnrestrictedLiveGrep")
+        end,
+        {silent=true, noremap=true, desc="Live grep"})
+-- method-2: specify `:\<C-U>`
+vim.keymap.set({'n', 'x'}, '<space>l',
+        ':<C-U>FzfxLiveGrep<CR>',
         {silent=true, noremap=true, desc="Live grep"})
 vim.keymap.set({'n', 'x'}, '<space>ul', ':<C-U>FzfxUnrestrictedLiveGrep<CR>',
         {silent=true, noremap=true, desc="Unrestricted live grep"})
+
 -- grep word
 vim.keymap.set('n', '<space>w', '<cmd>FzfxGrepWord<cr>',
         {silent=true, noremap=true, desc="Grep word under cursor"})
@@ -202,20 +221,6 @@ https://github.com/linrongbin16/fzfx.vim/assets/6496887/1864fde1-0cba-40d2-8e53-
    https://github.com/linrongbin16/fzfx.vim/assets/6496887/49c83edc-eb43-4e9c-9ea1-153e8de76f02
 
 3. it allows user search visual selections:
-
-   > Warning: for some reason that I'm not aware, if you define key mappings
-   > with `vim.cmd` or `<cmd>` in Neovim's visual mode:
-   >
-   > - `vim.keymap.set('x', '<space>l', function() vim.cmd('FzfxLiveGrep') end)`
-   > - `vim.keymap.set('x', '<space>l', '<cmd>FzfxLiveGrep<cr>')`
-   >
-   > It may not work correctly, since I'm using the `getpos("'<")` and
-   > `getpos("'>")` API to get visual selection. AFAIK, the correct key mapping
-   > I known is (must use `:\<C-u>`):
-   >
-   > `xnoremap <space>l :\<C-U>FzfxLiveGrep<CR>`
-   >
-   > For more details, please see: https://stackoverflow.com/a/47051271/4438921
 
 `FzfxUnrestrictedLiveGrep` is a variant of `FzfxLiveGrep`, it also searches the
 hidden and ignored files with `--unrestricted --hidden`:
