@@ -221,6 +221,7 @@ endfunction
 " files
 function! s:files(query, provider, fullscreen, visualmode)
     let query=s:try_visual_select(a:query, a:visualmode)
+    echo "query:".a:query.",provider:".a:provider.",fullscreen:".a:fullscreen.",visualmode:".a:visualmode
     let command_fmt = a:provider.' %s || true'
     let initial_command = printf(command_fmt, shellescape(query))
     let spec = { 'source': initial_command, }
@@ -238,10 +239,12 @@ function! fzfx#vim#unrestricted_files(query, fullscreen)
 endfunction
 
 function! fzfx#vim#files_visual(query, fullscreen)
+    echo "files_visual, query:".a:query.",fullscreen:".a:fullscreen
     call s:files(a:query, s:files_provider, a:fullscreen, visualmode())
 endfunction
 
 function! fzfx#vim#unrestricted_files_visual(query, fullscreen)
+    echo "unrestricted_files_visual, query:".a:query.",fullscreen:".a:fullscreen
     call s:files(a:query, s:unrestricted_files_provider, a:fullscreen, visualmode())
 endfunction
 
