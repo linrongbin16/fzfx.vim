@@ -165,12 +165,11 @@ let s:git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
 " ======== implementations ========
 
 " live grep
-function! s:live_grep(query, provider, fullscreen)
+function! s:live_grep(query, provider, fullscreen, visualmode)
     let query=a:query
-    let mode=visualmode()
     " echo "query:".a:query.",provider:".a:provider.",fullscreen:".a:fullscreen.",mode:".mode
-    if empty(query) && s:is_visual_mode(mode)
-        let query=s:get_visual_selection(mode)
+    if empty(query) && s:is_visual_mode(a:visualmode)
+        let query=s:get_visual_selection(a:visualmode)
     endif
     let fuzzy_search_header=':: Press '.s:magenta('CTRL-F', 'Special').' to fzf mode'
     let regex_search_header=':: Press '.s:magenta('CTRL-R', 'Special').' to rg mode'
@@ -196,11 +195,19 @@ function! s:live_grep(query, provider, fullscreen)
 endfunction
 
 function! fzfx#vim#live_grep(query, fullscreen)
-    call s:live_grep(a:query, s:live_grep_provider, a:fullscreen)
+    call s:live_grep(a:query, s:live_grep_provider, a:fullscreen, '')
 endfunction
 
 function! fzfx#vim#unrestricted_live_grep(query, fullscreen)
-    call s:live_grep(a:query, s:unrestricted_live_grep_provider, a:fullscreen)
+    call s:live_grep(a:query, s:unrestricted_live_grep_provider, a:fullscreen, '')
+endfunction
+
+function! fzfx#vim#live_grep_visual(query, fullscreen)
+    call s:live_grep(a:query, s:live_grep_provider, a:fullscreen, visualmode())
+endfunction
+
+function! fzfx#vim#unrestricted_live_grep_visual(query, fullscreen)
+    call s:live_grep(a:query, s:unrestricted_live_grep_provider, a:fullscreen, visualmode())
 endfunction
 
 " grep word
