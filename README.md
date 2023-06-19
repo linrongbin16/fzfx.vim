@@ -146,7 +146,7 @@ vim.keymap.set('n', '<space>ul',
         '<cmd>FzfxUnrestrictedLiveGrep<cr>',
         {silent=true, noremap=true, desc="Unrestricted live grep"})
 
--- warning: to support visual mode, you must below methods to let visual
+-- warning: to support visual mode, you must use below methods to let visual
 -- selection working correctly:
 --
 -- method-1: speicify `vim.cmd('execute "normal \\<ESC>"')` to exit visual mode first
@@ -229,7 +229,7 @@ https://github.com/linrongbin16/fzfx.vim/assets/6496887/1864fde1-0cba-40d2-8e53-
 
    https://github.com/linrongbin16/fzfx.vim/assets/6496887/49c83edc-eb43-4e9c-9ea1-153e8de76f02
 
-`FzfxLiveGrepVisual` is a variant of `FzfxLiveGrep`, it allows user search
+`FzfxLiveGrepVisual` is a variant of `FzfxLiveGrep`, it allows user searching
 visual selections:
 
 https://github.com/linrongbin16/fzfx.vim/assets/6496887/a7303036-e803-4e5f-a26b-92c565d37e43
@@ -237,15 +237,15 @@ https://github.com/linrongbin16/fzfx.vim/assets/6496887/a7303036-e803-4e5f-a26b-
 `FzfxUnrestrictedLiveGrep` is a variant of `FzfxLiveGrep`, it also searches the
 hidden and ignored files with `--unrestricted --hidden`:
 
-`FzfxUnrestrictedLiveGrepVisual` is a variant of `FzfxUnrestrictedLiveGrep`, it
-allows user search visual selection.
-
 ```bash
 # short version
 rg --column -n --no-heading --color=always -S -uu
 # e.g.
 rg --column --line-number --no-heading --color=always --smart-case --unrestricted --hidden
 ```
+
+`FzfxUnrestrictedLiveGrepVisual` is a variant of `FzfxUnrestrictedLiveGrep`, it
+allows user searching visual selection.
 
 ### Fzfx(Unrestricted)GrepWord
 
