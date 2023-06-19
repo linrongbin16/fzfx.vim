@@ -146,7 +146,7 @@ elseif executable('fdfind')
 endif
 
 " `git branch -a --color --list`
-let s:git_branch_command=get(g:, 'git_branch_command', 'git branch -a --color')
+let s:git_branch_command=get(g:, 'fzfx_git_branch_command', 'git branch -a --color')
 
 " ======== providers ========
 let s:live_grep_provider=s:fzfx_bin.'live_grep_provider'
