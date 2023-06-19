@@ -16,6 +16,7 @@ E(x)tended fzf commands missing in fzf.vim.
   - [Fzfx(Unrestricted)LiveGrep(Visual)](#fzfxunrestrictedlivegrepvisual)
   - [Fzfx(Unrestricted)GrepWord](#fzfxunrestrictedgrepword)
   - [FzfxBranches](#fzfxbranches)
+- [Config](#config)
 
 ## Dependency
 
@@ -185,79 +186,94 @@ vim.keymap.set('n', '<space>gb', '<cmd>FzfxBranches<cr>',
 
 ### Fzfx(Unrestricted)Files
 
-`FzfxFiles` is almost the same with (`Fzf`)`Files`, except it's using fd command:
+- `FzfxFiles` is almost the same with (`Fzf`)`Files`, except it's using fd command:
 
-```bash
-# short version
-fd -cnever -tf -tl -L -E .git
-# e.g.
-fd --color=never --type f --type symlink --follow --exclude .git
-```
+  ```bash
+  # short version
+  fd -cnever -tf -tl -L -E .git
+  # e.g.
+  fd --color=never --type f --type symlink --follow --exclude .git
+  ```
 
-`FzfxUnrestrictedFiles` is a variant of `FzfxFiles`, it also searches the hidden
-and ignored files with `--unrestricted`:
+- `FzfxUnrestrictedFiles` is a variant of `FzfxFiles`, it also searches the hidden
+  and ignored files with `--unrestricted`:
 
-```bash
-# short version
-fd -cnever -tf -tl -L -u
-# e.g.
-fd --color=never --type f --type symlink --follow --unrestricted
-```
+  ```bash
+  # short version
+  fd -cnever -tf -tl -L -u
+  # e.g.
+  fd --color=never --type f --type symlink --follow --unrestricted
+  ```
 
 ### FzfxBuffers
 
-`FzfxBuffers` is almost the same with (`Fzf`)`Buffers`, except it's using `ctrl-d`
-to delete buffers:
+- `FzfxBuffers` is almost the same with (`Fzf`)`Buffers`, except it's using `ctrl-d`
+  to delete buffers:
 
-https://github.com/linrongbin16/fzfx.vim/assets/6496887/1864fde1-0cba-40d2-8e53-b72140fb7675
+  https://github.com/linrongbin16/fzfx.vim/assets/6496887/1864fde1-0cba-40d2-8e53-b72140fb7675
 
 ### Fzfx(Unrestricted)LiveGrep(Visual)
 
-`FzfxLiveGrep` is almost the same with (`Fzf`)`RG`, except:
+- `FzfxLiveGrep` is almost the same with (`Fzf`)`RG`, except:
 
-1. it's using rg command:
+  1. it's using rg command:
 
-   ```bash
-   rg --column -n --no-heading --color=always -S -g '!*.git/'
-   # e.g.
-   rg --column --line-number --no-heading --color=always --smart-case
-   ```
+     ```bash
+     rg --column -n --no-heading --color=always -S -g '!*.git/'
+     # e.g.
+     rg --column --line-number --no-heading --color=always --smart-case
+     ```
 
-2. it allows user add rg's raw options by parsing `--` flag, treat the left part
-   as query content, the right side as rg's raw options. A most common use case
-   is searching by file type (via `--glob` or `--iglob` option):
+  2. it allows user add rg's raw options by parsing `--` flag, treat the left part
+     as query content, the right side as rg's raw options. A most common use case
+     is searching by file type (via `--glob` or `--iglob` option):
 
-   https://github.com/linrongbin16/fzfx.vim/assets/6496887/49c83edc-eb43-4e9c-9ea1-153e8de76f02
+     https://github.com/linrongbin16/fzfx.vim/assets/6496887/49c83edc-eb43-4e9c-9ea1-153e8de76f02
 
-`FzfxLiveGrepVisual` is a variant of `FzfxLiveGrep`, it allows user searching
-visual selections:
+- `FzfxLiveGrepVisual` is a variant of `FzfxLiveGrep`, it allows user searching
+  visual selections:
 
-https://github.com/linrongbin16/fzfx.vim/assets/6496887/a7303036-e803-4e5f-a26b-92c565d37e43
+  https://github.com/linrongbin16/fzfx.vim/assets/6496887/a7303036-e803-4e5f-a26b-92c565d37e43
 
-`FzfxUnrestrictedLiveGrep` is a variant of `FzfxLiveGrep`, it also searches the
-hidden and ignored files with `--unrestricted --hidden`:
+- `FzfxUnrestrictedLiveGrep` is a variant of `FzfxLiveGrep`, it also searches the
+  hidden and ignored files with `--unrestricted --hidden`:
 
-```bash
-# short version
-rg --column -n --no-heading --color=always -S -uu
-# e.g.
-rg --column --line-number --no-heading --color=always --smart-case --unrestricted --hidden
-```
+  ```bash
+  # short version
+  rg --column -n --no-heading --color=always -S -uu
+  # e.g.
+  rg --column --line-number --no-heading --color=always --smart-case --unrestricted --hidden
+  ```
 
-`FzfxUnrestrictedLiveGrepVisual` is a variant of `FzfxUnrestrictedLiveGrep`, it
-allows user searching visual selection.
+- `FzfxUnrestrictedLiveGrepVisual` is a variant of `FzfxUnrestrictedLiveGrep`, it
+  allows user searching visual selection.
 
 ### Fzfx(Unrestricted)GrepWord
 
-`FzfxGrepWord` is a variant of `FzfxLiveGrep`, except it searches by word under cursor,
-e.g. `expand('<cword>')`.
+- `FzfxGrepWord` is a variant of `FzfxLiveGrep`, except it searches by word
+  under cursor, e.g. `expand('<cword>')`.
 
-`FzfxUnrestrictedGrepWord` is a variant of `FzfxUnrestrictedLiveGrep`, except it
-searches by word under cursor, e.g. `expand('<cword>')`.
+- `FzfxUnrestrictedGrepWord` is a variant of `FzfxUnrestrictedLiveGrep`, except it
+  searches by word under cursor, e.g. `expand('<cword>')`.
 
 ### FzfxBranches
 
-`FzfxBranches` can search git branches, and use `ENTER` to switch to the
-selected branch:
+- `FzfxBranches` can search git branches, and use `ENTER` to switch to the
+  selected branch:
 
-https://github.com/linrongbin16/fzfx.vim/assets/6496887/e4b3e4b9-9b38-4fd7-bb8b-b7946fc49232
+  https://github.com/linrongbin16/fzfx.vim/assets/6496887/e4b3e4b9-9b38-4fd7-bb8b-b7946fc49232
+
+## Config
+
+There're some global variables you can speicify to config:
+
+```vim
+" live grep, grep word
+let g:fzfx_grep_command="rg --column -n --no-heading --color=always -S -g '!*.git/'"
+let g:fzfx_unrestricted_grep_command="rg --column -n --no-heading --color=always -S -uu"
+" files
+let g:fzfx_find_command="fd -cnever -tf -tl -L -E .git"
+let g:fzfx_unrestricted_find_command="fd -cnever -tf -tl -L -u"
+" git branches
+let g:fzfx_git_branch_command="git branch -a --color --list"
+```
