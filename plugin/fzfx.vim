@@ -12,6 +12,8 @@ command! -bar -bang -nargs=? -complete=dir FzfxBuffers call fzfx#vim#buffers(<q-
 
 command! -bang -nargs=* FzfxLiveGrep call fzfx#vim#live_grep(<q-args>, <bang>0)
 command! -bang -nargs=* FzfxUnrestrictedLiveGrep call fzfx#vim#unrestricted_live_grep(<q-args>, <bang>0)
+command! -bang -nargs=* FzfxLiveGrepVisual call fzfx#vim#live_grep_visual(<q-args>, <bang>0)
+command! -bang -nargs=* FzfxUnrestrictedLiveGrepVisual call fzfx#vim#unrestricted_live_grep_visual(<q-args>, <bang>0)
 
 command! -bang FzfxGrepWord call fzfx#vim#grep_word(<bang>0)
 command! -bang FzfxUnrestrictedGrepWord call fzfx#vim#unrestricted_grep_word(<bang>0)

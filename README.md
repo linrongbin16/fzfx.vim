@@ -109,29 +109,76 @@ return {
 For Vim:
 
 ```vim
-nmap <space>f FzfxFiles
-nmap <space>uf FzfxUnrestrictedFiles
-nmap <space>b FzfxBuffers
-nmap <space>l FzfxLiveGrep
-xmap <space>l FzfxLiveGrep
-nmap <space>ul FzfxUnrestrictedLiveGrep
-xmap <space>ul FzfxUnrestrictedLiveGrep
-nmap <space>w FzfxGrepWord
-nmap <space>uw FzfxUnrestrictedGrepWord
-nmap <space>gb FzfxBranches
+" files
+nnoremap <space>f :\<C-U>FzfxFiles<CR>
+nnoremap <space>uf :\<C-U>FzfxUnrestrictedFiles<CR>
+" buffers
+nnoremap <space>b :\<C-U>FzfxBuffers<CR>
+" live grep
+nnoremap <space>l :\<C-U>FzfxLiveGrep<CR>
+xnoremap <space>l :\<C-U>FzfxLiveGrepVisual<CR>
+nnoremap <space>ul :\<C-U>FzfxUnrestrictedLiveGrep<CR>
+xnoremap <space>ul :\<C-U>FzfxUnrestrictedLiveGrepVisual<CR>
+" grep word
+nnoremap <space>w :\<C-U>FzfxGrepWord<CR>
+nnoremap <space>uw :\<C-U>FzfxUnrestrictedGrepWord<CR>
+" git branches
+nnoremap <space>gb :\<C-U>FzfxBranches<CR>
 ```
 
 For Neovim:
 
 ```lua
-vim.keymap.set({'n'}, '<space>f', '<cmd>FzfxFiles<cr>', {silent=true, noremap=true, desc="Search files"})
-vim.keymap.set({'n'}, '<space>uf', '<cmd>FzfxUnrestrictedFiles<cr>', {silent=true, noremap=true, desc="Unrestricted search files"})
-vim.keymap.set({'n'}, '<space>b', '<cmd>FzfxBuffers<cr>', {silent=true, noremap=true, desc="Search buffers"})
-vim.keymap.set({'n', 'x'}, '<space>l', '<cmd>FzfxLiveGrep<cr>', {silent=true, noremap=true, desc="Live grep"})
-vim.keymap.set({'n', 'x'}, '<space>ul', '<cmd>FzfxUnrestrictedLiveGrep<cr>', {silent=true, noremap=true, desc="Unrestricted live grep"})
-vim.keymap.set({'n'}, '<space>w', '<cmd>FzfxGrepWord<cr>', {silent=true, noremap=true, desc="Grep word under cursor"})
-vim.keymap.set({'n'}, '<space>uw', '<cmd>FzfxUnrestrictedGrepWord<cr>', {silent=true, noremap=true, desc="Unrestricted grep word under cursor"})
-vim.keymap.set({'n'}, '<space>gb', '<cmd>FzfxBranches<cr>', {silent=true, noremap=true, desc="Search git branches"})
+-- files
+vim.keymap.set('n', '<space>f', '<cmd>FzfxFiles<cr>',
+        {silent=true, noremap=true, desc="Search files"})
+vim.keymap.set('n', '<space>uf', '<cmd>FzfxUnrestrictedFiles<cr>',
+        {silent=true, noremap=true, desc="Unrestricted search files"})
+-- buffers
+vim.keymap.set('n', '<space>b', '<cmd>FzfxBuffers<cr>',
+        {silent=true, noremap=true, desc="Search buffers"})
+
+-- live grep
+vim.keymap.set('n', '<space>l',
+        '<cmd>FzfxLiveGrep<cr>',
+        {silent=true, noremap=true, desc="Live grep"})
+vim.keymap.set('n', '<space>ul',
+        '<cmd>FzfxUnrestrictedLiveGrep<cr>',
+        {silent=true, noremap=true, desc="Unrestricted live grep"})
+
+-- warning: to support visual mode, you must below methods to let visual
+-- selection working correctly:
+--
+-- method-1: speicify `vim.cmd('execute "normal \\<ESC>"')` to exit visual mode first
+-- see: https://github.com/neovim/neovim/discussions/24055#discussioncomment-6213580
+vim.keymap.set('x', '<space>l',
+        function()
+            vim.cmd('execute "normal \\<ESC>"')
+            vim.cmd("FzfxLiveGrepVisual")
+        end,
+        {silent=true, noremap=true, desc="Live grep"})
+vim.keymap.set('x', '<space>ul',
+        function()
+            vim.cmd('execute "normal \\<ESC>"')
+            vim.cmd("FzfxUnrestrictedLiveGrepVisual")
+        end,
+        {silent=true, noremap=true, desc="Live grep"})
+-- method-2: specify `:\<C-U>`
+vim.keymap.set('x', '<space>l',
+        ':<C-U>FzfxLiveGrepVisual<CR>',
+        {silent=true, noremap=true, desc="Live grep"})
+vim.keymap.set('x', '<space>ul',
+        ':<C-U>FzfxUnrestrictedLiveGrepVisual<CR>',
+        {silent=true, noremap=true, desc="Unrestricted live grep"})
+
+-- grep word
+vim.keymap.set('n', '<space>w', '<cmd>FzfxGrepWord<cr>',
+        {silent=true, noremap=true, desc="Grep word under cursor"})
+vim.keymap.set('n', '<space>uw', '<cmd>FzfxUnrestrictedGrepWord<cr>',
+        {silent=true, noremap=true, desc="Unrestricted grep word under cursor"})
+-- git branches
+vim.keymap.set('n', '<space>gb', '<cmd>FzfxBranches<cr>',
+        {silent=true, noremap=true, desc="Search git branches"})
 ```
 
 ## Commands
@@ -182,11 +229,16 @@ https://github.com/linrongbin16/fzfx.vim/assets/6496887/1864fde1-0cba-40d2-8e53-
 
    https://github.com/linrongbin16/fzfx.vim/assets/6496887/49c83edc-eb43-4e9c-9ea1-153e8de76f02
 
-3. it allows user search visual selections by character and line (block-visual
-   not support).
+`FzfxLiveGrepVisual` is a variant of `FzfxLiveGrep`, it allows user search
+visual selections:
+
+https://github.com/linrongbin16/fzfx.vim/assets/6496887/a7303036-e803-4e5f-a26b-92c565d37e43
 
 `FzfxUnrestrictedLiveGrep` is a variant of `FzfxLiveGrep`, it also searches the
 hidden and ignored files with `--unrestricted --hidden`:
+
+`FzfxUnrestrictedLiveGrepVisual` is a variant of `FzfxUnrestrictedLiveGrep`, it
+allows user search visual selection.
 
 ```bash
 # short version
