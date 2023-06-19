@@ -212,11 +212,11 @@ endfunction
 
 " grep word
 function! fzfx#vim#grep_word(fullscreen)
-    call s:live_grep(expand('<cword>'), s:live_grep_provider, a:fullscreen)
+    call s:live_grep(expand('<cword>'), s:live_grep_provider, a:fullscreen, '')
 endfunction
 
 function! fzfx#vim#unrestricted_grep_word(fullscreen)
-    call s:live_grep(expand('<cword>'), s:unrestricted_live_grep_provider, a:fullscreen)
+    call s:live_grep(expand('<cword>'), s:unrestricted_live_grep_provider, a:fullscreen, '')
 endfunction
 
 " files
