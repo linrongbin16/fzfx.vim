@@ -221,6 +221,8 @@ https://github.com/linrongbin16/fzfx.vim/assets/6496887/1864fde1-0cba-40d2-8e53-
    https://github.com/linrongbin16/fzfx.vim/assets/6496887/49c83edc-eb43-4e9c-9ea1-153e8de76f02
 
 3. it allows user search visual selections:
+   
+   https://github.com/linrongbin16/fzfx.vim/assets/6496887/a7303036-e803-4e5f-a26b-92c565d37e43
 
 `FzfxUnrestrictedLiveGrep` is a variant of `FzfxLiveGrep`, it also searches the
 hidden and ignored files with `--unrestricted --hidden`:
