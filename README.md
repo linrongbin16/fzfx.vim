@@ -263,13 +263,13 @@ The variants are named following below rules:
      rg --column --line-number --no-heading --color=always --smart-case
      ```
 
+     Note: the unrestricted variants use `-uu` instead of `-g '!*.git/'`.
+
   2. it allows user add rg's raw options by parsing `--` flag, treat the left part
      as query content, the right side as rg's raw options. A most common use case
      is searching by file type (via `--glob` or `--iglob` option):
 
      https://github.com/linrongbin16/fzfx.vim/assets/6496887/49c83edc-eb43-4e9c-9ea1-153e8de76f02
-
-  Note: the unrestricted variants use `-uu` instead of `-g '!*.git/'`.
 
 - `FzfxLiveGrep(U)V` is a variant of `FzfxLiveGrep(U)`, it allows user searching
   visual selections:
