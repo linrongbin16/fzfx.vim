@@ -260,7 +260,7 @@ The variants are named following below rules:
      ```bash
      rg --column -n --no-heading --color=always -S -g '!*.git/'
      # e.g.
-     rg --column --line-number --no-heading --color=always --smart-case
+     rg --column --line-number --no-heading --color=always --smart-case --glob '!*.git/'
      ```
 
      Note: the unrestricted variants use `-uu` instead of `-g '!*.git/'`.
