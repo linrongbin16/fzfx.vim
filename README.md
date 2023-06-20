@@ -15,7 +15,7 @@ is from them.**
 - [Usage](#usage)
   - [Key mapping](#key-mapping)
 - [Commands](#commands)
-  - [Fzfx(Unrestricted)Files](#fzfxunrestrictedfiles)
+  - [FzfxFiles(U)](#fzfxfilesu)
   - [FzfxBuffers](#fzfxbuffers)
   - [Fzfx(Unrestricted)LiveGrep(Visual)](#fzfxunrestrictedlivegrepvisual)
   - [Fzfx(Unrestricted)GrepWord](#fzfxunrestrictedgrepword)
@@ -226,7 +226,13 @@ vim.keymap.set('n', '<space>gb', '<cmd>FzfxBranches<cr>',
 
 ## Commands
 
-### Fzfx(Unrestricted)Files
+The variants are named following below rules:
+
+- Unrestricted searching (include hidden and ignored files) variants add `U` suffix.
+- Searching by visual selection variants add `V` suffix.
+- Searching by cursor word variants add `W` suffix.
+
+### FzfxFiles(U)
 
 - `FzfxFiles` is almost the same with (`Fzf`)`Files`, except it's using fd command:
 
