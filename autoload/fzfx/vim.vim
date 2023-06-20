@@ -28,50 +28,18 @@ else
     endfunction
 endif
 
+function! s:warn(msg)
+    echohl "WarningMsg"
+    echomsg "".a:msg
+    echohl "None"
+endfunction
+
 function! s:trim(s)
     if has('nvim') || v:versionlong >= 8001630
         return trim(a:s)
     else
         return substitute(a:s, '^\s*\(.\{-}\)\s*$', '\1', '')
     endif
-endfunction
-
-" visual mode
-function! s:is_visual_mode(mode)
-    return a:mode==?"v" || a:mode==?"\<C-V>"
-endfunction
-
-function! s:get_visual_selection(mode)
-    " if a:mode==?"v"
-    "     let [line_start, column_start] = getpos("v")[1:2]
-    "     let [line_end, column_end] = getpos(".")[1:2]
-    "     echo "char/line-wise, line_start:".line_start.",column_start:".column_start.",line_end:".line_end.",column_end:".column_end
-    " else
-        let [line_start, column_start] = getpos("'<")[1:2]
-        let [line_end, column_end] = getpos("'>")[1:2]
-        " echo "block-wise, line_start:".line_start.",column_start:".column_start.",line_end:".line_end.",column_end:".column_end
-    " endif
-    if (line2byte(line_start)+column_start) > (line2byte(line_end)+column_end)
-        let [line_start, column_start, line_end, column_end] = [line_end, column_end, line_start, column_start]
-    end
-    let lines = getline(line_start, line_end)
-    if len(lines) == 0
-        return ''
-    endif
-    if a:mode==#"v" || a:mode==#"\<C-V>"
-        " for char/block-wise visual, trim first line head and last line tail.
-        let lines[-1] = lines[-1][: column_end - (&selection==?'inclusive' ? 1 : 2)]
-        let lines[0] = lines[0][column_start - 1:]
-        " echo "char/block-wise, mode:".a:mode
-    elseif a:mode==#"V"
-        " for line-wise visual, and if there's only 1 line, trim the whole
-        " line. for other cases, don't do anything.
-        if len(lines) == 1
-            let lines[0]=s:trim(lines[0])
-        endif
-        " echo "line-wise, mode:".a:mode
-    endif
-    return join(lines, "\n")
 endfunction
 
 " action
@@ -145,7 +113,7 @@ elseif executable('fdfind')
     let s:unrestricted_find_command=get(g:, 'fzfx_unrestricted_find_command', 'fdfind -cnever -tf -tl -L -u')
 endif
 
-" `git branch -a --color --list`
+" `git branch -a --color`
 let s:git_branch_command=get(g:, 'fzfx_git_branch_command', 'git branch -a --color')
 
 " ======== providers ========
@@ -165,16 +133,13 @@ let s:git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
 " ======== implementations ========
 
 " live grep
-function! s:live_grep(query, provider, fullscreen, visualmode)
-    let query=a:query
-    " echo "query:".a:query.",provider:".a:provider.",fullscreen:".a:fullscreen.",mode:".mode
-    if empty(query) && s:is_visual_mode(a:visualmode)
-        let query=s:get_visual_selection(a:visualmode)
-    endif
+function! fzfx#vim#live_grep(query, fullscreen, opts)
     let fuzzy_search_header=':: Press '.s:magenta('CTRL-F', 'Special').' to fzf mode'
     let regex_search_header=':: Press '.s:magenta('CTRL-R', 'Special').' to rg mode'
-    let command_fmt = a:provider.' %s || true'
-    let initial_command = printf(command_fmt, shellescape(query))
+    let provider= a:opts.unrestricted ? s:unrestricted_live_grep_provider : s:live_grep_provider
+    " echo "query:".a:query.",provider:".provider.",fullscreen:".a:fullscreen
+    let command_fmt = provider.' %s || true'
+    let initial_command = printf(command_fmt, shellescape(a:query))
     if s:is_win
         let reload_command = printf('sleep 0.1 && '.command_fmt, '{q}')
     else
@@ -183,7 +148,7 @@ function! s:live_grep(query, provider, fullscreen, visualmode)
     let spec = {'options': [
                 \ '--disabled',
                 \ '--print-query',
-                \ '--query', query,
+                \ '--query', a:query,
                 \ '--bind', 'ctrl-f:unbind(change,ctrl-f)+change-prompt(Rg> )+enable-search+change-header('.regex_search_header.')+rebind(ctrl-r)',
                 \ '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(*Rg> )+disable-search+change-header('.fuzzy_search_header.')+reload('.reload_command.')+rebind(change,ctrl-f)',
                 \ '--bind', 'change:reload:'.reload_command,
@@ -194,47 +159,96 @@ function! s:live_grep(query, provider, fullscreen, visualmode)
     call fzf#vim#grep(initial_command, spec, a:fullscreen)
 endfunction
 
-function! fzfx#vim#live_grep(query, fullscreen)
-    call s:live_grep(a:query, s:live_grep_provider, a:fullscreen, '')
-endfunction
-
+" deprecated
 function! fzfx#vim#unrestricted_live_grep(query, fullscreen)
-    call s:live_grep(a:query, s:unrestricted_live_grep_provider, a:fullscreen, '')
+    call s:warn("'FzfxUnrestrictedLiveGrep' is deprecated, use 'FzfxLiveGrepU'!")
+    call fzfx#vim#live_grep(a:query, a:fullscreen, {'unrestricted': 1})
 endfunction
 
-function! fzfx#vim#live_grep_visual(query, fullscreen)
-    call s:live_grep(a:query, s:live_grep_provider, a:fullscreen, visualmode())
+" visual mode
+function! s:visual_lines(mode)
+    " if a:mode==?"v"
+    "     let [line_start, column_start] = getpos("v")[1:2]
+    "     let [line_end, column_end] = getpos(".")[1:2]
+    "     echo "char/line-wise, line_start:".line_start.",column_start:".column_start.",line_end:".line_end.",column_end:".column_end
+    " else
+        let [line_start, column_start] = getpos("'<")[1:2]
+        let [line_end, column_end] = getpos("'>")[1:2]
+        " echo "block-wise, line_start:".line_start.",column_start:".column_start.",line_end:".line_end.",column_end:".column_end
+    " endif
+    if (line2byte(line_start)+column_start) > (line2byte(line_end)+column_end)
+        let [line_start, column_start, line_end, column_end] = [line_end, column_end, line_start, column_start]
+    end
+    let lines = getline(line_start, line_end)
+    if len(lines) == 0
+        return ''
+    endif
+    if a:mode==#"v" || a:mode==#"\<C-V>"
+        " for char/block-wise visual, trim first line head and last line tail.
+        let lines[-1] = lines[-1][: column_end - (&selection==?'inclusive' ? 1 : 2)]
+        let lines[0] = lines[0][column_start - 1:]
+        " echo "char/block-wise, mode:".a:mode
+    elseif a:mode==#"V"
+        " for line-wise visual, and if there's only 1 line, trim the whole
+        " line. for other cases, don't do anything.
+        if len(lines) == 1
+            let lines[0]=s:trim(lines[0])
+        endif
+        " echo "line-wise, mode:".a:mode
+    endif
+    return join(lines, "\n")
 endfunction
 
-function! fzfx#vim#unrestricted_live_grep_visual(query, fullscreen)
-    call s:live_grep(a:query, s:unrestricted_live_grep_provider, a:fullscreen, visualmode())
+function! fzfx#vim#_visual_select()
+    let query=''
+    let mode=visualmode()
+    if mode==?"v" || mode==?"\<C-V>"
+        let query=s:visual_lines(mode)
+    endif
+    return query
 endfunction
 
-" grep word
+" deprecated
+function! fzfx#vim#live_grep_visual(fullscreen)
+    call s:warn("'FzfxLiveGrepVisual' is deprecated, use 'FzfxLiveGrepV'!")
+    let query=fzfx#vim#_visual_select()
+    call fzfx#vim#live_grep(query, a:fullscreen, {'unrestricted': 0})
+endfunction
+
+" deprecated
+function! fzfx#vim#unrestricted_live_grep_visual(fullscreen)
+    call s:warn("'FzfxUnrestrictedLiveGrepVisual' is deprecated, use 'FzfxLiveGrepUV'!")
+    let query=fzfx#vim#_visual_select()
+    call fzfx#vim#live_grep(query, a:fullscreen, {'unrestricted': 1})
+endfunction
+
+" deprecated
 function! fzfx#vim#grep_word(fullscreen)
-    call s:live_grep(expand('<cword>'), s:live_grep_provider, a:fullscreen, '')
+    call s:warn("'FzfxGrepWord' is deprecated, use 'FzfxLiveGrepW'!")
+    call fzfx#vim#live_grep(expand('<cword>'), a:fullscreen, {'unrestricted': 0})
 endfunction
 
+" deprecated
 function! fzfx#vim#unrestricted_grep_word(fullscreen)
-    call s:live_grep(expand('<cword>'), s:unrestricted_live_grep_provider, a:fullscreen, '')
+    call s:warn("'FzfxUnrestrictedGrepWord' is deprecated, use 'FzfxLiveGrepUW'!")
+    call fzfx#vim#live_grep(expand('<cword>'), a:fullscreen, {'unrestricted': 1})
 endfunction
 
 " files
-function! s:files(query, provider, fullscreen)
-    let command_fmt = a:provider.' %s || true'
+function! fzfx#vim#files(query, fullscreen, opts)
+    let provider = a:opts.unrestricted ? s:unrestricted_files_provider : s:files_provider
+    let command_fmt = provider.' %s || true'
     let initial_command = printf(command_fmt, shellescape(a:query))
     let spec = { 'source': initial_command, }
     let spec = fzf#vim#with_preview(spec)
-    " echo 'a:query:'.string(shellescape(a:query)).',a:provider:'.string(a:provider).',a:fullscreen:'.string(a:fullscreen).',spec:'.string(spec)
+    " echo 'a:query:'.string(shellescape(a:query)).',provider:'.string(provider).',a:fullscreen:'.string(a:fullscreen).',spec:'.string(spec)
     call fzf#vim#files(a:query, spec, a:fullscreen)
 endfunction
 
-function! fzfx#vim#files(query, fullscreen)
-    call s:files(a:query, s:files_provider, a:fullscreen)
-endfunction
-
+" deprecated
 function! fzfx#vim#unrestricted_files(query, fullscreen)
-    call s:files(a:query, s:unrestricted_files_provider, a:fullscreen)
+    call s:warn("'FzfxUnrestrictedFiles' is deprecated, use 'FzfxFilesU'!")
+    call fzfx#vim#files(a:query, a:fullscreen, {'unrestricted':1})
 endfunction
 
 " buffers
