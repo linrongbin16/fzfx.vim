@@ -242,7 +242,7 @@ The variants are named following below rules:
   fd --color=never --type f --type symlink --follow --exclude .git
   ```
 
-  Note: the unrestricted variants don't contain `-E .git`, while contain `-u`.
+  Note: the unrestricted variants use `-u` instead of `-E .git`.
 
 ### FzfxBuffers
 
@@ -269,7 +269,7 @@ The variants are named following below rules:
 
      https://github.com/linrongbin16/fzfx.vim/assets/6496887/49c83edc-eb43-4e9c-9ea1-153e8de76f02
 
-  Note: the unrestricted variants don't contain `-g '!*.git/'`, while contain `-uu`.
+  Note: the unrestricted variants use `-uu` instead of `-g '!*.git/'`.
 
 - `FzfxLiveGrep(U)V` is a variant of `FzfxLiveGrep(U)`, it allows user searching
   visual selections:
