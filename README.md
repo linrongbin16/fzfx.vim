@@ -2,10 +2,6 @@
 
 E(x)tended fzf commands missing in fzf.vim.
 
-**Thanks to [fzf.vim](https://github.com/junegunn/fzf.vim) and
-[fzf-lua](https://github.com/ibhagwan/fzf-lua), everything I learned and copied
-is from them.**
-
 - [Dependency](#dependency)
   - [Rust commands](#rust-commands)
   - [Git (for Windows)](#git-for-windows)
@@ -314,3 +310,9 @@ let g:fzfx_unrestricted_find_command="fd -cnever -tf -tl -L -u"
 " git branches
 let g:fzfx_git_branch_command="git branch -a --color"
 ```
+
+## Credits
+
+- [fzf.vim](https://github.com/junegunn/fzf.vim): Things you can do with
+  [fzf](https://github.com/junegunn/fzf) and Vim.
+- [fzf-lua](https://github.com/ibhagwan/fzf-lua): Improved fzf.vim written in lua.
