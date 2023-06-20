@@ -2,6 +2,10 @@
 
 E(x)tended fzf commands missing in fzf.vim.
 
+**Thanks to [fzf.vim](https://github.com/junegunn/fzf.vim) and
+[fzf-lua](https://github.com/ibhagwan/fzf-lua), everything I learned and copied
+is from them.**
+
 - [Dependency](#dependency)
   - [Rust commands](#rust-commands)
   - [Git (for Windows)](#git-for-windows)
@@ -123,6 +127,8 @@ xnoremap <space>ul :\<C-U>FzfxUnrestrictedLiveGrepVisual<CR>
 " grep word
 nnoremap <space>w :\<C-U>FzfxGrepWord<CR>
 nnoremap <space>uw :\<C-U>FzfxUnrestrictedGrepWord<CR>
+" resume live grep
+nnoremap <space>r :\<C-U>FzfxResumeLiveGrep<CR>
 " git branches
 nnoremap <space>gb :\<C-U>FzfxBranches<CR>
 ```
@@ -177,6 +183,11 @@ vim.keymap.set('n', '<space>w', '<cmd>FzfxGrepWord<cr>',
         {silent=true, noremap=true, desc="Grep word under cursor"})
 vim.keymap.set('n', '<space>uw', '<cmd>FzfxUnrestrictedGrepWord<cr>',
         {silent=true, noremap=true, desc="Unrestricted grep word under cursor"})
+
+-- resume (unrestricted) live grep (include (unrestricted) grep word)
+vim.keymap.set('n', '<space>r', '<cmd>FzfxResumeLiveGrep<cr>',
+        {silent=true, noremap=true, desc="Resume live grep (include grep word)"})
+
 -- git branches
 vim.keymap.set('n', '<space>gb', '<cmd>FzfxBranches<cr>',
         {silent=true, noremap=true, desc="Search git branches"})
@@ -256,6 +267,11 @@ vim.keymap.set('n', '<space>gb', '<cmd>FzfxBranches<cr>',
 - `FzfxUnrestrictedGrepWord` is a variant of `FzfxUnrestrictedLiveGrep`, except it
   searches by word under cursor, e.g. `expand('<cword>')`.
 
+### FzfxResumeLiveGrep
+
+- `FzfxResumeLiveGrep` resumes the last live grep. It include unrestricted,
+  visual select and grep word variants.
+
 ### FzfxBranches
 
 - `FzfxBranches` can search git branches, and use `ENTER` to switch to the
@@ -275,5 +291,5 @@ let g:fzfx_unrestricted_grep_command="rg --column -n --no-heading --color=always
 let g:fzfx_find_command="fd -cnever -tf -tl -L -E .git"
 let g:fzfx_unrestricted_find_command="fd -cnever -tf -tl -L -u"
 " git branches
-let g:fzfx_git_branch_command="git branch -a --color --list"
+let g:fzfx_git_branch_command="git branch -a --color"
 ```
