@@ -190,11 +190,6 @@ vim.keymap.set('n', '<space>ul',
         '<cmd>FzfxLiveGrepU<cr>',
         {silent=true, noremap=true, desc="Unrestricted live grep"})
 
--- warning: to support visual mode, you must use below methods to let visual
--- selection working correctly:
---
--- method-1: speicify `vim.cmd('execute "normal \\<ESC>"')` to exit visual mode first
--- see: https://github.com/neovim/neovim/discussions/24055#discussioncomment-6213580
 vim.keymap.set('x', '<space>l',
         function()
             vim.cmd('execute "normal \\<ESC>"')
@@ -211,17 +206,6 @@ vim.keymap.set('x', '<space>ul',
             vim.cmd("FzfxLiveGrepUV")
         end,
         {silent=true, noremap=true, desc="Live grep"})
--- method-2: specify `:<C-U>`
-vim.keymap.set('x', '<space>l',
-        -- deprecated, use FzfxLiveGrepV instead
-        -- ':<C-U>FzfxLiveGrepVisual<CR>',
-        ':<C-U>FzfxLiveGrepV<CR>',
-        {silent=true, noremap=true, desc="Live grep"})
-vim.keymap.set('x', '<space>ul',
-        -- deprecated, use FzfxLiveGrepUV instead
-        -- ':<C-U>FzfxUnrestrictedLiveGrepVisual<CR>',
-        ':<C-U>FzfxLiveGrepUV<CR>',
-        {silent=true, noremap=true, desc="Unrestricted live grep"})
 
 -- grep word
 vim.keymap.set('n', '<space>wl',
@@ -239,6 +223,16 @@ vim.keymap.set('n', '<space>uwl',
 vim.keymap.set('n', '<space>gb', '<cmd>FzfxBranches<cr>',
         {silent=true, noremap=true, desc="Search git branches"})
 ```
+
+Warning: to support visual mode key mapping, you must use one of below methods
+to make visual selection working correctly:
+
+1. Speicify `vim.cmd('execute "normal \\<ESC>"')` to exit visual mode before
+   calling fzfx command.
+
+2. Speicify `:<C-U>FzfxCommand<CR>` to calling fzfx command.
+
+For details please see: https://github.com/neovim/neovim/discussions/24055#discussioncomment-6213580.
 
 ## Commands
 
