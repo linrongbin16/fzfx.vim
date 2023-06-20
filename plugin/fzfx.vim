@@ -7,6 +7,12 @@ let g:loaded_fzfx=1
 " ======== files ========
 command! -bang -nargs=? -complete=dir FzfxFiles call fzfx#vim#files(<q-args>, <bang>0, {'unrestricted': 0})
 command! -bang -nargs=? -complete=dir FzfxFilesU call fzfx#vim#files(<q-args>, <bang>0, {'unrestricted': 1})
+" find visual
+command! -bang -nargs=? -complete=dir FzfxFilesV call fzfx#vim#files(fzfx#vim#_visual_select(), <bang>0, {'unrestricted': 0})
+command! -bang -nargs=? -complete=dir FzfxFilesUV call fzfx#vim#files(fzfx#vim#_visual_select(), <bang>0, {'unrestricted': 1})
+" find word
+command! -bang -nargs=? -complete=dir FzfxFilesW call fzfx#vim#files(expand('<cword>'), <bang>0, {'unrestricted': 0})
+command! -bang -nargs=? -complete=dir FzfxFilesUW call fzfx#vim#files(expand('<cword>'), <bang>0, {'unrestricted': 1})
 
 " deprecated
 command! -bang -nargs=? -complete=dir FzfxUnrestrictedFiles call fzfx#vim#unrestricted_files(<q-args>, <bang>0)

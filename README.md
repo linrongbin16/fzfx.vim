@@ -2,10 +2,6 @@
 
 E(x)tended fzf commands missing in fzf.vim.
 
-**Thanks to [fzf.vim](https://github.com/junegunn/fzf.vim) and
-[fzf-lua](https://github.com/ibhagwan/fzf-lua), everything I learned and copied
-is from them.**
-
 - [Dependency](#dependency)
   - [Rust commands](#rust-commands)
   - [Git (for Windows)](#git-for-windows)
@@ -15,7 +11,7 @@ is from them.**
 - [Usage](#usage)
   - [Key mapping](#key-mapping)
 - [Commands](#commands)
-  - [FzfxFiles(U)](#fzfxfilesu)
+  - [FzfxFiles(UW)](#fzfxfilesuw)
   - [FzfxBuffers](#fzfxbuffers)
   - [FzfxLiveGrep(UVW)](#fzfxlivegrepuvw)
   - [FzfxBranches](#fzfxbranches)
@@ -115,9 +111,15 @@ For Vim:
 ```vim
 " files
 nnoremap <space>f :\<C-U>FzfxFiles<CR>
+xnoremap <space>f :\<C-U>FzfxFilesV<CR>
 " deprecated, use FzfxFilesU instead
 " nnoremap <space>uf :\<C-U>FzfxUnrestrictedFiles<CR>
 nnoremap <space>uf :\<C-U>FzfxFilesU<CR>
+xnoremap <space>uf :\<C-U>FzfxFilesUV<CR>
+
+" find files by cursor word
+nnoremap <space>wf :\<C-U>FzfxFilesW<CR>
+nnoremap <space>uwf :\<C-U>FzfxFilesUW<CR>
 
 " buffers
 nnoremap <space>b :\<C-U>FzfxBuffers<CR>
@@ -153,11 +155,22 @@ For Neovim:
 -- files
 vim.keymap.set('n', '<space>f', '<cmd>FzfxFiles<cr>',
         {silent=true, noremap=true, desc="Search files"})
+vim.keymap.set('x', '<space>f', ':<C-U>FzfxFilesV<CR>',
+        {silent=true, noremap=true, desc="Search files"})
 vim.keymap.set('n', '<space>uf',
         -- deprecated, use FzfxFilesU instead
         -- '<cmd>FzfxUnrestrictedFiles<cr>',
         '<cmd>FzfxFilesU<cr>',
         {silent=true, noremap=true, desc="Unrestricted search files"})
+vim.keymap.set('x', '<space>uf',
+        ':<C-U>FzfxFilesUV<CR>',
+        {silent=true, noremap=true, desc="Unrestricted search files"})
+
+-- find files by cursor word
+vim.keymap.set('n', '<space>wf', '<cmd>FzfxFilesW<cr>',
+        {silent=true, noremap=true, desc="Search files by cursor word"})
+vim.keymap.set('n', '<space>uwf', '<cmd>FzfxFilesUW<cr>',
+        {silent=true, noremap=true, desc="Unrestricted search files by cursor word"})
 
 -- buffers
 vim.keymap.set('n', '<space>b', '<cmd>FzfxBuffers<cr>',
@@ -173,11 +186,6 @@ vim.keymap.set('n', '<space>ul',
         '<cmd>FzfxLiveGrepU<cr>',
         {silent=true, noremap=true, desc="Unrestricted live grep"})
 
--- warning: to support visual mode, you must use below methods to let visual
--- selection working correctly:
---
--- method-1: speicify `vim.cmd('execute "normal \\<ESC>"')` to exit visual mode first
--- see: https://github.com/neovim/neovim/discussions/24055#discussioncomment-6213580
 vim.keymap.set('x', '<space>l',
         function()
             vim.cmd('execute "normal \\<ESC>"')
@@ -194,25 +202,14 @@ vim.keymap.set('x', '<space>ul',
             vim.cmd("FzfxLiveGrepUV")
         end,
         {silent=true, noremap=true, desc="Live grep"})
--- method-2: specify `:\<C-U>`
-vim.keymap.set('x', '<space>l',
-        -- deprecated, use FzfxLiveGrepV instead
-        -- ':<C-U>FzfxLiveGrepVisual<CR>',
-        ':<C-U>FzfxLiveGrepV<CR>',
-        {silent=true, noremap=true, desc="Live grep"})
-vim.keymap.set('x', '<space>ul',
-        -- deprecated, use FzfxLiveGrepUV instead
-        -- ':<C-U>FzfxUnrestrictedLiveGrepVisual<CR>',
-        ':<C-U>FzfxLiveGrepUV<CR>',
-        {silent=true, noremap=true, desc="Unrestricted live grep"})
 
 -- grep word
-vim.keymap.set('n', '<space>w',
+vim.keymap.set('n', '<space>wl',
         -- deprecated, use FzfxLiveGrepW instead
         -- '<cmd>FzfxGrepWord<cr>',
         '<cmd>FzfxLiveGrepW<cr>',
         {silent=true, noremap=true, desc="Grep word under cursor"})
-vim.keymap.set('n', '<space>uw',
+vim.keymap.set('n', '<space>uwl',
         -- deprecated, use FzfxLiveGrepUW instead
         -- '<cmd>FzfxUnrestrictedGrepWord<cr>',
         '<cmd>FzfxLiveGrepUW<cr>',
@@ -223,6 +220,16 @@ vim.keymap.set('n', '<space>gb', '<cmd>FzfxBranches<cr>',
         {silent=true, noremap=true, desc="Search git branches"})
 ```
 
+Warning: to support visual mode key mapping, you must use one of below methods
+to make visual selection working correctly:
+
+1. Speicify `vim.cmd('execute "normal \\<ESC>"')` to exit visual mode before
+   calling fzfx command.
+
+2. Speicify `:<C-U>FzfxCommand<CR>` to calling fzfx command.
+
+For details please see: https://github.com/neovim/neovim/discussions/24055#discussioncomment-6213580.
+
 ## Commands
 
 The variants are named following below rules:
@@ -231,7 +238,7 @@ The variants are named following below rules:
 - Searching by visual selection variants add `V` suffix.
 - Searching by cursor word variants add `W` suffix.
 
-### FzfxFiles(U)
+### FzfxFiles(UW)
 
 - `FzfxFiles(U)` is almost the same with (`Fzf`)`Files`, except it's using fd command:
 
@@ -243,6 +250,9 @@ The variants are named following below rules:
   ```
 
   Note: the unrestricted variants use `-u` instead of `-E .git`.
+
+- `FzfxFiles(U)W` is a variant of `FzfxFiles(U)`, except it searches by
+  cursor word, e.g. `expand('<cword>')`.
 
 ### FzfxBuffers
 
@@ -300,3 +310,9 @@ let g:fzfx_unrestricted_find_command="fd -cnever -tf -tl -L -u"
 " git branches
 let g:fzfx_git_branch_command="git branch -a --color"
 ```
+
+## Credits
+
+- [fzf.vim](https://github.com/junegunn/fzf.vim): Things you can do with
+  [fzf](https://github.com/junegunn/fzf) and Vim.
+- [fzf-lua](https://github.com/ibhagwan/fzf-lua): Improved fzf.vim written in lua.

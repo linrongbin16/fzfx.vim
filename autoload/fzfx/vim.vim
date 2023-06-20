@@ -123,8 +123,6 @@ let s:grep_word_provider=s:grep_command
 let s:unrestricted_grep_word_provider=s:unrestricted_grep_command
 let s:files_provider=s:find_command
 let s:unrestricted_files_provider=s:unrestricted_find_command
-let s:word_files_provider=s:find_command
-let s:unrestricted_word_files_provider=s:unrestricted_find_command
 let s:git_branches_provider=s:git_branch_command
 
 " ======== previewers ========
@@ -132,40 +130,7 @@ let s:git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
 
 " ======== implementations ========
 
-" live grep
-function! fzfx#vim#live_grep(query, fullscreen, opts)
-    let fuzzy_search_header=':: Press '.s:magenta('CTRL-F', 'Special').' to fzf mode'
-    let regex_search_header=':: Press '.s:magenta('CTRL-R', 'Special').' to rg mode'
-    let provider= a:opts.unrestricted ? s:unrestricted_live_grep_provider : s:live_grep_provider
-    " echo "query:".a:query.",provider:".provider.",fullscreen:".a:fullscreen
-    let command_fmt = provider.' %s || true'
-    let initial_command = printf(command_fmt, shellescape(a:query))
-    if s:is_win
-        let reload_command = printf('sleep 0.1 && '.command_fmt, '{q}')
-    else
-        let reload_command = printf('sleep 0.1;'.command_fmt, '{q}')
-    endif
-    let spec = {'options': [
-                \ '--disabled',
-                \ '--print-query',
-                \ '--query', a:query,
-                \ '--bind', 'ctrl-f:unbind(change,ctrl-f)+change-prompt(Rg> )+enable-search+change-header('.regex_search_header.')+rebind(ctrl-r)',
-                \ '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(*Rg> )+disable-search+change-header('.fuzzy_search_header.')+reload('.reload_command.')+rebind(change,ctrl-f)',
-                \ '--bind', 'change:reload:'.reload_command,
-                \ '--header', fuzzy_search_header,
-                \ '--prompt', '*Rg> '
-                \ ]}
-    let spec = fzf#vim#with_preview(spec)
-    call fzf#vim#grep(initial_command, spec, a:fullscreen)
-endfunction
-
-" deprecated
-function! fzfx#vim#unrestricted_live_grep(query, fullscreen)
-    call s:warn("'FzfxUnrestrictedLiveGrep' is deprecated, use 'FzfxLiveGrepU'!")
-    call fzfx#vim#live_grep(a:query, a:fullscreen, {'unrestricted': 1})
-endfunction
-
-" visual mode
+" visual
 function! s:visual_lines(mode)
     " if a:mode==?"v"
     "     let [line_start, column_start] = getpos("v")[1:2]
@@ -208,6 +173,38 @@ function! fzfx#vim#_visual_select()
     return query
 endfunction
 
+" live grep
+function! fzfx#vim#live_grep(query, fullscreen, opts)
+    let fuzzy_search_header=':: Press '.s:magenta('CTRL-F', 'Special').' to fzf mode'
+    let regex_search_header=':: Press '.s:magenta('CTRL-R', 'Special').' to rg mode'
+    let provider= a:opts.unrestricted ? s:unrestricted_live_grep_provider : s:live_grep_provider
+    " echo "query:".a:query.",provider:".provider.",fullscreen:".a:fullscreen
+    let command_fmt = provider.' %s || true'
+    let initial_command = printf(command_fmt, shellescape(a:query))
+    if s:is_win
+        let reload_command = printf('sleep 0.1 && '.command_fmt, '{q}')
+    else
+        let reload_command = printf('sleep 0.1;'.command_fmt, '{q}')
+    endif
+    let spec = {'options': [
+                \ '--disabled',
+                \ '--print-query',
+                \ '--query', a:query,
+                \ '--bind', 'ctrl-f:unbind(change,ctrl-f)+change-prompt(Rg> )+enable-search+change-header('.regex_search_header.')+rebind(ctrl-r)',
+                \ '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(*Rg> )+disable-search+change-header('.fuzzy_search_header.')+reload('.reload_command.')+rebind(change,ctrl-f)',
+                \ '--bind', 'change:reload:'.reload_command,
+                \ '--header', fuzzy_search_header,
+                \ '--prompt', '*Rg> '
+                \ ]}
+    let spec = fzf#vim#with_preview(spec)
+    call fzf#vim#grep(initial_command, spec, a:fullscreen)
+endfunction
+
+" deprecated
+function! fzfx#vim#unrestricted_live_grep(query, fullscreen)
+    call s:warn("'FzfxUnrestrictedLiveGrep' is deprecated, use 'FzfxLiveGrepU'!")
+    call fzfx#vim#live_grep(a:query, a:fullscreen, {'unrestricted': 1})
+endfunction
 " deprecated
 function! fzfx#vim#live_grep_visual(fullscreen)
     call s:warn("'FzfxLiveGrepVisual' is deprecated, use 'FzfxLiveGrepV'!")
@@ -237,12 +234,15 @@ endfunction
 " files
 function! fzfx#vim#files(query, fullscreen, opts)
     let provider = a:opts.unrestricted ? s:unrestricted_files_provider : s:files_provider
-    let command_fmt = provider.' %s || true'
+    let command_fmt = provider.' -- %s || true'
     let initial_command = printf(command_fmt, shellescape(a:query))
-    let spec = { 'source': initial_command, }
+    " echo "a:query:".a:query.",initial_command:".initial_command
+    let spec = { 'source': initial_command,
+                \ 'option': [
+                \   '--print-query',
+                \ ]}
     let spec = fzf#vim#with_preview(spec)
-    " echo 'a:query:'.string(shellescape(a:query)).',provider:'.string(provider).',a:fullscreen:'.string(a:fullscreen).',spec:'.string(spec)
-    call fzf#vim#files(a:query, spec, a:fullscreen)
+    call fzf#vim#files('', spec, a:fullscreen)
 endfunction
 
 " deprecated
