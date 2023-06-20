@@ -42,44 +42,6 @@ function! s:trim(s)
     endif
 endfunction
 
-" visual mode
-function! s:is_visual_mode(mode)
-    return a:mode==?"v" || a:mode==?"\<C-V>"
-endfunction
-
-function! s:get_visual_selection(mode)
-    " if a:mode==?"v"
-    "     let [line_start, column_start] = getpos("v")[1:2]
-    "     let [line_end, column_end] = getpos(".")[1:2]
-    "     echo "char/line-wise, line_start:".line_start.",column_start:".column_start.",line_end:".line_end.",column_end:".column_end
-    " else
-        let [line_start, column_start] = getpos("'<")[1:2]
-        let [line_end, column_end] = getpos("'>")[1:2]
-        " echo "block-wise, line_start:".line_start.",column_start:".column_start.",line_end:".line_end.",column_end:".column_end
-    " endif
-    if (line2byte(line_start)+column_start) > (line2byte(line_end)+column_end)
-        let [line_start, column_start, line_end, column_end] = [line_end, column_end, line_start, column_start]
-    end
-    let lines = getline(line_start, line_end)
-    if len(lines) == 0
-        return ''
-    endif
-    if a:mode==#"v" || a:mode==#"\<C-V>"
-        " for char/block-wise visual, trim first line head and last line tail.
-        let lines[-1] = lines[-1][: column_end - (&selection==?'inclusive' ? 1 : 2)]
-        let lines[0] = lines[0][column_start - 1:]
-        " echo "char/block-wise, mode:".a:mode
-    elseif a:mode==#"V"
-        " for line-wise visual, and if there's only 1 line, trim the whole
-        " line. for other cases, don't do anything.
-        if len(lines) == 1
-            let lines[0]=s:trim(lines[0])
-        endif
-        " echo "line-wise, mode:".a:mode
-    endif
-    return join(lines, "\n")
-endfunction
-
 " action
 let s:default_action = {
             \ 'ctrl-t': 'tab split',
@@ -203,25 +165,60 @@ function! fzfx#vim#unrestricted_live_grep(query, fullscreen)
     call fzfx#vim#live_grep(a:query, a:fullscreen, {'unrestricted': 1})
 endfunction
 
+" visual mode
+function! s:visual_lines(mode)
+    " if a:mode==?"v"
+    "     let [line_start, column_start] = getpos("v")[1:2]
+    "     let [line_end, column_end] = getpos(".")[1:2]
+    "     echo "char/line-wise, line_start:".line_start.",column_start:".column_start.",line_end:".line_end.",column_end:".column_end
+    " else
+        let [line_start, column_start] = getpos("'<")[1:2]
+        let [line_end, column_end] = getpos("'>")[1:2]
+        " echo "block-wise, line_start:".line_start.",column_start:".column_start.",line_end:".line_end.",column_end:".column_end
+    " endif
+    if (line2byte(line_start)+column_start) > (line2byte(line_end)+column_end)
+        let [line_start, column_start, line_end, column_end] = [line_end, column_end, line_start, column_start]
+    end
+    let lines = getline(line_start, line_end)
+    if len(lines) == 0
+        return ''
+    endif
+    if a:mode==#"v" || a:mode==#"\<C-V>"
+        " for char/block-wise visual, trim first line head and last line tail.
+        let lines[-1] = lines[-1][: column_end - (&selection==?'inclusive' ? 1 : 2)]
+        let lines[0] = lines[0][column_start - 1:]
+        " echo "char/block-wise, mode:".a:mode
+    elseif a:mode==#"V"
+        " for line-wise visual, and if there's only 1 line, trim the whole
+        " line. for other cases, don't do anything.
+        if len(lines) == 1
+            let lines[0]=s:trim(lines[0])
+        endif
+        " echo "line-wise, mode:".a:mode
+    endif
+    return join(lines, "\n")
+endfunction
+
+function! fzfx#vim#_visual_select()
+    let query=''
+    let mode=visualmode()
+    if mode==?"v" || mode==?"\<C-V>"
+        let query=s:visual_lines(mode)
+    endif
+    return query
+endfunction
+
 " deprecated
 function! fzfx#vim#live_grep_visual(fullscreen)
     call s:warn("'FzfxLiveGrepVisual' is deprecated, use 'FzfxLiveGrepV'!")
-    let query=''
-    let mode=visualmode()
-    if s:is_visual_mode(mode)
-        let query=s:get_visual_selection(mode)
-    endif
+    let query=fzfx#vim#_visual_select()
     call fzfx#vim#live_grep(query, a:fullscreen, {'unrestricted': 0})
 endfunction
 
 " deprecated
 function! fzfx#vim#unrestricted_live_grep_visual(fullscreen)
     call s:warn("'FzfxUnrestrictedLiveGrepVisual' is deprecated, use 'FzfxLiveGrepUV'!")
-    let query=''
-    let mode=visualmode()
-    if s:is_visual_mode(mode)
-        let query=s:get_visual_selection(mode)
-    endif
+    let query=fzfx#vim#_visual_select()
     call fzfx#vim#live_grep(query, a:fullscreen, {'unrestricted': 1})
 endfunction
 
