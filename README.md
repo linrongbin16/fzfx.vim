@@ -11,7 +11,7 @@ E(x)tended fzf commands missing in fzf.vim.
 - [Usage](#usage)
   - [Key mapping](#key-mapping)
 - [Commands](#commands)
-  - [FzfxFiles(UW)](#fzfxfilesuw)
+  - [FzfxFiles(UVW)](#fzfxfilesuvw)
   - [FzfxBuffers](#fzfxbuffers)
   - [FzfxLiveGrep(UVW)](#fzfxlivegrepuvw)
   - [FzfxBranches](#fzfxbranches)
