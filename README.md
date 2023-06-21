@@ -252,8 +252,8 @@ The variants are named following below rules:
 
   Note: the unrestricted variants use `-u` instead of `-E .git`.
 
-- `FzfxFiles(U)V` is a variant of `FzfxFiles(U)`, it allows user searching
-  visual selections.
+- `FzfxFiles(U)V` is a variant of `FzfxFiles(U)`, except it searches by
+  visual selection.
   
 - `FzfxFiles(U)W` is a variant of `FzfxFiles(U)`, except it searches by
   cursor word, e.g. `expand('<cword>')`.
@@ -285,8 +285,8 @@ The variants are named following below rules:
 
      https://github.com/linrongbin16/fzfx.vim/assets/6496887/49c83edc-eb43-4e9c-9ea1-153e8de76f02
 
-- `FzfxLiveGrep(U)V` is a variant of `FzfxLiveGrep(U)`, it allows user searching
-  visual selections:
+- `FzfxLiveGrep(U)V` is a variant of `FzfxLiveGrep(U)`, except it searches by
+  visual selection:
 
   https://github.com/linrongbin16/fzfx.vim/assets/6496887/a7303036-e803-4e5f-a26b-92c565d37e43
 
