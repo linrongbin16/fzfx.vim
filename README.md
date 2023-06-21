@@ -235,11 +235,11 @@ For details please see: https://github.com/neovim/neovim/discussions/24055#discu
 
 The variants are named following below rules:
 
-- Unrestricted searching (include hidden and ignored files) variants add `U` suffix.
-- Searching by visual selection variants add `V` suffix.
-- Searching by cursor word variants add `W` suffix.
+- Unrestricted searching (include hidden and ignored files) variants use `U` suffix.
+- Searching by visual selection variants use `V` suffix.
+- Searching by cursor word variants use `W` suffix.
 
-### FzfxFiles(UW)
+### FzfxFiles(UVW)
 
 - `FzfxFiles(U)` is almost the same with (`Fzf`)`Files`, except it's using fd command:
 
@@ -252,6 +252,9 @@ The variants are named following below rules:
 
   Note: the unrestricted variants use `-u` instead of `-E .git`.
 
+- `FzfxFiles(U)V` is a variant of `FzfxFiles(U)`, it allows user searching
+  visual selections.
+  
 - `FzfxFiles(U)W` is a variant of `FzfxFiles(U)`, except it searches by
   cursor word, e.g. `expand('<cword>')`.
 
