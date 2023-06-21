@@ -11,7 +11,7 @@ E(x)tended fzf commands missing in fzf.vim.
 - [Usage](#usage)
   - [Key mapping](#key-mapping)
 - [Commands](#commands)
-  - [FzfxFiles(UW)](#fzfxfilesuw)
+  - [FzfxFiles(UVW)](#fzfxfilesuvw)
   - [FzfxBuffers](#fzfxbuffers)
   - [FzfxLiveGrep(UVW)](#fzfxlivegrepuvw)
   - [FzfxBranches](#fzfxbranches)
@@ -235,11 +235,11 @@ For details please see: https://github.com/neovim/neovim/discussions/24055#discu
 
 The variants are named following below rules:
 
-- Unrestricted searching (include hidden and ignored files) variants add `U` suffix.
-- Searching by visual selection variants add `V` suffix.
-- Searching by cursor word variants add `W` suffix.
+- Unrestricted searching (include hidden and ignored files) variants use `U` suffix.
+- Searching by visual selection variants use `V` suffix.
+- Searching by cursor word variants use `W` suffix.
 
-### FzfxFiles(UW)
+### FzfxFiles(UVW)
 
 - `FzfxFiles(U)` is almost the same with (`Fzf`)`Files`, except it's using fd command:
 
@@ -252,6 +252,9 @@ The variants are named following below rules:
 
   Note: the unrestricted variants use `-u` instead of `-E .git`.
 
+- `FzfxFiles(U)V` is a variant of `FzfxFiles(U)`, except it searches by
+  visual selection.
+  
 - `FzfxFiles(U)W` is a variant of `FzfxFiles(U)`, except it searches by
   cursor word, e.g. `expand('<cword>')`.
 
@@ -282,8 +285,8 @@ The variants are named following below rules:
 
      https://github.com/linrongbin16/fzfx.vim/assets/6496887/49c83edc-eb43-4e9c-9ea1-153e8de76f02
 
-- `FzfxLiveGrep(U)V` is a variant of `FzfxLiveGrep(U)`, it allows user searching
-  visual selections:
+- `FzfxLiveGrep(U)V` is a variant of `FzfxLiveGrep(U)`, except it searches by
+  visual selection:
 
   https://github.com/linrongbin16/fzfx.vim/assets/6496887/a7303036-e803-4e5f-a26b-92c565d37e43
 
