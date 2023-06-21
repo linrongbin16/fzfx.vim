@@ -16,6 +16,7 @@ E(x)tended fzf commands missing in fzf.vim.
   - [FzfxLiveGrep(UVW)](#fzfxlivegrepuvw)
   - [FzfxBranches](#fzfxbranches)
 - [Config](#config)
+- [Credit](#credit)
 
 ## Dependency
 
@@ -311,7 +312,7 @@ let g:fzfx_unrestricted_find_command="fd -cnever -tf -tl -L -u"
 let g:fzfx_git_branch_command="git branch -a --color"
 ```
 
-## Credits
+## Credit
 
 - [fzf.vim](https://github.com/junegunn/fzf.vim): Things you can do with
   [fzf](https://github.com/junegunn/fzf) and Vim.
