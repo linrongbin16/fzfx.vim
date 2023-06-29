@@ -245,16 +245,18 @@ The variants are named following below rules:
 
   ```bash
   # short version
-  fd -cnever -tf -tl -L -E .git
+  fd -cnever -tf -tl -L -i -E .git
   # e.g.
-  fd --color=never --type f --type symlink --follow --exclude .git
+  fd --color=never --type f --type symlink --follow --ignore-case --exclude .git
   ```
 
   Note: the unrestricted variants use `-u` instead of `-E .git`.
 
 - `FzfxFiles(U)V` is a variant of `FzfxFiles(U)`, except it searches by
   visual selection.
-  
+
+  https://github.com/linrongbin16/fzfx.vim/assets/6496887/cfe9f279-eb5c-4e7d-8cb2-95e168867250
+
 - `FzfxFiles(U)W` is a variant of `FzfxFiles(U)`, except it searches by
   cursor word, e.g. `expand('<cword>')`.
 
