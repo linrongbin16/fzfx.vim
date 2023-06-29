@@ -104,13 +104,14 @@ let s:default_action = {
 let s:grep_command=get(g:, 'fzfx_grep_command', "rg --column -n --no-heading --color=always -S -g '!*.git/'")
 let s:unrestricted_grep_command=get(g:, 'fzfx_unrestricted_grep_command', 'rg --column -n --no-heading --color=always -S -uu')
 
-" `fd --color=never --type f --type symlink --follow --exclude .git`
+" `fd --color=never --type f --type symlink --follow --exclude .git
+" --ignore-case`
 if executable('fd')
-    let s:find_command=get(g:, 'fzfx_find_command', 'fd -cnever -tf -tl -L -E .git')
-    let s:unrestricted_find_command=get(g:, 'fzfx_unrestricted_find_command', 'fd -cnever -tf -tl -L -u')
+    let s:find_command=get(g:, 'fzfx_find_command', 'fd -cnever -tf -tl -L -i -E .git')
+    let s:unrestricted_find_command=get(g:, 'fzfx_unrestricted_find_command', 'fd -cnever -tf -tl -L -i -u')
 elseif executable('fdfind')
-    let s:find_command=get(g:, 'fzfx_find_command', 'fdfind -cnever -tf -tl -L -E .git')
-    let s:unrestricted_find_command=get(g:, 'fzfx_unrestricted_find_command', 'fdfind -cnever -tf -tl -L -u')
+    let s:find_command=get(g:, 'fzfx_find_command', 'fdfind -cnever -tf -tl -L -i -E .git')
+    let s:unrestricted_find_command=get(g:, 'fzfx_unrestricted_find_command', 'fdfind -cnever -tf -tl -L -i -u')
 endif
 
 " `git branch -a --color`
@@ -234,12 +235,12 @@ endfunction
 " files
 function! fzfx#vim#files(query, fullscreen, opts)
     let provider = a:opts.unrestricted ? s:unrestricted_files_provider : s:files_provider
-    let command_fmt = provider.' -- %s || true'
-    let initial_command = printf(command_fmt, shellescape(a:query))
+    let initial_command = provider.' || true'
     " echo "a:query:".a:query.",initial_command:".initial_command
     let spec = { 'source': initial_command,
-                \ 'option': [
+                \ 'options': [
                 \   '--print-query',
+                \   '--query', a:query,
                 \ ]}
     let spec = fzf#vim#with_preview(spec)
     call fzf#vim#files('', spec, a:fullscreen)
