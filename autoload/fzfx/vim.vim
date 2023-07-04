@@ -242,7 +242,6 @@ function! fzfx#vim#files(query, fullscreen, opts)
     " echo "a:query:".a:query.",initial_command:".initial_command
     let spec = { 'source': initial_command,
                 \ 'options': [
-                \   '--print-query',
                 \   '--query', a:query,
                 \ ]}
     let spec = fzf#vim#with_preview(spec)
