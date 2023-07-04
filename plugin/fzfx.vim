@@ -3,6 +3,8 @@ if exists('g:loaded_fzfx')
 endif
 let g:loaded_fzfx=1
 
+let s:cpo_save = &cpo
+set cpo&vim
 
 " ======== files ========
 command! -bang -nargs=? -complete=dir FzfxFiles call fzfx#vim#files(<q-args>, <bang>0, {'unrestricted': 0})
@@ -39,3 +41,6 @@ command! -bang FzfxUnrestrictedGrepWord call fzfx#vim#unrestricted_grep_word(<ba
 
 " ======== git ========
 command! -bang -nargs=* FzfxBranches call fzfx#vim#branches(<q-args>, <bang>0)
+
+let s:cpo_save = &cpo
+set cpo&vim
