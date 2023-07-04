@@ -192,7 +192,6 @@ function! fzfx#vim#live_grep(query, fullscreen, opts)
     endif
     let spec = {'options': [
                 \ '--disabled',
-                \ '--print-query',
                 \ '--query', a:query,
                 \ '--bind', 'ctrl-f:unbind(change,ctrl-f)+change-prompt(Rg> )+enable-search+change-header('.regex_search_header.')+rebind(ctrl-r)',
                 \ '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(*Rg> )+disable-search+change-header('.fuzzy_search_header.')+reload('.reload_command.')+rebind(change,ctrl-f)',
@@ -314,7 +313,6 @@ function! fzfx#vim#buffers(query, fullscreen)
     let close_buffer_header=':: Press '.s:magenta('CTRL-D', 'Special').' to close buffer'
     let spec = { 'sink*': {lines -> s:buffers_sink(lines, a:query, a:fullscreen)},
                 \ 'options': [
-                \   '--print-query',
                 \   '--header', close_buffer_header,
                 \   '--prompt', 'Buffer> '
                 \ ],
@@ -339,7 +337,6 @@ function! fzfx#vim#branches(query, fullscreen)
                 \ 'source': initial_command,
                 \ 'options': [
                 \   '--no-multi',
-                \   '--print-query',
                 \   '--delimiter=:',
                 \   '--bind', 'ctrl-l:toggle-preview',
                 \   '--preview-window', 'right,50%',
