@@ -2,7 +2,7 @@
 
 E(x)tended fzf commands missing in fzf.vim.
 
-- [Dependency](#dependency)
+- [Requirement](#requirement)
   - [Rust commands](#rust-commands)
   - [Git (for Windows)](#git-for-windows)
 - [Install](#install)
@@ -18,7 +18,7 @@ E(x)tended fzf commands missing in fzf.vim.
 - [Config](#config)
 - [Credit](#credit)
 
-## Dependency
+## Requirement
 
 ### Rust commands
 
