@@ -1,3 +1,6 @@
+let s:cpo_save = &cpo
+set cpo&vim
+
 " ======== utils ========
 let s:is_win = has('win32') || has('win64')
 
@@ -368,3 +371,6 @@ function! fzfx#vim#branches(query, fullscreen)
 
     call fzf#run(fzf#wrap('branches', spec, a:fullscreen))
 endfunction
+
+let &cpo = s:cpo_save
+unlet s:cpo_save
