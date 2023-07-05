@@ -73,7 +73,7 @@ After this step, **git.exe** and Linux built-in commands(**sh.exe**, **cp.exe**,
 
 ## Install
 
-This plugin depends on:
+Plugin dependencies:
 
 - [fzf](https://github.com/junegunn/fzf)
 - [fzf.vim](https://github.com/junegunn/fzf.vim)
@@ -268,12 +268,12 @@ The variants are named following below rules:
 
   ```bash
   # short version
-  fd -cnever -tf -tl -L -i -E .git
+  fd -cnever -tf -tl -L -i
   # e.g.
-  fd --color=never --type f --type symlink --follow --ignore-case --exclude .git
+  fd --color=never --type f --type symlink --follow --ignore-case
   ```
 
-  Note: the unrestricted variants use `-u` instead of `-E .git`.
+  Note: the unrestricted variants add `-u` option.
 
 - `FzfxFiles(U)V` is a variant of `FzfxFiles(U)`, except it searches by
   visual selection.
@@ -297,12 +297,12 @@ The variants are named following below rules:
   1. it's using rg command:
 
      ```bash
-     rg --column -n --no-heading --color=always -S -g '!*.git/'
+     rg --column -n --no-heading --color=always -S
      # e.g.
-     rg --column --line-number --no-heading --color=always --smart-case --glob '!*.git/'
+     rg --column --line-number --no-heading --color=always --smart-case
      ```
 
-     Note: the unrestricted variants use `-uu` instead of `-g '!*.git/'`.
+     Note: the unrestricted variants add `-uu` options.
 
   2. it allows user add rg's raw options by parsing `--` flag, treat the left part
      as query content, the right side as rg's raw options. A most common use case
@@ -326,14 +326,27 @@ The variants are named following below rules:
 There're some global variables you can speicify to config:
 
 ```vim
-" live grep, grep word
-let g:fzfx_grep_command="rg --column -n --no-heading --color=always -S -g '!*.git/'"
-let g:fzfx_unrestricted_grep_command="rg --column -n --no-heading --color=always -S -uu"
+""" find/grep commands
+
+" live grep
+let g:fzfx_grep_command = 'rg --column -n --no-heading --color=always -S'
+let g:fzfx_unrestricted_grep_command = 'rg --column -n --no-heading --color=always -S -uu'
+
 " files
-let g:fzfx_find_command="fd -cnever -tf -tl -L -E .git"
-let g:fzfx_unrestricted_find_command="fd -cnever -tf -tl -L -u"
+let g:fzfx_find_command = 'fd -cnever -tf -tl -'
+let g:fzfx_unrestricted_find_command = 'fd -cnever -tf -tl -L -u'
+
 " git branches
-let g:fzfx_git_branch_command="git branch -a --color"
+let g:fzfx_git_branch_command = 'git branch -a --color'
+
+""" key actions
+
+" live grep
+let g:fzfx_live_grep_fzf_mode_action = 'ctrl-f'
+let g:fzfx_live_grep_rg_mode_action = 'ctrl-r'
+
+" buffers
+let g:fzfx_buffers_close_action = 'ctrl-d'
 ```
 
 ## Credit

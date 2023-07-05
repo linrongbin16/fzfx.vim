@@ -20,9 +20,9 @@ if [ ${#option} -gt 0 ] && [ "$option" != "$content" ]; then
     option=$(fzfx_trim $option)
     query=$(fzfx_trim ${content:0:query_len})
     # echo "option:[$option], query:[$query]"
-    rg --column -n --no-heading --color=always -S -g '!*.git/' $option -- "$query"
+    rg --column -n --no-heading --color=always -S $option -- "$query"
 else
     content=$(fzfx_trim $content)
     # echo "content:[$content]"
-    rg --column -n --no-heading --color=always -S -g '!*.git/' -- "$content"
+    rg --column -n --no-heading --color=always -S -- "$content"
 fi
