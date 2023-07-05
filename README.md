@@ -2,11 +2,12 @@
 
 E(x)tended fzf commands missing in fzf.vim.
 
-- [Requirement](#requirement)
+- [Dependency](#dependency)
   - [Rust commands](#rust-commands)
   - [Git (for Windows)](#git-for-windows)
 - [Install](#install)
   - [vim-plug](#vim-plug)
+  - [packer.nvim](#packernvim)
   - [lazy.nvim](#lazynvim)
 - [Usage](#usage)
   - [Key mapping](#key-mapping)
@@ -18,7 +19,7 @@ E(x)tended fzf commands missing in fzf.vim.
 - [Config](#config)
 - [Credit](#credit)
 
-## Requirement
+## Dependency
 
 ### Rust commands
 
@@ -84,22 +85,27 @@ Plug 'linrongbin16/fzfx.vim'
 call plug#end()
 ```
 
+### [packer.nvim](https://github.com/wbthomason/packer.nvim)
+
+```lua
+return require('packer').startup(function(use)
+
+    use { "junegunn/fzf", run = ":call fzf#install()" }
+    use { "junegunn/fzf.vim" }
+    use { "linrongbin16/fzfx.vim" }
+
+end)
+```
+
 ### [lazy.nvim](https://github.com/folke/lazy.nvim)
 
 ```lua
 return {
-    {
-        "junegunn/fzf",
-        build = ":call fzf#install()",
-    },
-    {
-        "junegunn/fzf.vim",
-        dependencies = { "junegunn/fzf" },
-    },
-    {
-        "linrongbin16/fzfx.vim",
-        dependencies = { "junegunn/fzf", "junegunn/fzf.vim" },
-    },
+
+    { "junegunn/fzf", build = ":call fzf#install()" },
+    "junegunn/fzf.vim",
+    "linrongbin16/fzfx.vim",
+
 }
 ```
 
@@ -235,90 +241,4 @@ For details please see: https://github.com/neovim/neovim/discussions/24055#discu
 
 The variants are named following below rules:
 
-- Unrestricted searching (include hidden and ignored files) variants use `U` suffix.
-- Searching by visual selection variants use `V` suffix.
-- Searching by cursor word variants use `W` suffix.
-
-### FzfxFiles(UVW)
-
-- `FzfxFiles(U)` is almost the same with (`Fzf`)`Files`, except it's using fd command:
-
-  ```bash
-  # short version
-  fd -cnever -tf -tl -L -i -E .git
-  # e.g.
-  fd --color=never --type f --type symlink --follow --ignore-case --exclude .git
-  ```
-
-  Note: the unrestricted variants use `-u` instead of `-E .git`.
-
-- `FzfxFiles(U)V` is a variant of `FzfxFiles(U)`, except it searches by
-  visual selection.
-
-  https://github.com/linrongbin16/fzfx.vim/assets/6496887/cfe9f279-eb5c-4e7d-8cb2-95e168867250
-
-- `FzfxFiles(U)W` is a variant of `FzfxFiles(U)`, except it searches by
-  cursor word, e.g. `expand('<cword>')`.
-
-### FzfxBuffers
-
-- `FzfxBuffers` is almost the same with (`Fzf`)`Buffers`, except it's using `ctrl-d`
-  to delete buffers:
-
-  https://github.com/linrongbin16/fzfx.vim/assets/6496887/1864fde1-0cba-40d2-8e53-b72140fb7675
-
-### FzfxLiveGrep(UVW)
-
-- `FzfxLiveGrep(U)` is almost the same with (`Fzf`)`RG`, except:
-
-  1. it's using rg command:
-
-     ```bash
-     rg --column -n --no-heading --color=always -S -g '!*.git/'
-     # e.g.
-     rg --column --line-number --no-heading --color=always --smart-case --glob '!*.git/'
-     ```
-
-     Note: the unrestricted variants use `-uu` instead of `-g '!*.git/'`.
-
-  2. it allows user add rg's raw options by parsing `--` flag, treat the left part
-     as query content, the right side as rg's raw options. A most common use case
-     is searching by file type (via `--glob` or `--iglob` option):
-
-     https://github.com/linrongbin16/fzfx.vim/assets/6496887/49c83edc-eb43-4e9c-9ea1-153e8de76f02
-
-- `FzfxLiveGrep(U)V` is a variant of `FzfxLiveGrep(U)`, except it searches by
-  visual selection:
-
-  https://github.com/linrongbin16/fzfx.vim/assets/6496887/a7303036-e803-4e5f-a26b-92c565d37e43
-
-- `FzfxLiveGrep(U)W` is a variant of `FzfxLiveGrep(U)`, except it searches by
-  cursor word, e.g. `expand('<cword>')`.
-
-### FzfxBranches
-
-- `FzfxBranches` can search git branches, and use `ENTER` to switch to the
-  selected branch:
-
-  https://github.com/linrongbin16/fzfx.vim/assets/6496887/e4b3e4b9-9b38-4fd7-bb8b-b7946fc49232
-
-## Config
-
-There're some global variables you can speicify to config:
-
-```vim
-" live grep, grep word
-let g:fzfx_grep_command="rg --column -n --no-heading --color=always -S -g '!*.git/'"
-let g:fzfx_unrestricted_grep_command="rg --column -n --no-heading --color=always -S -uu"
-" files
-let g:fzfx_find_command="fd -cnever -tf -tl -L -E .git"
-let g:fzfx_unrestricted_find_command="fd -cnever -tf -tl -L -u"
-" git branches
-let g:fzfx_git_branch_command="git branch -a --color"
-```
-
-## Credit
-
-- [fzf.vim](https://github.com/junegunn/fzf.vim): Things you can do with
-  [fzf](https://github.com/junegunn/fzf) and Vim.
-- [fzf-lua](https://github.com/ibhagwan/fzf-lua): Improved fzf.vim written in lua.
+- Unrestricted searching (include hidden and ignored files) vari
