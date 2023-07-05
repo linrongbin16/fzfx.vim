@@ -29,6 +29,10 @@ function! s:warning(msg)
     echohl None
 endfunction
 
+function! s:message(msg)
+    echomsg "[fzfx.vim] ".a:msg
+endfunction
+
 " ======== hack: script local function ========
 
 " this plugin heavily leverage the 'fzf.vim' plugin and its script local
@@ -119,13 +123,17 @@ endfunction
 
 let s:fzf_autoload_sid=s:get_fzf_autoload_sid()
 
-function! s:fzf_autoload_func_ref(sid, name)
+function! s:get_fzf_autoload_func_ref(sid, name)
     return function('<SNR>'.a:sid.'_'.a:name)
 endfunction
 
 " script local functions import from fzf.vim autoload.
-let s:action_for_ref=s:fzf_autoload_func_ref(s:fzf_autoload_sid, "action_for")
-let s:magenta_ref=s:fzf_autoload_func_ref(s:fzf_autoload_sid, "magenta")
+let s:action_for_ref=s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "action_for")
+let s:magenta_ref=s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "magenta")
+let s:find_open_window_ref=s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "find_open_window")
+let s:jump_ref=s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "jump")
+let s:function_ref=s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "function")
+let s:bufopen_ref=s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "bufopen")
 
 " ======== defaults ========
 
@@ -149,11 +157,16 @@ let s:fzfx_git_branch_command=get(g:, 'fzfx_git_branch_command', 'git branch -a 
 " actions
 
 " live grep
-let s:fzfx_live_grep_action=get(g:, 'fzfx_live_grep_action', {'fzf_mode': 'ctrl-f', 'rg_mode': 'ctrl-r'})
+let s:fzfx_live_grep_fzf_mode_action=get(g:, 'fzfx_live_grep_fzf_mode_action', 'ctrl-f')
+let s:fzfx_live_grep_rg_mode_action=get(g:, 'fzfx_live_grep_rg_mode_action', 'ctrl-r')
 " buffers
-let s:fzfx_buffers_action=get(g:, 'fzfx_buffers_action', { 'close': 'ctrl-d' })
-" git branches
-let s:fzfx_git_branches_action=get(g:, 'fzfx_git_branches_action', { 'enter': 'git checkout', 'double-click': 'git checkout' })
+let s:fzfx_buffers_close_action=get(g:, 'fzfx_buffers_close_action', 'ctrl-d')
+
+let s:default_action = {
+            \ 'ctrl-t': 'tab split',
+            \ 'ctrl-x': 'split',
+            \ 'ctrl-v': 'vsplit'
+            \ }
 
 " ======== utils ========
 
@@ -165,14 +178,16 @@ function! s:trim(s)
     endif
 endfunction
 
-function! s:action_for(action)
+function! s:expect_keys(...)
+    let keys_list = keys(get(g:, 'fzf_action', s:default_action))
+    for k in a:000
+        let k2 = tolower(s:trim(k))
+        if len(k2) > 0
+            call add(keys_list, k2)
+        endif
+    endfor
+    return "--expect=".join(keys_list, ',')
 endfunction
-
-let s:default_action = {
-            \ 'ctrl-t': 'tab split',
-            \ 'ctrl-x': 'split',
-            \ 'ctrl-v': 'vsplit'
-            \ }
 
 " ======== implementations ========
 
@@ -221,8 +236,10 @@ endfunction
 
 " live grep
 function! fzfx#vim#live_grep(query, fullscreen, opts)
-    let fuzzy_search_header=':: Press '.call(s:magenta_ref, ['CTRL-F', 'Special']).' to fzf mode'
-    let regex_search_header=':: Press '.call(s:magenta_ref, ['CTRL-R', 'Special']).' to rg mode'
+    let fzf_mode_key=s:fzfx_live_grep_fzf_mode_action
+    let rg_mode_key=s:fzfx_live_grep_rg_mode_action
+    let fuzzy_search_header=':: Press '.call(s:magenta_ref, [toupper(fzf_mode_key), 'Special']).' to fzf mode'
+    let regex_search_header=':: Press '.call(s:magenta_ref, [toupper(rg_mode_key), 'Special']).' to rg mode'
     let live_grep_provider=s:fzfx_bin.'live_grep_provider'
     let unrestricted_live_grep_provider=s:fzfx_bin.'unrestricted_live_grep_provider'
     let provider= a:opts.unrestricted ? unrestricted_live_grep_provider : live_grep_provider
@@ -237,8 +254,8 @@ function! fzfx#vim#live_grep(query, fullscreen, opts)
     let spec = {'options': [
                 \ '--disabled',
                 \ '--query', a:query,
-                \ '--bind', 'ctrl-f:unbind(change,ctrl-f)+change-prompt(Rg> )+enable-search+change-header('.regex_search_header.')+rebind(ctrl-r)',
-                \ '--bind', 'ctrl-r:unbind(ctrl-r)+change-prompt(*Rg> )+disable-search+change-header('.fuzzy_search_header.')+reload('.reload_command.')+rebind(change,ctrl-f)',
+                \ '--bind', fzf_mode_key.':unbind(change,'.fzf_mode_key.')+change-prompt(Rg> )+enable-search+change-header('.regex_search_header.')+rebind('.rg_mode_key.')',
+                \ '--bind', rg_mode_key.':unbind('.rg_mode_key.')+change-prompt(*Rg> )+disable-search+change-header('.fuzzy_search_header.')+reload('.reload_command.')+rebind(change,'.fzf_mode_key.')',
                 \ '--bind', 'change:reload:'.reload_command,
                 \ '--header', fuzzy_search_header,
                 \ '--prompt', '*Rg> '
@@ -298,73 +315,61 @@ function! fzfx#vim#unrestricted_files(query, fullscreen)
 endfunction
 
 " buffers
-function! s:find_open_window(b)
-    let [tcur, tcnt] = [tabpagenr() - 1, tabpagenr('$')]
-    for toff in range(0, tabpagenr('$') - 1)
-        let t = (tcur + toff) % tcnt + 1
-        let buffers = tabpagebuflist(t)
-        for w in range(1, len(buffers))
-            let b = buffers[w - 1]
-            if b == a:b
-                return [t, w]
-            endif
-        endfor
-    endfor
-    return [0, 0]
-endfunction
-
-function! s:jump(t, w)
-    execute a:t.'tabnext'
-    execute a:w.'wincmd w'
-endfunction
-
 function! s:buffers_sink(lines, query, fullscreen)
-    if len(a:lines) < 3
-        " echo "lines0:".string(a:lines)
+    echo "lines0:".string(a:lines)
+    if len(a:lines) < 2
         return
     endif
-    let b = matchstr(a:lines[2], '\[\zs[0-9]*\ze\]')
-    let bufname=split(a:lines[2])[-1]
-    let action = a:lines[1]
-    " echo "lines0.5:".string(a:lines).",b:".b."(".string(bufname).")"
-    if empty(action)
-        " echo "lines1:".string(a:lines).",bdelete:".b."(".bufname.")"
-        let [t, w] = s:find_open_window(b)
-        if t
-            call s:jump(t, w)
-            return
-        endif
-        execute 'buffer' b
-        echo "Switch to '".bufname."'"
-        return
-    endif
-    if action==?'ctrl-d'
+    let b = matchstr(a:lines[1], '\[\zs[0-9]*\ze\]')
+    let bufname=split(a:lines[1])[-1]
+    let action = a:lines[0]
+    echo "lines0.5:".string(a:lines).",b:".b."(".string(bufname).")"
+    if action ==? s:fzfx_buffers_close_action
         execute 'bdelete' b
         " echo "lines2:".string(a:lines).",bdelete:".b."(".bufname.")"
-        echo "Close '".bufname."'"
+        call s:message("Close '".bufname."'")
         call fzfx#vim#buffers(a:query, a:fullscreen)
     else
-        let cmd = call(s:action_for_ref, action)
-        " echo "lines3:".string(a:lines).",cmd:".string(cmd).",b:".b."(".string(bufname).")"
-        if !empty(cmd)
-            execute 'silent' cmd
-        endif
-        execute 'buffer' b
+        call call(s:bufopen_ref, [a:lines])
     endif
 endfunction
 
 function! fzfx#vim#buffers(query, fullscreen)
-    let close_buffer_header=':: Press '.call(s:magenta_ref, ['CTRL-D', 'Special']).' to close buffer'
+    let close_key=s:fzfx_buffers_close_action
+    let close_buffer_header=':: Press '.call(s:magenta_ref, [toupper(close_key), 'Special']).' to close buffer'
     let spec = { 'sink*': {lines -> s:buffers_sink(lines, a:query, a:fullscreen)},
                 \ 'options': [
                 \   '--header', close_buffer_header,
-                \   '--prompt', 'Buffer> '
+                \   '--prompt', 'Buffer> ',
+                \   s:expect_keys(close_key),
                 \ ],
                 \ 'placeholder': '{1}'
                 \ }
-    let spec._action = get(g:, 'fzf_action', s:default_action)
-    call add(spec.options, '--expect=ctrl-d,'.join(keys(spec._action), ','))
+    " let spec._action = get(g:, 'fzf_action', s:default_action)
+    " call add(spec.options, '--expect=ctrl-d,'.join(keys(spec._action), ','))
     call fzf#vim#buffers(a:query, fzf#vim#with_preview(spec), a:fullscreen)
+endfunction
+
+function! s:normalize_git_branch(branch)
+    let branch=s:trim(a:branch)
+    if len(branch) > 0 && branch[0:1] ==? '*'
+        let branch=branch[1:]
+    endif
+    let arrow_pos=stridx(branch, '->')
+    if arrow_pos > 0
+        let branch=s:trim(branch[arrow_pos+2:])
+    endif
+    return branch
+endfunction
+
+function! s:branches_sink(lines) abort
+    " echo "lines:".string(a:lines)
+    let action=a:lines[1]
+    if action==?'enter' || action==?'double-click'
+        let branch = s:normalize_git_branch(a:lines[2])
+        execute '!git checkout '.branch
+        call s:message("Switch to '".branch."'")
+    endif
 endfunction
 
 " branches
@@ -388,26 +393,12 @@ function! fzfx#vim#branches(query, fullscreen)
                 \   '--prompt', 'Branches> ',
                 \   '--preview', git_branches_previewer.' {}',
                 \   '--header', git_branch_header,
+                \   s:expect_keys("enter", "double-click"),
                 \ ]}
 
     " spec sink
-    let spec._action = get(g:, 'fzf_action', s:default_action)
-    call add(spec.options, '--expect=enter,double-click,'.join(keys(spec._action), ','))
-    function! spec.sinklist(lines) abort
-        " echo "lines:".string(a:lines)
-        let action=a:lines[1]
-        if action==?'enter' || action==?'double-click'
-            let branch=s:trim(a:lines[2])
-            if len(branch) > 0 && branch[0:1]==?'*'
-                let branch=branch[1:]
-            endif
-            let arrow_pos=stridx(branch, '->')
-            if arrow_pos > 0
-                let branch=s:trim(branch[arrow_pos+2:])
-            endif
-            execute '!git checkout '.branch
-        endif
-    endfunction
+    " let spec._action = get(g:, 'fzf_action', s:default_action)
+    let spec.sinklist = call(s:function_ref, "s:branches_sink")
     let spec['sink*'] = spec.sinklist
 
     call fzf#run(fzf#wrap('branches', spec, a:fullscreen))
