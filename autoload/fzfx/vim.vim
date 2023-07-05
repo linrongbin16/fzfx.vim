@@ -1,7 +1,8 @@
 let s:cpo_save = &cpo
 set cpo&vim
 
-" ======== utils ========
+" ======== infra ========
+
 let s:is_win = has('win32') || has('win64')
 
 if s:is_win && &shellslash
@@ -18,24 +19,117 @@ else
     let s:fzfx_bin=s:base_dir.'/bin/'
 endif
 
-let s:TYPE = {'bool': type(0), 'dict': type({}), 'funcref': type(function('call')), 'string': type(''), 'list': type([])}
-
-if v:version >= 704
-    function! s:function(name)
-        return function(a:name)
-    endfunction
-else
-    function! s:function(name)
-        " By Ingo Karkat
-        return function(substitute(a:name, '^s:', matchstr(expand('<sfile>'), '<SNR>\d\+_\zefunction$'), ''))
-    endfunction
-endif
-
-function! s:warn(msg)
-    echohl "WarningMsg"
-    echomsg "".a:msg
-    echohl "None"
+function! s:exception(msg)
+    throw "[fzfx.vim] Error! ".a:msg
 endfunction
+
+function! s:warning(msg)
+    echohl WarningMsg
+    echomsg "[fzfx.vim] Warning! ".a:msg
+    echohl None
+endfunction
+
+" ======== hack: script local function ========
+
+" this plugin heavily leverage the 'fzf.vim' plugin and its script local
+" functions, because I don't have time to fully re-write another fzf.vim and I
+" don't think I could do better than the author.
+" so hack into fzf.vim autoload script local funciton, and use it as a library
+" is the best solution for now.
+
+function! s:get_sid(scriptname)
+    let all_scripts = split(execute('scriptnames'), '\n')
+    let matched_line = ''
+    for line in all_scripts
+        if line =~ a:scriptname
+            " first time matching a script.
+            if matched_line ==? ''
+                let matched_line = line
+            else
+                " multiple matches, unexpected.
+                call s:warning("Found multiple '".a:scriptname."' files with same name.")
+            endif
+        endif
+    endfor
+    " echo "get_sid-1, matched_line:[".matched_line."], scriptname:[".a:scriptname."]"
+    if matched_line ==? ''
+        return [v:null, v:null]
+    endif
+
+    " the matching line looks like:
+    " `20: ~/src/ruanyl/vim-gh-line/plugin/vim-gh-line.vim`
+    " extract the first number before : and return it as the scriptID
+    let matched_splits = split(matched_line)
+    if len(matched_splits) != 2
+        call s:warning('Failed to parse matched line: '.matched_line)
+        return [v:null, v:null]
+    endif
+
+    let first_entry = matched_splits[0]
+    let scriptpath = matched_splits[1]
+    let sid = substitute(first_entry, ':', '', '')
+    " echo "get_sid-2, sid:[".sid."], scriptpath:[".scriptpath."]"
+    return [sid, scriptpath]
+endfunction
+
+" there're two source files in 'fzf.vim' plugin:
+"
+" 1. fzf.vim/plugin/fzf.vim
+" 2. fzf.vim/autoload/fzf/vim.vim
+"
+" the 1st is always available in 'scriptnames' result (if config correctly),
+" but the 2nd is missing in 'scriptnames' (because I'm using lazy.nvim and lazy
+" loading fzf.vim), so here we first try to find the 2nd, or fallback to find
+" the 1st if 2nd is missing, and build the 2nd path from 1st.
+function! s:get_fzf_autoload_sid()
+    let [autoload_sid, _1]=s:get_sid("fzf.vim/autoload/fzf/vim.vim")
+    " echo "get_fzf_sid-1, autoload_sid:[".autoload_sid."], _1:["._1."]"
+    if autoload_sid isnot v:null
+        return autoload_sid
+    endif
+
+    let [plugin_sid, plugin_path]=s:get_sid("fzf.vim/plugin/fzf.vim")
+    " echo "get_fzf_sid-2, plugin_sid:[".plugin_sid."], plugin_path:[".plugin_path."]"
+    if plugin_sid is v:null
+        call s:exception("Failed to find vimscript 'fzf.vim/plugin/fzf.vim'")
+        return v:null
+    endif
+
+    " remove the 'plugin/fzf.vim' from the tail, then append 'autoload/fzf/vim.vim'
+    if s:is_win
+        let autoload_path=plugin_path[:-15].'autoload\fzf\vim.vim'
+    else
+        let autoload_path=plugin_path[:-15].'autoload/fzf/vim.vim'
+    endif
+    " echo "get_fzf_sid-3, autoload_path:[".autoload_path."], expanded:[".expand(autoload_path)."], filereadable:[".filereadable(expand(autoload_path))."]"
+    if filereadable(expand(autoload_path))
+        execute "source ".expand(autoload_path)
+    else
+        call s:exception("Failed to source vimscript '".autoload_path."'")
+        return v:null
+    endif
+
+    let [autoload_sid2, _2]=s:get_sid("fzf.vim/autoload/fzf/vim.vim")
+    " echo "get_fzf_sid-4, autoload_sid2:[".autoload_sid2."], _2:["._2."]"
+    if autoload_sid2 isnot v:null
+        return autoload_sid2
+    endif
+
+    call s:exception("Failed to find vimscript '".autoload_path."' SID")
+    return v:null
+endfunction
+
+let s:fzf_autoload_sid=s:get_fzf_autoload_sid()
+
+function! s:fzf_autoload_func_ref(sid, name)
+    return function('<SNR>'.a:sid.'_'.a:name)
+endfunction
+
+" script local functions import from fzf.vim autoload.
+let s:action_for_ref=s:fzf_autoload_func_ref(s:fzf_autoload_sid, "action_for")
+let s:magenta_ref=s:fzf_autoload_func_ref(s:fzf_autoload_sid, "magenta")
+
+" ======== utils ========
 
 function! s:trim(s)
     if has('nvim') || v:versionlong >= 8001630
@@ -45,57 +139,6 @@ function! s:trim(s)
     endif
 endfunction
 
-" action
-let s:default_action = {
-            \ 'ctrl-t': 'tab split',
-            \ 'ctrl-x': 'split',
-            \ 'ctrl-v': 'vsplit' }
-
-function! s:action_for(key, ...)
-    let default = a:0 ? a:1 : ''
-    let Cmd = get(get(g:, 'fzf_action', s:default_action), a:key, default)
-    return type(Cmd) == s:TYPE.string ? Cmd : default
-endfunction
-
-" color
-function! s:get_color(attr, ...)
-    let gui = has('termguicolors') && &termguicolors
-    let fam = gui ? 'gui' : 'cterm'
-    let pat = gui ? '^#[a-f0-9]\+' : '^[0-9]\+$'
-    for group in a:000
-        let code = synIDattr(synIDtrans(hlID(group)), a:attr, fam)
-        if code =~? pat
-            return code
-        endif
-    endfor
-    return ''
-endfunction
-
-let s:ansi = {'black': 30, 'red': 31, 'green': 32, 'yellow': 33, 'blue': 34, 'magenta': 35, 'cyan': 36}
-
-function! s:csi(color, fg)
-    let prefix = a:fg ? '38;' : '48;'
-    if a:color[0] == '#'
-        return prefix.'2;'.join(map([a:color[1:2], a:color[3:4], a:color[5:6]], 'str2nr(v:val, 16)'), ';')
-    endif
-    return prefix.'5;'.a:color
-endfunction
-
-function! s:ansi(str, group, default, ...)
-    let fg = s:get_color('fg', a:group)
-    let bg = s:get_color('bg', a:group)
-    let color = (empty(fg) ? s:ansi[a:default] : s:csi(fg, 1)) .
-                \ (empty(bg) ? '' : ';'.s:csi(bg, 0))
-    return printf("\x1b[%s%sm%s\x1b[m", color, a:0 ? ';1' : '', a:str)
-endfunction
-
-" note: s:magenta is here
-for s:color_name in keys(s:ansi)
-    execute "function! s:".s:color_name."(str, ...)\n"
-                \ "  return s:ansi(a:str, get(a:, 1, ''), '".s:color_name."')\n"
-                \ "endfunction"
-endfor
-
 " ======== defaults ========
 let s:default_action = {
             \ 'ctrl-t': 'tab split',
@@ -104,30 +147,30 @@ let s:default_action = {
             \ }
 
 " `rg --column --line-number --no-heading --color=always --smart-case`
-let s:grep_command=get(g:, 'fzfx_grep_command', "rg --column -n --no-heading --color=always -S -g '!*.git/'")
-let s:unrestricted_grep_command=get(g:, 'fzfx_unrestricted_grep_command', 'rg --column -n --no-heading --color=always -S -uu')
+let s:fzfx_grep_command=get(g:, 'fzfx_grep_command', "rg --column -n --no-heading --color=always -S -g '!*.git/'")
+let s:fzfx_unrestricted_grep_command=get(g:, 'fzfx_unrestricted_grep_command', 'rg --column -n --no-heading --color=always -S -uu')
 
 " `fd --color=never --type f --type symlink --follow --exclude .git
 " --ignore-case`
 if executable('fd')
-    let s:find_command=get(g:, 'fzfx_find_command', 'fd -cnever -tf -tl -L -i -E .git')
-    let s:unrestricted_find_command=get(g:, 'fzfx_unrestricted_find_command', 'fd -cnever -tf -tl -L -i -u')
+    let s:fzfx_find_command=get(g:, 'fzfx_find_command', 'fd -cnever -tf -tl -L -i -E .git')
+    let s:fzfx_unrestricted_find_command=get(g:, 'fzfx_unrestricted_find_command', 'fd -cnever -tf -tl -L -i -u')
 elseif executable('fdfind')
-    let s:find_command=get(g:, 'fzfx_find_command', 'fdfind -cnever -tf -tl -L -i -E .git')
-    let s:unrestricted_find_command=get(g:, 'fzfx_unrestricted_find_command', 'fdfind -cnever -tf -tl -L -i -u')
+    let s:fzfx_find_command=get(g:, 'fzfx_find_command', 'fdfind -cnever -tf -tl -L -i -E .git')
+    let s:fzfx_unrestricted_find_command=get(g:, 'fzfx_unrestricted_find_command', 'fdfind -cnever -tf -tl -L -i -u')
 endif
 
 " `git branch -a --color`
-let s:git_branch_command=get(g:, 'fzfx_git_branch_command', 'git branch -a --color')
+let s:fzfx_git_branch_command=get(g:, 'fzfx_git_branch_command', 'git branch -a --color')
 
 " ======== providers ========
 let s:live_grep_provider=s:fzfx_bin.'live_grep_provider'
 let s:unrestricted_live_grep_provider=s:fzfx_bin.'unrestricted_live_grep_provider'
-let s:grep_word_provider=s:grep_command
-let s:unrestricted_grep_word_provider=s:unrestricted_grep_command
-let s:files_provider=s:find_command
-let s:unrestricted_files_provider=s:unrestricted_find_command
-let s:git_branches_provider=s:git_branch_command
+let s:grep_word_provider=s:fzfx_grep_command
+let s:unrestricted_grep_word_provider=s:fzfx_unrestricted_grep_command
+let s:files_provider=s:fzfx_find_command
+let s:unrestricted_files_provider=s:fzfx_unrestricted_find_command
+let s:git_branches_provider=s:fzfx_git_branch_command
 
 " ======== previewers ========
 let s:git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
@@ -179,8 +222,8 @@ endfunction
 
 " live grep
 function! fzfx#vim#live_grep(query, fullscreen, opts)
-    let fuzzy_search_header=':: Press '.s:magenta('CTRL-F', 'Special').' to fzf mode'
-    let regex_search_header=':: Press '.s:magenta('CTRL-R', 'Special').' to rg mode'
+    let fuzzy_search_header=':: Press '.call(s:magenta_ref, ['CTRL-F', 'Special']).' to fzf mode'
+    let regex_search_header=':: Press '.call(s:magenta_ref, ['CTRL-R', 'Special']).' to rg mode'
     let provider= a:opts.unrestricted ? s:unrestricted_live_grep_provider : s:live_grep_provider
     " echo "query:".a:query.",provider:".provider.",fullscreen:".a:fullscreen
     let command_fmt = provider.' %s || true'
@@ -205,32 +248,32 @@ endfunction
 
 " deprecated
 function! fzfx#vim#unrestricted_live_grep(query, fullscreen)
-    call s:warn("'FzfxUnrestrictedLiveGrep' is deprecated, use 'FzfxLiveGrepU'!")
+    call s:warning("'FzfxUnrestrictedLiveGrep' is deprecated, use 'FzfxLiveGrepU'!")
     call fzfx#vim#live_grep(a:query, a:fullscreen, {'unrestricted': 1})
 endfunction
 " deprecated
 function! fzfx#vim#live_grep_visual(fullscreen)
-    call s:warn("'FzfxLiveGrepVisual' is deprecated, use 'FzfxLiveGrepV'!")
+    call s:warning("'FzfxLiveGrepVisual' is deprecated, use 'FzfxLiveGrepV'!")
     let query=fzfx#vim#_visual_select()
     call fzfx#vim#live_grep(query, a:fullscreen, {'unrestricted': 0})
 endfunction
 
 " deprecated
 function! fzfx#vim#unrestricted_live_grep_visual(fullscreen)
-    call s:warn("'FzfxUnrestrictedLiveGrepVisual' is deprecated, use 'FzfxLiveGrepUV'!")
+    call s:warning("'FzfxUnrestrictedLiveGrepVisual' is deprecated, use 'FzfxLiveGrepUV'!")
     let query=fzfx#vim#_visual_select()
     call fzfx#vim#live_grep(query, a:fullscreen, {'unrestricted': 1})
 endfunction
 
 " deprecated
 function! fzfx#vim#grep_word(fullscreen)
-    call s:warn("'FzfxGrepWord' is deprecated, use 'FzfxLiveGrepW'!")
+    call s:warning("'FzfxGrepWord' is deprecated, use 'FzfxLiveGrepW'!")
     call fzfx#vim#live_grep(expand('<cword>'), a:fullscreen, {'unrestricted': 0})
 endfunction
 
 " deprecated
 function! fzfx#vim#unrestricted_grep_word(fullscreen)
-    call s:warn("'FzfxUnrestrictedGrepWord' is deprecated, use 'FzfxLiveGrepUW'!")
+    call s:warning("'FzfxUnrestrictedGrepWord' is deprecated, use 'FzfxLiveGrepUW'!")
     call fzfx#vim#live_grep(expand('<cword>'), a:fullscreen, {'unrestricted': 1})
 endfunction
 
@@ -249,7 +292,7 @@ endfunction
 
 " deprecated
 function! fzfx#vim#unrestricted_files(query, fullscreen)
-    call s:warn("'FzfxUnrestrictedFiles' is deprecated, use 'FzfxFilesU'!")
+    call s:warning("'FzfxUnrestrictedFiles' is deprecated, use 'FzfxFilesU'!")
     call fzfx#vim#files(a:query, a:fullscreen, {'unrestricted':1})
 endfunction
 
@@ -300,7 +343,7 @@ function! s:buffers_sink(lines, query, fullscreen)
         echo "Close '".bufname."'"
         call fzfx#vim#buffers(a:query, a:fullscreen)
     else
-        let cmd = s:action_for(action)
+        let cmd = call(s:action_for_ref, action)
         " echo "lines3:".string(a:lines).",cmd:".string(cmd).",b:".b."(".string(bufname).")"
         if !empty(cmd)
             execute 'silent' cmd
@@ -310,7 +353,7 @@ function! s:buffers_sink(lines, query, fullscreen)
 endfunction
 
 function! fzfx#vim#buffers(query, fullscreen)
-    let close_buffer_header=':: Press '.s:magenta('CTRL-D', 'Special').' to close buffer'
+    let close_buffer_header=':: Press '.call(s:magenta_ref, ['CTRL-D', 'Special']).' to close buffer'
     let spec = { 'sink*': {lines -> s:buffers_sink(lines, a:query, a:fullscreen)},
                 \ 'options': [
                 \   '--header', close_buffer_header,
@@ -325,7 +368,7 @@ endfunction
 
 " branches
 function! fzfx#vim#branches(query, fullscreen)
-    let git_branch_header=':: Press '.s:magenta('ENTER', 'Special').' to switch branch'
+    let git_branch_header=':: Press '.call(s:magenta_ref, ['ENTER', 'Special']).' to switch branch'
     if len(a:query) > 0
         let command_fmt = s:git_branches_provider.' --list %s'
         let initial_command = printf(command_fmt, shellescape(a:query))
