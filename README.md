@@ -25,6 +25,8 @@ E(x)tended fzf commands missing in fzf.vim.
 
 ## Features
 
+Note: this plugin doesn't define key mappings by default, below keys are following the recommended key mapping configs.
+
 ### Find Files
 
 * `<space>f` to find files, filter hidden and ignored files.
