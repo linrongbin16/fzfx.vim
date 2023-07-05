@@ -448,14 +448,27 @@ endfunction
 
 " resume
 function! fzfx#vim#resume_live_grep(fullscreen)
-    if !s:cache_has(s:fzfx_resume_live_grep_cache)
-        call fzfx#vim#live_grep()
-        let query = s:cache_has(key)
-    else
+    let query = ''
+    let opts = {'unrestricted': 0}
+    if s:cache_has(s:fzfx_resume_live_grep_cache)
+        let query = s:cache_get(s:fzfx_resume_live_grep_cache)
     endif
+    if s:cache_has(s:fzfx_resume_live_grep_opts_cache)
+        let opts = s:cache_get_object(s:fzfx_resume_live_grep_opts_cache)
+    endif
+    call fzfx#vim#live_grep(query, a:fullscreen, opts)
 endfunction
 
 function! fzfx#vim#resume_files(fullscreen)
+    let query = ''
+    let opts = {'unrestricted': 0}
+    if s:cache_has(s:fzfx_resume_files_cache)
+        let query = s:cache_get(s:fzfx_resume_files_cache)
+    endif
+    if s:cache_has(s:fzfx_resume_files_opts_cache)
+        let opts = s:cache_get_object(s:fzfx_resume_files_opts_cache)
+    endif
+    call fzfx#vim#files(query, a:fullscreen, opts)
 endfunction
 
 let &cpo = s:cpo_save
