@@ -7,7 +7,7 @@ fzfx_trim() {
     # remove leading whitespace characters
     var="${var#"${var%%[![:space:]]*}"}"
     # remove trailing whitespace characters
-    var="${var%"${var##*[![:space:]]}"}"   
+    var="${var%"${var##*[![:space:]]}"}"
     printf '%s' "$var"
 }
 
@@ -30,11 +30,11 @@ if [ ${#option} -gt 0 ] && [ "$option" != "$content" ]; then
     query_len=$((${#content} - ${#option} - ${#flag}))
     option=$(fzfx_trim $option)
     query=$(fzfx_trim ${content:0:query_len})
-    # echo "option:[$option], query:[$query]"
-    rg --column -n --no-heading --color=always -S $option -- "$query"
+    # echo "option:[$option], query:[$query], _FZFX_GREP_COMMAND:[$_FZFX_GREP_COMMAND]"
+    $_FZFX_GREP_COMMAND $option -- "$query"
 else
     content=$(fzfx_trim $content)
-    # echo "content:[$content]"
-    rg --column -n --no-heading --color=always -S -- "$content"
+    # echo "content:[$content], _FZFX_GREP_COMMAND:[$_FZFX_GREP_COMMAND]"
+    $_FZFX_GREP_COMMAND -- "$content"
 fi
 
