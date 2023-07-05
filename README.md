@@ -4,6 +4,7 @@ E(x)tended fzf commands missing in fzf.vim.
 
 - [Features](#features)
   - [Find Files](#find-files)
+  - [Live Grep](#live-grep)
 - [Requirement](#requirement)
   - [Rust commands](#rust-commands)
   - [Git (for Windows)](#git-for-windows)
