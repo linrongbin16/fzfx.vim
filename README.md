@@ -73,6 +73,11 @@ After this step, **git.exe** and Linux built-in commands(**sh.exe**, **cp.exe**,
 
 ## Install
 
+This plugin depends on:
+
+- [fzf](https://github.com/junegunn/fzf)
+- [fzf.vim](https://github.com/junegunn/fzf.vim)
+
 ### [vim-plug](https://github.com/junegunn/vim-plug)
 
 ```vim
@@ -91,8 +96,14 @@ call plug#end()
 return require('packer').startup(function(use)
 
     use { "junegunn/fzf", run = ":call fzf#install()" }
-    use { "junegunn/fzf.vim" }
-    use { "linrongbin16/fzfx.vim" }
+    use { "junegunn/fzf.vim", requires = { "junegunn/fzf" } }
+    use {
+        "linrongbin16/fzfx.vim",
+        requires = {
+            "junegunn/fzf",
+            "junegunn/fzf.vim",
+        },
+    }
 
 end)
 ```
@@ -103,8 +114,14 @@ end)
 return {
 
     { "junegunn/fzf", build = ":call fzf#install()" },
-    "junegunn/fzf.vim",
-    "linrongbin16/fzfx.vim",
+    { "junegunn/fzf.vim", dependencies = { "junegunn/fzf" } },
+    {
+        "linrongbin16/fzfx.vim",
+        dependencies = {
+            "junegunn/fzf",
+            "junegunn/fzf.vim"
+        },
+    },
 
 }
 ```
@@ -239,6 +256,4 @@ For details please see: https://github.com/neovim/neovim/discussions/24055#discu
 
 ## Commands
 
-The variants are named following below rules:
-
-- Unrestricted searching (include hidden and ignored files) vari
+The varia
