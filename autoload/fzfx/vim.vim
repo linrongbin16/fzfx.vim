@@ -138,6 +138,7 @@ function! s:trim(s)
 endfunction
 
 " ======== defaults ========
+
 let s:default_action = {
             \ 'ctrl-t': 'tab split',
             \ 'ctrl-x': 'split',
@@ -160,18 +161,6 @@ endif
 
 " `git branch -a --color`
 let s:fzfx_git_branch_command=get(g:, 'fzfx_git_branch_command', 'git branch -a --color')
-
-" ======== providers ========
-let s:live_grep_provider=s:fzfx_bin.'live_grep_provider'
-let s:unrestricted_live_grep_provider=s:fzfx_bin.'unrestricted_live_grep_provider'
-let s:grep_word_provider=s:fzfx_grep_command
-let s:unrestricted_grep_word_provider=s:fzfx_unrestricted_grep_command
-let s:files_provider=s:fzfx_find_command
-let s:unrestricted_files_provider=s:fzfx_unrestricted_find_command
-let s:git_branches_provider=s:fzfx_git_branch_command
-
-" ======== previewers ========
-let s:git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
 
 " ======== implementations ========
 
@@ -222,7 +211,9 @@ endfunction
 function! fzfx#vim#live_grep(query, fullscreen, opts)
     let fuzzy_search_header=':: Press '.call(s:magenta_ref, ['CTRL-F', 'Special']).' to fzf mode'
     let regex_search_header=':: Press '.call(s:magenta_ref, ['CTRL-R', 'Special']).' to rg mode'
-    let provider= a:opts.unrestricted ? s:unrestricted_live_grep_provider : s:live_grep_provider
+    let live_grep_provider=s:fzfx_bin.'live_grep_provider'
+    let unrestricted_live_grep_provider=s:fzfx_bin.'unrestricted_live_grep_provider'
+    let provider= a:opts.unrestricted ? unrestricted_live_grep_provider : live_grep_provider
     " echo "query:".a:query.",provider:".provider.",fullscreen:".a:fullscreen
     let command_fmt = provider.' %s || true'
     let initial_command = printf(command_fmt, shellescape(a:query))
@@ -277,7 +268,7 @@ endfunction
 
 " files
 function! fzfx#vim#files(query, fullscreen, opts)
-    let provider = a:opts.unrestricted ? s:unrestricted_files_provider : s:files_provider
+    let provider = a:opts.unrestricted ? s:fzfx_unrestricted_find_command : s:fzfx_find_command
     let initial_command = provider.' || true'
     " echo "a:query:".a:query.",initial_command:".initial_command
     let spec = { 'source': initial_command,
@@ -367,11 +358,12 @@ endfunction
 " branches
 function! fzfx#vim#branches(query, fullscreen)
     let git_branch_header=':: Press '.call(s:magenta_ref, ['ENTER', 'Special']).' to switch branch'
+    let git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
     if len(a:query) > 0
-        let command_fmt = s:git_branches_provider.' --list %s'
+        let command_fmt = s:fzfx_git_branch_command.' --list %s'
         let initial_command = printf(command_fmt, shellescape(a:query))
     else
-        let initial_command = s:git_branches_provider
+        let initial_command = s:fzfx_git_branch_command
     endif
 
     let spec = {
@@ -382,7 +374,7 @@ function! fzfx#vim#branches(query, fullscreen)
                 \   '--bind', 'ctrl-l:toggle-preview',
                 \   '--preview-window', 'right,50%',
                 \   '--prompt', 'Branches> ',
-                \   '--preview', s:git_branches_previewer.' {}',
+                \   '--preview', git_branches_previewer.' {}',
                 \   '--header', git_branch_header,
                 \ ]}
 
