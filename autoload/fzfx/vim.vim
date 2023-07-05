@@ -193,15 +193,8 @@ endfunction
 
 " visual
 function! s:visual_lines(mode)
-    " if a:mode==?"v"
-    "     let [line_start, column_start] = getpos("v")[1:2]
-    "     let [line_end, column_end] = getpos(".")[1:2]
-    "     echo "char/line-wise, line_start:".line_start.",column_start:".column_start.",line_end:".line_end.",column_end:".column_end
-    " else
-        let [line_start, column_start] = getpos("'<")[1:2]
-        let [line_end, column_end] = getpos("'>")[1:2]
-        " echo "block-wise, line_start:".line_start.",column_start:".column_start.",line_end:".line_end.",column_end:".column_end
-    " endif
+    let [line_start, column_start] = getpos("'<")[1:2]
+    let [line_end, column_end] = getpos("'>")[1:2]
     if (line2byte(line_start)+column_start) > (line2byte(line_end)+column_end)
         let [line_start, column_start, line_end, column_end] = [line_end, column_end, line_start, column_start]
     end
@@ -316,14 +309,14 @@ endfunction
 
 " buffers
 function! s:buffers_sink(lines, query, fullscreen)
-    echo "lines0:".string(a:lines)
+    " echo "lines0:".string(a:lines)
     if len(a:lines) < 2
         return
     endif
     let b = matchstr(a:lines[1], '\[\zs[0-9]*\ze\]')
     let bufname=split(a:lines[1])[-1]
     let action = a:lines[0]
-    echo "lines0.5:".string(a:lines).",b:".b."(".string(bufname).")"
+    " echo "lines0.5:".string(a:lines).",b:".b."(".string(bufname).")"
     if action ==? s:fzfx_buffers_close_action
         execute 'bdelete' b
         " echo "lines2:".string(a:lines).",bdelete:".b."(".bufname.")"
@@ -345,8 +338,6 @@ function! fzfx#vim#buffers(query, fullscreen)
                 \ ],
                 \ 'placeholder': '{1}'
                 \ }
-    " let spec._action = get(g:, 'fzf_action', s:default_action)
-    " call add(spec.options, '--expect=ctrl-d,'.join(keys(spec._action), ','))
     call fzf#vim#buffers(a:query, fzf#vim#with_preview(spec), a:fullscreen)
 endfunction
 
@@ -396,14 +387,6 @@ function! fzfx#vim#branches(query, fullscreen)
                 \   '--header', git_branch_header,
                 \   s:expect_keys("enter", "double-click"),
                 \ ]}
-
-    " spec sink
-    " let spec._action = get(g:, 'fzf_action', s:default_action)
-    " function! spec.sinklist(lines) abort
-    "     call s:branches_sink(a:lines)
-    " endfunction
-    " let spec['sink*'] = spec.sinklist
-
     call fzf#run(fzf#wrap('branches', spec, a:fullscreen))
 endfunction
 
