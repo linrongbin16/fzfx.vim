@@ -16,6 +16,7 @@ E(x)tended fzf commands missing in fzf.vim.
   - [FzfxBuffers](#fzfxbuffers)
   - [FzfxLiveGrep(UVW)](#fzfxlivegrepuvw)
   - [FzfxBranches](#fzfxbranches)
+  - [FzfxResumeLiveGrep/FzfxResumeFiles)](#fzfxresumelivegrepfzfxresumefiles)
 - [Config](#config)
 - [Credit](#credit)
 
@@ -324,12 +325,17 @@ The variants are named following below rules:
 
   https://github.com/linrongbin16/fzfx.vim/assets/6496887/e4b3e4b9-9b38-4fd7-bb8b-b7946fc49232
 
+### FzfxResumeLiveGrep/FzfxResumeFiles)
+
+- `FzfxResumeLiveGrep` can resume last live grep (include all variants).
+- `FzfxResumeFiles` can resume last files search (include all variants).
+
 ## Config
 
 There're some global variables you can speicify to config:
 
 ```vim
-""" find/grep commands
+""" ======== find/grep commands ========
 
 " live grep
 let g:fzfx_grep_command = 'rg --column -n --no-heading --color=always -S'
@@ -342,7 +348,7 @@ let g:fzfx_unrestricted_find_command = 'fd -cnever -tf -tl -L -u'
 " git branches
 let g:fzfx_git_branch_command = 'git branch -a --color'
 
-""" key actions
+""" ======== key actions ========
 
 " live grep
 let g:fzfx_live_grep_fzf_mode_action = 'ctrl-f'
@@ -350,6 +356,16 @@ let g:fzfx_live_grep_rg_mode_action = 'ctrl-r'
 
 " buffers
 let g:fzfx_buffers_close_action = 'ctrl-d'
+
+""" ======== resume last search ========
+
+" live grep resume
+let g:fzfx_resume_live_grep_cache = '~/.cache/'.(has('nvim') ? 'nvim' : 'vim').'/fzfx.vim/resume_live_grep_cache'
+let g:fzfx_resume_live_grep_opts_cache = '~/.cache/'.(has('nvim') ? 'nvim' : 'vim').'/fzfx.vim/resume_live_grep_opts_cache'
+
+" files resume
+let g:fzfx_resume_files_cache = '~/.cache/'.(has('nvim') ? 'nvim' : 'vim').'/fzfx.vim/resume_files_cache'
+let g:fzfx_resume_files_opts_cache = '~/.cache/'.(has('nvim') ? 'nvim' : 'vim').'/fzfx.vim/resume_files_opts_cache'
 ```
 
 ## Credit
