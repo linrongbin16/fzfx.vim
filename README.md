@@ -16,7 +16,7 @@ E(x)tended fzf commands missing in fzf.vim.
   - [FzfxBuffers](#fzfxbuffers)
   - [FzfxLiveGrep(UVW)](#fzfxlivegrepuvw)
   - [FzfxBranches](#fzfxbranches)
-  - [FzfxResumeLiveGrep/FzfxResumeFiles)](#fzfxresumelivegrepfzfxresumefiles)
+  - [FzfxResumeLiveGrep/FzfxResumeFiles](#fzfxresumelivegrepfzfxresumefiles)
 - [Config](#config)
 - [Credit](#credit)
 
@@ -325,7 +325,7 @@ The variants are named following below rules:
 
   https://github.com/linrongbin16/fzfx.vim/assets/6496887/e4b3e4b9-9b38-4fd7-bb8b-b7946fc49232
 
-### FzfxResumeLiveGrep/FzfxResumeFiles)
+### FzfxResumeLiveGrep/FzfxResumeFiles
 
 - `FzfxResumeLiveGrep` can resume last live grep (include all variants).
 - `FzfxResumeFiles` can resume last files search (include all variants).
