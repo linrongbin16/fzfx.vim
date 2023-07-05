@@ -127,23 +127,7 @@ endfunction
 let s:action_for_ref=s:fzf_autoload_func_ref(s:fzf_autoload_sid, "action_for")
 let s:magenta_ref=s:fzf_autoload_func_ref(s:fzf_autoload_sid, "magenta")
 
-" ======== utils ========
-
-function! s:trim(s)
-    if has('nvim') || v:versionlong >= 8001630
-        return trim(a:s)
-    else
-        return substitute(a:s, '^\s*\(.\{-}\)\s*$', '\1', '')
-    endif
-endfunction
-
 " ======== defaults ========
-
-let s:default_action = {
-            \ 'ctrl-t': 'tab split',
-            \ 'ctrl-x': 'split',
-            \ 'ctrl-v': 'vsplit'
-            \ }
 
 " `rg --column --line-number --no-heading --color=always --smart-case`
 let s:fzfx_grep_command=get(g:, 'fzfx_grep_command', "rg --column -n --no-heading --color=always -S -g '!*.git/'")
@@ -161,6 +145,34 @@ endif
 
 " `git branch -a --color`
 let s:fzfx_git_branch_command=get(g:, 'fzfx_git_branch_command', 'git branch -a --color')
+
+" actions
+
+" live grep
+let s:fzfx_live_grep_action=get(g:, 'fzfx_live_grep_action', {'fzf_mode': 'ctrl-f', 'rg_mode': 'ctrl-r'})
+" buffers
+let s:fzfx_buffers_action=get(g:, 'fzfx_buffers_action', { 'close': 'ctrl-d' })
+" git branches
+let s:fzfx_git_branches_action=get(g:, 'fzfx_git_branches_action', { 'enter': 'git checkout', 'double-click': 'git checkout' })
+
+" ======== utils ========
+
+function! s:trim(s)
+    if has('nvim') || v:versionlong >= 8001630
+        return trim(a:s)
+    else
+        return substitute(a:s, '^\s*\(.\{-}\)\s*$', '\1', '')
+    endif
+endfunction
+
+function! s:action_for(action)
+endfunction
+
+let s:default_action = {
+            \ 'ctrl-t': 'tab split',
+            \ 'ctrl-x': 'split',
+            \ 'ctrl-v': 'vsplit'
+            \ }
 
 " ======== implementations ========
 
