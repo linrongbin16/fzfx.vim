@@ -216,6 +216,14 @@ function! s:cache_get(key)
     return v:null
 endfunction
 
+function! s:cache_set(key, value)
+    let cache_dir=fnamemodify(a:key, ':h')
+    if !isdirectory(cache_dir)
+        call mkdir(cache_dir, 'p')
+    endif
+    call writefile(split(s:trim(a:value), "\n", 1), a:key, "S")
+endfunction
+
 " ======== implementations ========
 
 " visual
@@ -325,6 +333,7 @@ function! fzfx#vim#files(query, fullscreen, opts)
                 \   '--query', a:query,
                 \ ]}
     let spec = fzf#vim#with_preview(spec)
+    call s:cache_set(s:fzfx_resume_files_cache, a:query)
     call fzf#vim#files('', spec, a:fullscreen)
 endfunction
 
