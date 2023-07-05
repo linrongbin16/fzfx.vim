@@ -320,7 +320,6 @@ function! s:buffers_sink(lines, query, fullscreen)
     if action ==? s:fzfx_buffers_close_action
         execute 'bdelete' b
         " echo "lines2:".string(a:lines).",bdelete:".b."(".bufname.")"
-        call s:message("Close '".bufname."'")
         call fzfx#vim#buffers(a:query, a:fullscreen)
     else
         call call(s:bufopen_ref, [a:lines])
@@ -359,7 +358,6 @@ function! s:branches_sink(lines) abort
     if action==?'enter' || action==?'double-click'
         let branch = s:normalize_git_branch(a:lines[1])
         execute '!git checkout '.branch
-        call s:message("Switch to '".branch."'")
     endif
 endfunction
 
