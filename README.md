@@ -2,6 +2,8 @@
 
 E(x)tended fzf commands missing in fzf.vim.
 
+- [Features](#features)
+  - [Find Files](#find-files)
 - [Requirement](#requirement)
   - [Rust commands](#rust-commands)
   - [Git (for Windows)](#git-for-windows)
@@ -19,6 +21,28 @@ E(x)tended fzf commands missing in fzf.vim.
   - [FzfxResumeLiveGrep/FzfxResumeFiles](#fzfxresumelivegrepfzfxresumefiles)
 - [Config](#config)
 - [Credit](#credit)
+
+## Features
+
+### Find Files
+
+* `<space>f` to find files, filter hidden and ignored files.
+* `<space>uf` to unrestrictly find files, include all hidden and ignored files.
+* `<space>f` and `<space>uf` also support visual mode, e.g. search visual selected.
+* `<space>wf` to search files by cursor word.
+* `<space>rf` to resume last file searching.
+
+https://github.com/linrongbin16/fzfx.vim/assets/6496887/4bc44577-345c-4b71-bd2f-f262d39bff9b
+
+### Live Grep
+
+* `<space>l` to live grep, filter hidden and ignored files.
+* `<space>ul` to unrestrictly live grep, include all hidden and ignored files.
+* `<space>l` and `<space>ul` also support visual mode, e.g. search visual selected.
+* `<space>wl` to grep by cursor word.
+* `<space>rl` to resume last live grep.
+
+https://github.com/linrongbin16/fzfx.vim/assets/6496887/0309bbd9-f344-4ee3-bca1-5dd115665504
 
 ## Requirement
 
@@ -278,8 +302,6 @@ The variants are named following below rules:
 - `FzfxFiles(U)V` is a variant of `FzfxFiles(U)`, except it searches by
   visual selection.
 
-  https://github.com/linrongbin16/fzfx.vim/assets/6496887/cfe9f279-eb5c-4e7d-8cb2-95e168867250
-
 - `FzfxFiles(U)W` is a variant of `FzfxFiles(U)`, except it searches by
   cursor word, e.g. `expand('<cword>')`.
 
@@ -308,12 +330,8 @@ The variants are named following below rules:
      as query content, the right side as rg's raw options. A most common use case
      is searching by file type (via `--glob` or `--iglob` option):
 
-     https://github.com/linrongbin16/fzfx.vim/assets/6496887/49c83edc-eb43-4e9c-9ea1-153e8de76f02
-
 - `FzfxLiveGrep(U)V` is a variant of `FzfxLiveGrep(U)`, except it searches by
   visual selection:
-
-  https://github.com/linrongbin16/fzfx.vim/assets/6496887/a7303036-e803-4e5f-a26b-92c565d37e43
 
 - `FzfxLiveGrep(U)W` is a variant of `FzfxLiveGrep(U)`, except it searches by
   cursor word, e.g. `expand('<cword>')`.
