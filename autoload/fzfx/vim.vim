@@ -41,10 +41,12 @@ function! s:get_sid(scriptname)
     let all_scripts = split(execute('scriptnames'), '\n')
     let matched_line = ''
     for line in all_scripts
-        if line =~ a:scriptname
+        " fix the backslash for Windows.
+        let normalized_line = substitute(line, "\\", "/", "g")
+        if normalized_line =~ a:scriptname
             " first time matching a script.
             if matched_line ==? ''
-                let matched_line = line
+                let matched_line = normalized_line
             else
                 " multiple matches, unexpected.
                 call s:warning("Found multiple '".a:scriptname."' files with same name.")
@@ -96,14 +98,10 @@ function! s:get_fzf_autoload_sid()
     endif
 
     " remove the 'plugin/fzf.vim' from the tail, then append 'autoload/fzf/vim.vim'
-    if s:is_win
-        let autoload_path=plugin_path[:-15].'autoload\fzf\vim.vim'
-    else
-        let autoload_path=plugin_path[:-15].'autoload/fzf/vim.vim'
-    endif
-    " echo "get_fzf_sid-3, autoload_path:[".autoload_path."], expanded:[".expand(autoload_path)."], filereadable:[".filereadable(expand(autoload_path))."]"
-    if filereadable(expand(autoload_path))
-        execute "source ".expand(autoload_path)
+    let autoload_path=expand(plugin_path[:-15].'autoload/fzf/vim.vim')
+    " echo "get_fzf_sid-3, plugin_path:[".plugin_path."], stridx:[".stridx(plugin_path, "\\")."], autoload_path:[".autoload_path."], filereadable:[".filereadable(autoload_path)."]"
+    if filereadable(autoload_path)
+        execute "source ".autoload_path
     else
         call s:exception("Failed to source vimscript '".autoload_path."'")
         return v:null
