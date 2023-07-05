@@ -306,11 +306,14 @@ The variants are named following below rules:
   2. it allows user add rg's raw options by parsing `--` flag, treat the left part
      as query content, the right side as rg's raw options. A most common use case
      is searching by file type (via `--glob` or `--iglob` option):
+
      https://github.com/linrongbin16/fzfx.vim/assets/6496887/49c83edc-eb43-4e9c-9ea1-153e8de76f02
 
 - `FzfxLiveGrep(U)V` is a variant of `FzfxLiveGrep(U)`, except it searches by
   visual selection:
+
   https://github.com/linrongbin16/fzfx.vim/assets/6496887/a7303036-e803-4e5f-a26b-92c565d37e43
+
 - `FzfxLiveGrep(U)W` is a variant of `FzfxLiveGrep(U)`, except it searches by
   cursor word, e.g. `expand('<cword>')`.
 
@@ -318,6 +321,7 @@ The variants are named following below rules:
 
 - `FzfxBranches` can search git branches, and use `ENTER` to switch to the
   selected branch:
+
   https://github.com/linrongbin16/fzfx.vim/assets/6496887/e4b3e4b9-9b38-4fd7-bb8b-b7946fc49232
 
 ## Config
