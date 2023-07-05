@@ -7,16 +7,16 @@ let s:is_win = has('win32') || has('win64')
 
 if s:is_win && &shellslash
     set noshellslash
-    let s:base_dir=expand('<sfile>:p:h:h:h')
+    let s:base_dir = expand('<sfile>:p:h:h:h')
     set shellslash
 else
-    let s:base_dir=expand('<sfile>:p:h:h:h')
+    let s:base_dir = expand('<sfile>:p:h:h:h')
 endif
 
 if s:is_win
-    let s:fzfx_bin=s:base_dir.'\bin\'
+    let s:fzfx_bin = s:base_dir.'\bin\'
 else
-    let s:fzfx_bin=s:base_dir.'/bin/'
+    let s:fzfx_bin = s:base_dir.'/bin/'
 endif
 
 function! s:exception(msg)
@@ -88,13 +88,13 @@ endfunction
 " loading fzf.vim), so here we first try to find the 2nd, or fallback to find
 " the 1st if 2nd is missing, and build the 2nd path from 1st.
 function! s:get_fzf_autoload_sid()
-    let [autoload_sid, _1]=s:get_sid("fzf.vim/autoload/fzf/vim.vim")
+    let [autoload_sid, _1] = s:get_sid("fzf.vim/autoload/fzf/vim.vim")
     " echo "get_fzf_sid-1, autoload_sid:[".autoload_sid."], _1:["._1."]"
     if autoload_sid isnot v:null
         return autoload_sid
     endif
 
-    let [plugin_sid, plugin_path]=s:get_sid("fzf.vim/plugin/fzf.vim")
+    let [plugin_sid, plugin_path] = s:get_sid("fzf.vim/plugin/fzf.vim")
     " echo "get_fzf_sid-2, plugin_sid:[".plugin_sid."], plugin_path:[".plugin_path."]"
     if plugin_sid is v:null
         call s:exception("Failed to find vimscript 'fzf.vim/plugin/fzf.vim'")
@@ -102,7 +102,7 @@ function! s:get_fzf_autoload_sid()
     endif
 
     " remove the 'plugin/fzf.vim' from the tail, then append 'autoload/fzf/vim.vim'
-    let autoload_path=expand(plugin_path[:-15].'autoload/fzf/vim.vim')
+    let autoload_path = expand(plugin_path[:-15].'autoload/fzf/vim.vim')
     " echo "get_fzf_sid-3, plugin_path:[".plugin_path."], stridx:[".stridx(plugin_path, "\\")."], autoload_path:[".autoload_path."], filereadable:[".filereadable(autoload_path)."]"
     if filereadable(autoload_path)
         execute "source ".autoload_path
@@ -111,7 +111,7 @@ function! s:get_fzf_autoload_sid()
         return v:null
     endif
 
-    let [autoload_sid2, _2]=s:get_sid("fzf.vim/autoload/fzf/vim.vim")
+    let [autoload_sid2, _2] = s:get_sid("fzf.vim/autoload/fzf/vim.vim")
     " echo "get_fzf_sid-4, autoload_sid2:[".autoload_sid2."], _2:["._2."]"
     if autoload_sid2 isnot v:null
         return autoload_sid2
@@ -121,52 +121,62 @@ function! s:get_fzf_autoload_sid()
     return v:null
 endfunction
 
-let s:fzf_autoload_sid=s:get_fzf_autoload_sid()
+let s:fzf_autoload_sid = s:get_fzf_autoload_sid()
 
 function! s:get_fzf_autoload_func_ref(sid, name)
     return function('<SNR>'.a:sid.'_'.a:name)
 endfunction
 
 " script local functions import from fzf.vim autoload.
-let s:action_for_ref=s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "action_for")
-let s:magenta_ref=s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "magenta")
-let s:find_open_window_ref=s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "find_open_window")
-let s:jump_ref=s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "jump")
-let s:function_ref=s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "function")
-let s:bufopen_ref=s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "bufopen")
+let s:action_for_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "action_for")
+let s:magenta_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "magenta")
+let s:bufopen_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "bufopen")
 
 " ======== defaults ========
 
+" grep/find commands
+
 " `rg --column --line-number --no-heading --color=always --smart-case`
-let s:fzfx_grep_command=get(g:, 'fzfx_grep_command', "rg --column -n --no-heading --color=always -S")
-let s:fzfx_unrestricted_grep_command=get(g:, 'fzfx_unrestricted_grep_command', 'rg --column -n --no-heading --color=always -S -uu')
+let s:fzfx_grep_command = get(g:, 'fzfx_grep_command', "rg --column -n --no-heading --color=always -S")
+let s:fzfx_unrestricted_grep_command = get(g:, 'fzfx_unrestricted_grep_command', 'rg --column -n --no-heading --color=always -S -uu')
 
 " `fd --color=never --type f --type symlink --follow
 " --ignore-case`
 if executable('fd')
-    let s:fzfx_find_command=get(g:, 'fzfx_find_command', 'fd -cnever -tf -tl -L -i')
-    let s:fzfx_unrestricted_find_command=get(g:, 'fzfx_unrestricted_find_command', 'fd -cnever -tf -tl -L -i -u')
+    let s:fzfx_find_command = get(g:, 'fzfx_find_command', 'fd -cnever -tf -tl -L -i')
+    let s:fzfx_unrestricted_find_command = get(g:, 'fzfx_unrestricted_find_command', 'fd -cnever -tf -tl -L -i -u')
 elseif executable('fdfind')
-    let s:fzfx_find_command=get(g:, 'fzfx_find_command', 'fdfind -cnever -tf -tl -L -i')
-    let s:fzfx_unrestricted_find_command=get(g:, 'fzfx_unrestricted_find_command', 'fdfind -cnever -tf -tl -L -i -u')
+    let s:fzfx_find_command = get(g:, 'fzfx_find_command', 'fdfind -cnever -tf -tl -L -i')
+    let s:fzfx_unrestricted_find_command = get(g:, 'fzfx_unrestricted_find_command', 'fdfind -cnever -tf -tl -L -i -u')
 endif
 
 " `git branch -a --color`
-let s:fzfx_git_branch_command=get(g:, 'fzfx_git_branch_command', 'git branch -a --color')
+let s:fzfx_git_branch_command = get(g:, 'fzfx_git_branch_command', 'git branch -a --color')
 
-" actions
+" key actions
 
 " live grep
-let s:fzfx_live_grep_fzf_mode_action=get(g:, 'fzfx_live_grep_fzf_mode_action', 'ctrl-f')
-let s:fzfx_live_grep_rg_mode_action=get(g:, 'fzfx_live_grep_rg_mode_action', 'ctrl-r')
+let s:fzfx_live_grep_fzf_mode_action = get(g:, 'fzfx_live_grep_fzf_mode_action', 'ctrl-f')
+let s:fzfx_live_grep_rg_mode_action = get(g:, 'fzfx_live_grep_rg_mode_action', 'ctrl-r')
 " buffers
-let s:fzfx_buffers_close_action=get(g:, 'fzfx_buffers_close_action', 'ctrl-d')
+let s:fzfx_buffers_close_action = get(g:, 'fzfx_buffers_close_action', 'ctrl-d')
 
 let s:default_action = {
             \ 'ctrl-t': 'tab split',
             \ 'ctrl-x': 'split',
             \ 'ctrl-v': 'vsplit'
             \ }
+
+" cache
+if has('nvim')
+    let s:fzfx_resume_live_grep_cache = expand(get(g:, 'fzfx_resume_live_grep_cache', '~/.cache/nvim/fzfx.vim/resume_live_grep_cache'))
+    let s:fzfx_resume_files_cache = expand(get(g:, 'fzfx_resume_files_cache', '~/.cache/nvim/fzfx.vim/resume_files_cache'))
+else
+    let s:fzfx_resume_live_grep_cache = expand(get(g:, 'fzfx_resume_live_grep_cache', '~/.cache/vim/fzfx.vim/resume_live_grep_cache'))
+    let s:fzfx_resume_files_cache = expand(get(g:, 'fzfx_resume_files_cache', '~/.cache/vim/fzfx.vim/resume_files_cache'))
+endif
+let $_FZFX_RESUME_LIVE_GREP_CACHE=s:fzfx_resume_live_grep_cache
+let $_FZFX_RESUME_FILES_CACHE=s:fzfx_resume_files_cache
 
 " ======== utils ========
 
@@ -178,6 +188,7 @@ function! s:trim(s)
     endif
 endfunction
 
+" --expect=...
 function! s:expect_keys(...)
     let keys_list = keys(get(g:, 'fzf_action', s:default_action))
     for k in a:000
@@ -187,6 +198,22 @@ function! s:expect_keys(...)
         endif
     endfor
     return "--expect=".join(keys_list, ',')
+endfunction
+
+" cache
+function! s:cache_has(key)
+    if filereadable(a:key)
+        let value = s:trim(readfile(a:key))
+        return !empty(value)
+    endif
+    return v:false
+endfunction
+
+function! s:cache_get(key)
+    if filereadable(a:key)
+        return s:trim(readfile(a:key))
+    endif
+    return v:null
 endfunction
 
 " ======== implementations ========
@@ -340,7 +367,7 @@ function! fzfx#vim#buffers(query, fullscreen)
     call fzf#vim#buffers(a:query, fzf#vim#with_preview(spec), a:fullscreen)
 endfunction
 
-function! s:normalize_git_branch(branch)
+function! s:parse_branch(branch)
     let branch=s:trim(a:branch)
     if len(branch) > 0 && branch[0:1] ==? '*'
         let branch=branch[1:]
@@ -356,7 +383,7 @@ function! s:branches_sink(lines) abort
     " echo "lines:".string(a:lines)
     let action=a:lines[0]
     if action==?'enter' || action==?'double-click'
-        let branch = s:normalize_git_branch(a:lines[1])
+        let branch = s:parse_branch(a:lines[1])
         execute '!git checkout '.branch
     endif
 endfunction
