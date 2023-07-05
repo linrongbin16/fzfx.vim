@@ -193,6 +193,23 @@ function! s:trim(s)
     endif
 endfunction
 
+function! s:trim_lines(lines)
+    if a:lines is v:null
+        return v:null
+    endif
+    if empty(a:lines)
+        return []
+    endif
+    let lines = []
+    for l in a:lines
+        let tl = s:trim(l)
+        if len(tl) > 0
+            call add(lines, tl)
+        endif
+    endfor
+    return lines
+endfunction
+
 " --expect=...
 function! s:expect_keys(...)
     let keys_list = keys(get(g:, 'fzf_action', s:default_action))
@@ -208,15 +225,21 @@ endfunction
 " cache
 function! s:cache_has(key)
     if filereadable(a:key)
-        let value = s:trim(readfile(a:key))
-        return !empty(value)
+        let lines = readfile(a:key)
+        if empty(lines)
+            return v:false
+        endif
+        let lines = s:trim_lines(lines)
+        return !empty(lines)
     endif
     return v:false
 endfunction
 
 function! s:cache_get(key)
     if filereadable(a:key)
-        return s:trim(readfile(a:key))
+        let lines = readfile(a:key)
+        let lines = s:trim_lines(lines)
+        return join(lines, '\n')
     endif
     return v:null
 endfunction
@@ -231,11 +254,12 @@ function! s:cache_get_object(key)
 endfunction
 
 function! s:cache_set(key, value)
+    " echo "cache_set, key:[".string(a:key)."], value:[".string(a:value)."]"
     let cache_dir=fnamemodify(a:key, ':h')
     if !isdirectory(cache_dir)
         call mkdir(cache_dir, 'p')
     endif
-    call writefile(split(s:trim(a:value), "\n", 1), a:key, "S")
+    call writefile(split(a:value, "\n", 1), a:key, "S")
 endfunction
 
 function! s:cache_set_object(key, value)
