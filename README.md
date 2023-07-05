@@ -2,7 +2,10 @@
 
 E(x)tended fzf commands missing in fzf.vim.
 
-- [Dependency](#dependency)
+- [Features](#features)
+  - [Find Files](#find-files)
+  - [Live Grep](#live-grep)
+- [Requirement](#requirement)
   - [Rust commands](#rust-commands)
   - [Git (for Windows)](#git-for-windows)
 - [Install](#install)
@@ -16,10 +19,37 @@ E(x)tended fzf commands missing in fzf.vim.
   - [FzfxBuffers](#fzfxbuffers)
   - [FzfxLiveGrep(UVW)](#fzfxlivegrepuvw)
   - [FzfxBranches](#fzfxbranches)
+  - [FzfxResumeLiveGrep/FzfxResumeFiles](#fzfxresumelivegrepfzfxresumefiles)
 - [Config](#config)
 - [Credit](#credit)
 
-## Dependency
+## Features
+
+### Find Files
+
+* `<space>f` to find files, filter hidden and ignored files.
+* `<space>uf` to unrestrictly find files, include all hidden and ignored files.
+* `<space>f` and `<space>uf` also support visual mode, e.g. search visual selected.
+* `<space>wf` to search files by cursor word.
+* `<space>rf` to resume last file searching.
+
+https://github.com/linrongbin16/fzfx.vim/assets/6496887/4bc44577-345c-4b71-bd2f-f262d39bff9b
+
+### Live Grep
+
+* `<space>l` to live grep, filter hidden and ignored files.
+* `<space>ul` to unrestrictly live grep, include all hidden and ignored files.
+* `<space>l` and `<space>ul` also support visual mode, e.g. search visual selected.
+* `<space>wl` to grep by cursor word.
+* `<space>rl` to resume last live grep.
+
+https://github.com/linrongbin16/fzfx.vim/assets/6496887/0309bbd9-f344-4ee3-bca1-5dd115665504
+
+## Requirement
+
+- Vim &ge; 7.4.1304 or Neovim.
+- [fzf](https://github.com/junegunn/fzf)
+- [fzf.vim](https://github.com/junegunn/fzf.vim)
 
 ### Rust commands
 
@@ -72,11 +102,6 @@ After this step, **git.exe** and Linux built-in commands(**sh.exe**, **cp.exe**,
 **mv.exe**, **ls.exe**, etc) will be available in **%PATH%**.
 
 ## Install
-
-Plugin dependencies:
-
-- [fzf](https://github.com/junegunn/fzf)
-- [fzf.vim](https://github.com/junegunn/fzf.vim)
 
 ### [vim-plug](https://github.com/junegunn/vim-plug)
 
@@ -278,8 +303,6 @@ The variants are named following below rules:
 - `FzfxFiles(U)V` is a variant of `FzfxFiles(U)`, except it searches by
   visual selection.
 
-  https://github.com/linrongbin16/fzfx.vim/assets/6496887/cfe9f279-eb5c-4e7d-8cb2-95e168867250
-
 - `FzfxFiles(U)W` is a variant of `FzfxFiles(U)`, except it searches by
   cursor word, e.g. `expand('<cword>')`.
 
@@ -307,11 +330,10 @@ The variants are named following below rules:
   2. it allows user add rg's raw options by parsing `--` flag, treat the left part
      as query content, the right side as rg's raw options. A most common use case
      is searching by file type (via `--glob` or `--iglob` option):
-     https://github.com/linrongbin16/fzfx.vim/assets/6496887/49c83edc-eb43-4e9c-9ea1-153e8de76f02
 
 - `FzfxLiveGrep(U)V` is a variant of `FzfxLiveGrep(U)`, except it searches by
   visual selection:
-  https://github.com/linrongbin16/fzfx.vim/assets/6496887/a7303036-e803-4e5f-a26b-92c565d37e43
+
 - `FzfxLiveGrep(U)W` is a variant of `FzfxLiveGrep(U)`, except it searches by
   cursor word, e.g. `expand('<cword>')`.
 
@@ -319,14 +341,20 @@ The variants are named following below rules:
 
 - `FzfxBranches` can search git branches, and use `ENTER` to switch to the
   selected branch:
+
   https://github.com/linrongbin16/fzfx.vim/assets/6496887/e4b3e4b9-9b38-4fd7-bb8b-b7946fc49232
+
+### FzfxResumeLiveGrep/FzfxResumeFiles
+
+- `FzfxResumeLiveGrep` can resume last live grep (include all variants).
+- `FzfxResumeFiles` can resume last files search (include all variants).
 
 ## Config
 
 There're some global variables you can speicify to config:
 
 ```vim
-""" find/grep commands
+""" ======== find/grep commands ========
 
 " live grep
 let g:fzfx_grep_command = 'rg --column -n --no-heading --color=always -S'
@@ -339,7 +367,7 @@ let g:fzfx_unrestricted_find_command = 'fd -cnever -tf -tl -L -u'
 " git branches
 let g:fzfx_git_branch_command = 'git branch -a --color'
 
-""" key actions
+""" ======== key actions ========
 
 " live grep
 let g:fzfx_live_grep_fzf_mode_action = 'ctrl-f'
@@ -347,6 +375,16 @@ let g:fzfx_live_grep_rg_mode_action = 'ctrl-r'
 
 " buffers
 let g:fzfx_buffers_close_action = 'ctrl-d'
+
+""" ======== resume last search ========
+
+" live grep resume
+let g:fzfx_resume_live_grep_cache = '~/.cache/'.(has('nvim') ? 'nvim' : 'vim').'/fzfx.vim/resume_live_grep_cache'
+let g:fzfx_resume_live_grep_opts_cache = '~/.cache/'.(has('nvim') ? 'nvim' : 'vim').'/fzfx.vim/resume_live_grep_opts_cache'
+
+" files resume
+let g:fzfx_resume_files_cache = '~/.cache/'.(has('nvim') ? 'nvim' : 'vim').'/fzfx.vim/resume_files_cache'
+let g:fzfx_resume_files_opts_cache = '~/.cache/'.(has('nvim') ? 'nvim' : 'vim').'/fzfx.vim/resume_files_opts_cache'
 ```
 
 ## Credit

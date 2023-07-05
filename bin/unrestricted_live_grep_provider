@@ -11,7 +11,18 @@ fzfx_trim() {
     printf '%s' "$var"
 }
 
+fzfx_dump_cache() {
+    local cache_dir=$(dirname "$_FZFX_RESUME_LIVE_GREP_CACHE")
+    if [ ! -d $cache_dir ]; then
+        mkdir -p "$cache_dir"
+    fi
+    # echo "_FZFX_RESUME_LIVE_GREP_CACHE:[$_FZFX_RESUME_LIVE_GREP_CACHE]"
+    echo "$*" > "$_FZFX_RESUME_LIVE_GREP_CACHE"
+}
+
 content=$1
+fzfx_dump_cache $content
+
 flag="--"
 option=${content#*$flag}
 
