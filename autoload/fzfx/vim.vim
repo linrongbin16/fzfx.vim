@@ -385,6 +385,7 @@ function! fzfx#vim#branches(query, fullscreen)
 
     let spec = {
                 \ 'source': initial_command,
+                \ 'sink*': {lines -> s:branches_sink(lines)},
                 \ 'options': [
                 \   '--no-multi',
                 \   '--delimiter=:',
@@ -398,8 +399,10 @@ function! fzfx#vim#branches(query, fullscreen)
 
     " spec sink
     " let spec._action = get(g:, 'fzf_action', s:default_action)
-    let spec.sinklist = call(s:function_ref, "s:branches_sink")
-    let spec['sink*'] = spec.sinklist
+    " function! spec.sinklist(lines) abort
+    "     call s:branches_sink(a:lines)
+    " endfunction
+    " let spec['sink*'] = spec.sinklist
 
     call fzf#run(fzf#wrap('branches', spec, a:fullscreen))
 endfunction
