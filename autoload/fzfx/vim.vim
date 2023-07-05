@@ -138,16 +138,16 @@ let s:bufopen_ref=s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "bufopen")
 " ======== defaults ========
 
 " `rg --column --line-number --no-heading --color=always --smart-case`
-let s:fzfx_grep_command=get(g:, 'fzfx_grep_command', "rg --column -n --no-heading --color=always -S -g '!*.git/'")
+let s:fzfx_grep_command=get(g:, 'fzfx_grep_command', "rg --column -n --no-heading --color=always -S")
 let s:fzfx_unrestricted_grep_command=get(g:, 'fzfx_unrestricted_grep_command', 'rg --column -n --no-heading --color=always -S -uu')
 
-" `fd --color=never --type f --type symlink --follow --exclude .git
+" `fd --color=never --type f --type symlink --follow
 " --ignore-case`
 if executable('fd')
-    let s:fzfx_find_command=get(g:, 'fzfx_find_command', 'fd -cnever -tf -tl -L -i -E .git')
+    let s:fzfx_find_command=get(g:, 'fzfx_find_command', 'fd -cnever -tf -tl -L -i')
     let s:fzfx_unrestricted_find_command=get(g:, 'fzfx_unrestricted_find_command', 'fd -cnever -tf -tl -L -i -u')
 elseif executable('fdfind')
-    let s:fzfx_find_command=get(g:, 'fzfx_find_command', 'fdfind -cnever -tf -tl -L -i -E .git')
+    let s:fzfx_find_command=get(g:, 'fzfx_find_command', 'fdfind -cnever -tf -tl -L -i')
     let s:fzfx_unrestricted_find_command=get(g:, 'fzfx_unrestricted_find_command', 'fdfind -cnever -tf -tl -L -i -u')
 endif
 
