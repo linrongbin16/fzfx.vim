@@ -19,6 +19,12 @@ else
     let s:fzfx_bin = s:base_dir.'/bin/'
 endif
 
+if has('nvim')
+    let s:vim_name='nvim'
+else
+    let s:vim_name='vim'
+endif
+
 function! s:exception(msg)
     throw "[fzfx.vim] Error! ".a:msg
 endfunction
@@ -168,13 +174,12 @@ let s:default_action = {
             \ }
 
 " cache
-if has('nvim')
-    let s:fzfx_resume_live_grep_cache = expand(get(g:, 'fzfx_resume_live_grep_cache', '~/.cache/nvim/fzfx.vim/resume_live_grep_cache'))
-    let s:fzfx_resume_files_cache = expand(get(g:, 'fzfx_resume_files_cache', '~/.cache/nvim/fzfx.vim/resume_files_cache'))
-else
-    let s:fzfx_resume_live_grep_cache = expand(get(g:, 'fzfx_resume_live_grep_cache', '~/.cache/vim/fzfx.vim/resume_live_grep_cache'))
-    let s:fzfx_resume_files_cache = expand(get(g:, 'fzfx_resume_files_cache', '~/.cache/vim/fzfx.vim/resume_files_cache'))
-endif
+
+let s:fzfx_resume_live_grep_cache = expand(get(g:, 'fzfx_resume_live_grep_cache', '~/.cache/'.s:vim_name.'/fzfx.vim/resume_live_grep_cache'))
+let s:fzfx_resume_live_grep_opts_cache = expand(get(g:, 'fzfx_resume_live_grep_opts_cache', '~/.cache/'.s:vim_name.'/fzfx.vim/resume_live_grep_opts_cache'))
+let s:fzfx_resume_files_cache = expand(get(g:, 'fzfx_resume_files_cache', '~/.cache/'.s:vim_name.'/fzfx.vim/resume_files_cache'))
+let s:fzfx_resume_files_opts_cache = expand(get(g:, 'fzfx_resume_files_opts_cache', '~/.cache/'.s:vim_name.'/fzfx.vim/resume_files_opts_cache'))
+
 let $_FZFX_RESUME_LIVE_GREP_CACHE=s:fzfx_resume_live_grep_cache
 let $_FZFX_RESUME_FILES_CACHE=s:fzfx_resume_files_cache
 
@@ -216,6 +221,15 @@ function! s:cache_get(key)
     return v:null
 endfunction
 
+function! s:cache_get_object(key)
+    let j = s:cache_get(a:key)
+    if j is v:null
+        return v:null
+    else
+        return json_decode(j)
+    endif
+endfunction
+
 function! s:cache_set(key, value)
     let cache_dir=fnamemodify(a:key, ':h')
     if !isdirectory(cache_dir)
@@ -223,6 +237,12 @@ function! s:cache_set(key, value)
     endif
     call writefile(split(s:trim(a:value), "\n", 1), a:key, "S")
 endfunction
+
+function! s:cache_set_object(key, value)
+    let j = json_encode(a:value)
+    call s:cache_set(a:key, j)
+endfunction
+
 
 " ======== implementations ========
 
@@ -289,6 +309,7 @@ function! fzfx#vim#live_grep(query, fullscreen, opts)
                 \ '--prompt', '*Rg> '
                 \ ]}
     let spec = fzf#vim#with_preview(spec)
+    call s:cache_set_object(s:fzfx_resume_live_grep_opts_cache, a:opts)
     call fzf#vim#grep(initial_command, spec, a:fullscreen)
 endfunction
 
@@ -334,6 +355,7 @@ function! fzfx#vim#files(query, fullscreen, opts)
                 \ ]}
     let spec = fzf#vim#with_preview(spec)
     call s:cache_set(s:fzfx_resume_files_cache, a:query)
+    call s:cache_set_object(s:fzfx_resume_live_grep_opts_cache, a:opts)
     call fzf#vim#files('', spec, a:fullscreen)
 endfunction
 
@@ -422,6 +444,18 @@ function! fzfx#vim#branches(query, fullscreen)
                 \   s:expect_keys("enter", "double-click"),
                 \ ]}
     call fzf#run(fzf#wrap('branches', spec, a:fullscreen))
+endfunction
+
+" resume
+function! fzfx#vim#resume_live_grep(fullscreen)
+    if !s:cache_has(s:fzfx_resume_live_grep_cache)
+        call fzfx#vim#live_grep()
+        let query = s:cache_has(key)
+    else
+    endif
+endfunction
+
+function! fzfx#vim#resume_files(fullscreen)
 endfunction
 
 let &cpo = s:cpo_save

@@ -2,7 +2,7 @@
 
 E(x)tended fzf commands missing in fzf.vim.
 
-- [Dependency](#dependency)
+- [Requirement](#requirement)
   - [Rust commands](#rust-commands)
   - [Git (for Windows)](#git-for-windows)
 - [Install](#install)
@@ -19,7 +19,11 @@ E(x)tended fzf commands missing in fzf.vim.
 - [Config](#config)
 - [Credit](#credit)
 
-## Dependency
+## Requirement
+
+- Vim &ge; 7.4.1304 or Neovim.
+- [fzf](https://github.com/junegunn/fzf)
+- [fzf.vim](https://github.com/junegunn/fzf.vim)
 
 ### Rust commands
 
@@ -72,11 +76,6 @@ After this step, **git.exe** and Linux built-in commands(**sh.exe**, **cp.exe**,
 **mv.exe**, **ls.exe**, etc) will be available in **%PATH%**.
 
 ## Install
-
-Plugin dependencies:
-
-- [fzf](https://github.com/junegunn/fzf)
-- [fzf.vim](https://github.com/junegunn/fzf.vim)
 
 ### [vim-plug](https://github.com/junegunn/vim-plug)
 
