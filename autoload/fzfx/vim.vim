@@ -363,10 +363,10 @@ function! s:normalize_git_branch(branch)
 endfunction
 
 function! s:branches_sink(lines) abort
-    echo "lines:".string(a:lines)
-    let action=a:lines[1]
+    " echo "lines:".string(a:lines)
+    let action=a:lines[0]
     if action==?'enter' || action==?'double-click'
-        let branch = s:normalize_git_branch(a:lines[2])
+        let branch = s:normalize_git_branch(a:lines[1])
         execute '!git checkout '.branch
         call s:message("Switch to '".branch."'")
     endif
