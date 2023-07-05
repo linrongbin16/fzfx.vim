@@ -308,10 +308,14 @@ endfunction
 
 " live grep
 function! fzfx#vim#live_grep(query, fullscreen, opts)
+    let $_FZFX_GREP_COMMAND = get(g:, 'fzfx_grep_command', "rg --column -n --no-heading --color=always -S")
+    let $_FZFX_UNRESTRICTED_GREP_COMMAND = get(g:, 'fzfx_unrestricted_grep_command', 'rg --column -n --no-heading --color=always -S -uu')
+
     let fzf_mode_key=s:fzfx_live_grep_fzf_mode_action
     let rg_mode_key=s:fzfx_live_grep_rg_mode_action
     let fuzzy_search_header=':: Press '.call(s:magenta_ref, [toupper(fzf_mode_key), 'Special']).' to fzf mode'
     let regex_search_header=':: Press '.call(s:magenta_ref, [toupper(rg_mode_key), 'Special']).' to rg mode'
+
     let live_grep_provider=s:fzfx_bin.'live_grep_provider'
     let unrestricted_live_grep_provider=s:fzfx_bin.'unrestricted_live_grep_provider'
     let provider= a:opts.unrestricted ? unrestricted_live_grep_provider : live_grep_provider
