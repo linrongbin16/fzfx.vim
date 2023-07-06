@@ -146,6 +146,9 @@ let s:bufopen_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "bufopen")
 let s:fzfx_grep_command = get(g:, 'fzfx_grep_command', "rg --column -n --no-heading --color=always -S")
 let s:fzfx_unrestricted_grep_command = get(g:, 'fzfx_unrestricted_grep_command', 'rg --column -n --no-heading --color=always -S -uu')
 
+let $_FZFX_GREP_COMMAND = s:fzfx_grep_command
+let $_FZFX_UNRESTRICTED_GREP_COMMAND = s:fzfx_unrestricted_grep_command
+
 " `fd --color=never --type f --type symlink --follow
 " --ignore-case`
 if executable('fd')
@@ -180,8 +183,8 @@ let s:fzfx_resume_live_grep_opts_cache = expand(get(g:, 'fzfx_resume_live_grep_o
 let s:fzfx_resume_files_cache = expand(get(g:, 'fzfx_resume_files_cache', '~/.cache/'.s:vim_name.'/fzfx.vim/resume_files_cache'))
 let s:fzfx_resume_files_opts_cache = expand(get(g:, 'fzfx_resume_files_opts_cache', '~/.cache/'.s:vim_name.'/fzfx.vim/resume_files_opts_cache'))
 
-let $_FZFX_RESUME_LIVE_GREP_CACHE=s:fzfx_resume_live_grep_cache
-let $_FZFX_RESUME_FILES_CACHE=s:fzfx_resume_files_cache
+let $_FZFX_RESUME_LIVE_GREP_CACHE = s:fzfx_resume_live_grep_cache
+let $_FZFX_RESUME_FILES_CACHE = s:fzfx_resume_files_cache
 
 " ======== utils ========
 
@@ -308,9 +311,6 @@ endfunction
 
 " live grep
 function! fzfx#vim#live_grep(query, fullscreen, opts)
-    let $_FZFX_GREP_COMMAND = get(g:, 'fzfx_grep_command', "rg --column -n --no-heading --color=always -S")
-    let $_FZFX_UNRESTRICTED_GREP_COMMAND = get(g:, 'fzfx_unrestricted_grep_command', 'rg --column -n --no-heading --color=always -S -uu')
-
     let fzf_mode_key=s:fzfx_live_grep_fzf_mode_action
     let rg_mode_key=s:fzfx_live_grep_rg_mode_action
     let fuzzy_search_header=':: Press '.call(s:magenta_ref, [toupper(fzf_mode_key), 'Special']).' to fzf mode'
