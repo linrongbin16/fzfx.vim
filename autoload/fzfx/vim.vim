@@ -20,10 +20,12 @@ else
 endif
 
 if has('nvim')
-    let s:vim_name='nvim'
+    let s:vim='nvim'
 else
-    let s:vim_name='vim'
+    let s:vim='vim'
 endif
+
+let s:_fzfx_enable_debug = get(g:, '_fzfx_enable_debug', 0)
 
 function! s:exception(msg)
     throw "[fzfx.vim] Error! ".a:msg
@@ -37,6 +39,12 @@ endfunction
 
 function! s:message(msg)
     echomsg "[fzfx.vim] ".a:msg
+endfunction
+
+function! s:debug(msg)
+    if s:_fzfx_enable_debug
+        echomsg "[fzfx.vim|debug] ".a:msg
+    endif
 endfunction
 
 " ======== hack: script local function ========
@@ -178,10 +186,10 @@ let s:default_action = {
 
 " cache
 
-let s:fzfx_resume_live_grep_cache = expand(get(g:, 'fzfx_resume_live_grep_cache', '~/.cache/'.s:vim_name.'/fzfx.vim/resume_live_grep_cache'))
-let s:fzfx_resume_live_grep_opts_cache = expand(get(g:, 'fzfx_resume_live_grep_opts_cache', '~/.cache/'.s:vim_name.'/fzfx.vim/resume_live_grep_opts_cache'))
-let s:fzfx_resume_files_cache = expand(get(g:, 'fzfx_resume_files_cache', '~/.cache/'.s:vim_name.'/fzfx.vim/resume_files_cache'))
-let s:fzfx_resume_files_opts_cache = expand(get(g:, 'fzfx_resume_files_opts_cache', '~/.cache/'.s:vim_name.'/fzfx.vim/resume_files_opts_cache'))
+let s:fzfx_resume_live_grep_cache = expand(get(g:, 'fzfx_resume_live_grep_cache', '~/.cache/'.s:vim.'/fzfx.vim/resume_live_grep_cache'))
+let s:fzfx_resume_live_grep_opts_cache = expand(get(g:, 'fzfx_resume_live_grep_opts_cache', '~/.cache/'.s:vim.'/fzfx.vim/resume_live_grep_opts_cache'))
+let s:fzfx_resume_files_cache = expand(get(g:, 'fzfx_resume_files_cache', '~/.cache/'.s:vim.'/fzfx.vim/resume_files_cache'))
+let s:fzfx_resume_files_opts_cache = expand(get(g:, 'fzfx_resume_files_opts_cache', '~/.cache/'.s:vim.'/fzfx.vim/resume_files_opts_cache'))
 
 let $_FZFX_RESUME_LIVE_GREP_CACHE = s:fzfx_resume_live_grep_cache
 let $_FZFX_RESUME_FILES_CACHE = s:fzfx_resume_files_cache
@@ -383,7 +391,7 @@ function! fzfx#vim#files(query, fullscreen, opts)
                 \ ]}
     let spec = fzf#vim#with_preview(spec)
     call s:cache_set(s:fzfx_resume_files_cache, a:query)
-    call s:cache_set_object(s:fzfx_resume_live_grep_opts_cache, a:opts)
+    call s:cache_set_object(s:fzfx_resume_files_opts_cache, a:opts)
     call fzf#vim#files('', spec, a:fullscreen)
 endfunction
 
@@ -492,9 +500,11 @@ function! fzfx#vim#resume_files(fullscreen)
     let opts = {'unrestricted': 0}
     if s:cache_has(s:fzfx_resume_files_cache)
         let query = s:cache_get(s:fzfx_resume_files_cache)
+        call s:debug("resume_files-1, query:".query)
     endif
     if s:cache_has(s:fzfx_resume_files_opts_cache)
         let opts = s:cache_get_object(s:fzfx_resume_files_opts_cache)
+        call s:debug("resume_files-2, opts:".string(opts))
     endif
     call fzfx#vim#files(query, a:fullscreen, opts)
 endfunction
