@@ -2,12 +2,9 @@
 
 E(x)tended fzf commands missing in fzf.vim.
 
-- [Features](#features)
-  - [Find Files](#find-files)
-  - [Live Grep](#live-grep)
 - [Requirement](#requirement)
   - [Rust commands](#rust-commands)
-  - [Git (for Windows)](#git-for-windows)
+  - [Git, MingW & Core Utils (for Windows)](#gitmingwcoreutilsforwindows)
 - [Install](#install)
   - [vim-plug](#vim-plug)
   - [packer.nvim](#packernvim)
@@ -22,30 +19,6 @@ E(x)tended fzf commands missing in fzf.vim.
   - [FzfxResumeLiveGrep/FzfxResumeFiles](#fzfxresumelivegrepfzfxresumefiles)
 - [Config](#config)
 - [Credit](#credit)
-
-## Features
-
-Note: this plugin doesn't define key mappings by default, below keys are following the recommended key mapping configs.
-
-### Find Files
-
-* `<space>f` to find files, filter hidden and ignored files.
-* `<space>uf` to unrestrictly find files, include all hidden and ignored files.
-* `<space>f` and `<space>uf` also support visual mode, e.g. search visual selected.
-* `<space>wf` to search files by cursor word.
-* `<space>rf` to resume last file searching.
-
-https://github.com/linrongbin16/fzfx.vim/assets/6496887/4bc44577-345c-4b71-bd2f-f262d39bff9b
-
-### Live Grep
-
-* `<space>l` to live grep, filter hidden and ignored files.
-* `<space>ul` to unrestrictly live grep, include all hidden and ignored files.
-* `<space>l` and `<space>ul` also support visual mode, e.g. search visual selected.
-* `<space>wl` to grep by cursor word.
-* `<space>rl` to resume last live grep.
-
-https://github.com/linrongbin16/fzfx.vim/assets/6496887/0309bbd9-f344-4ee3-bca1-5dd115665504
 
 ## Requirement
 
@@ -69,36 +42,24 @@ cargo install --locked bat
 cargo install git-delta
 ```
 
-### Git (for Windows)
+### Git, MingW & Core Utils (for Windows)
 
 Since the cmd scripts on Windows are actually implemented by forwarding
-user input to linux shell scripts, thus we are relying on the embeded shell installed with
-[Git for Windows](https://git-scm.com/download/win).
+user input to linux shell scripts, thus we are relying on the embeded shell
+installed with [scoop](scoop.sh).
 
-Install with the below 3 options:
+Run PowerShell commands:
 
-1. In **Select Components**, select **Associate .sh files to be run with Bash**.
-   <!-- ![install-windows-git1](https://github.com/linrongbin16/fzfx.vim/assets/6496887/6e1065f4-9d94-4564-848f-3f505e3e5b0c) -->
-   <p align="center" width="70%">
-       <img alt="install-windows-git1.png" src="https://github.com/linrongbin16/fzfx.vim/assets/6496887/6e1065f4-9d94-4564-848f-3f505e3e5b0c"
-           width="70%" />
-   </p>
+```powershell
+# scoop
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+irm get.scoop.sh | iex
 
-2. In **Adjusting your PATH environment**, select **Use Git and optional Unix
-   tools from the Command Prompt**.
-   <!-- ![install-windows-git2](https://github.com/linrongbin16/fzfx.vim/assets/6496887/d1b73beb-c95f-4fba-83c7-2eaf369db692) -->
-   <p align="center" width="70%">
-       <img alt="install-windows-git2.png" src="https://github.com/linrongbin16/fzfx.vim/assets/6496887/d1b73beb-c95f-4fba-83c7-2eaf369db692"
-           width="70%" />
-   </p>
-
-3. In **Configuring the terminal emulator to use with Git Bash**, select **Use
-   Windows's default console window**.
-   <!-- ![install-windows-git3](https://github.com/linrongbin16/fzfx.vim/assets/6496887/1b05584f-a030-4555-b588-f344f933a523) -->
-   <p align="center" width="70%">
-       <img alt="install-windows-git3.png" src="https://github.com/linrongbin16/fzfx.vim/assets/6496887/1b05584f-a030-4555-b588-f344f933a523"
-           width="70%" />
-   </p>
+scoop bucket add extras
+scoop install git
+scoop install mingw
+scoop install uutils-coreutils
+```
 
 After this step, **git.exe** and Linux built-in commands(**sh.exe**, **cp.exe**,
 **mv.exe**, **ls.exe**, etc) will be available in **%PATH%**.
@@ -160,42 +121,44 @@ return {
 For Vim:
 
 ```vim
-" files
+" ======== files ========
+
+" find files, filter hidden and ignored files
 nnoremap <space>f :\<C-U>FzfxFiles<CR>
+" you can also find by visual selected
 xnoremap <space>f :\<C-U>FzfxFilesV<CR>
-" deprecated, use FzfxFilesU instead
-" nnoremap <space>uf :\<C-U>FzfxUnrestrictedFiles<CR>
+" unrestrictly find files, include hidden and ignored files
 nnoremap <space>uf :\<C-U>FzfxFilesU<CR>
+" you can also unrestrictly find by visual selected
 xnoremap <space>uf :\<C-U>FzfxFilesUV<CR>
 
 " find files by cursor word
 nnoremap <space>wf :\<C-U>FzfxFilesW<CR>
+" unrestrictly find files by cursor word
 nnoremap <space>uwf :\<C-U>FzfxFilesUW<CR>
 
-" buffers
+" ======== buffers ========
+
 nnoremap <space>b :\<C-U>FzfxBuffers<CR>
 
-" live grep
+" ======== live grep ========
+
+" live grep, filter hidden and ignored files
 nnoremap <space>l :\<C-U>FzfxLiveGrep<CR>
-" deprecated, use FzfxLiveGrepV instead
-" xnoremap <space>l :\<C-U>FzfxLiveGrepVisual<CR>
+" you can also grep by visual selected
 xnoremap <space>l :\<C-U>FzfxLiveGrepV<CR>
-" deprecated, use FzfxLiveGrepU instead
-" nnoremap <space>ul :\<C-U>FzfxUnrestrictedLiveGrep<CR>
+" unrestrictly live grep, include hidden and ignored files
 nnoremap <space>ul :\<C-U>FzfxLiveGrepU<CR>
-" deprecated, use FzfxLiveGrepUV instead
-" xnoremap <space>ul :\<C-U>FzfxUnrestrictedLiveGrepVisual<CR>
+" you can also unrestrictly grep by visual selected
 xnoremap <space>ul :\<C-U>FzfxLiveGrepUV<CR>
 
-" grep word
-" deprecated, use FzfxLiveGrepW instead
-" nnoremap <space>wl :\<C-U>FzfxGrepWord<CR>
+" live grep by cursor word, filter hidden and ignored files
 nnoremap <space>wl :\<C-U>FzfxLiveGrepW<CR>
-" deprecated, use FzfxLiveGrepUW instead
-" nnoremap <space>uwl :\<C-U>FzfxUnrestrictedGrepWord<CR>
+" unrestrictly live grep by cursor word, include hidden and ignored files
 nnoremap <space>uwl :\<C-U>FzfxLiveGrepUW<CR>
 
-" git branches
+" ======== git branches ========
+
 nnoremap <space>gb :\<C-U>FzfxBranches<CR>
 
 ```
@@ -203,16 +166,19 @@ nnoremap <space>gb :\<C-U>FzfxBranches<CR>
 For Neovim:
 
 ```lua
--- files
+-- ======== files ========
+
+-- find files, filter hidden and ignored files
 vim.keymap.set('n', '<space>f', '<cmd>FzfxFiles<cr>',
         {silent=true, noremap=true, desc="Search files"})
+-- you can also find by visual selected
 vim.keymap.set('x', '<space>f', ':<C-U>FzfxFilesV<CR>',
         {silent=true, noremap=true, desc="Search files"})
+-- unrestrictly find files, include hidden and ignored files
 vim.keymap.set('n', '<space>uf',
-        -- deprecated, use FzfxFilesU instead
-        -- '<cmd>FzfxUnrestrictedFiles<cr>',
         '<cmd>FzfxFilesU<cr>',
         {silent=true, noremap=true, desc="Unrestricted search files"})
+-- you can also unrestrictly find by visual selected
 vim.keymap.set('x', '<space>uf',
         ':<C-U>FzfxFilesUV<CR>',
         {silent=true, noremap=true, desc="Unrestricted search files"})
@@ -220,59 +186,59 @@ vim.keymap.set('x', '<space>uf',
 -- find files by cursor word
 vim.keymap.set('n', '<space>wf', '<cmd>FzfxFilesW<cr>',
         {silent=true, noremap=true, desc="Search files by cursor word"})
+-- unrestrictly find files by cursor word
 vim.keymap.set('n', '<space>uwf', '<cmd>FzfxFilesUW<cr>',
         {silent=true, noremap=true, desc="Unrestricted search files by cursor word"})
 
--- buffers
+-- ======== buffers ========
+
 vim.keymap.set('n', '<space>b', '<cmd>FzfxBuffers<cr>',
         {silent=true, noremap=true, desc="Search buffers"})
 
--- live grep
+-- ======== live grep ========
+
+-- live grep, filter hidden and ignored files
 vim.keymap.set('n', '<space>l',
         '<cmd>FzfxLiveGrep<cr>',
         {silent=true, noremap=true, desc="Live grep"})
-vim.keymap.set('n', '<space>ul',
-        -- deprecated, use FzfxLiveGrepU instead
-        -- '<cmd>FzfxUnrestrictedLiveGrep<cr>',
-        '<cmd>FzfxLiveGrepU<cr>',
-        {silent=true, noremap=true, desc="Unrestricted live grep"})
-
+-- you can also grep by visual selected
 vim.keymap.set('x', '<space>l',
         function()
             vim.cmd('execute "normal \\<ESC>"')
-            -- deprecated, use FzfxLiveGrepV instead
-            -- vim.cmd("FzfxLiveGrepVisual")
-            vim.cmd("FzfxLiveGrepV")
+           vim.cmd("FzfxLiveGrepV")
         end,
         {silent=true, noremap=true, desc="Live grep"})
+-- unrestrictly live grep, include hidden and ignored files
+vim.keymap.set('n', '<space>ul',
+        '<cmd>FzfxLiveGrepU<cr>',
+        {silent=true, noremap=true, desc="Unrestricted live grep"})
+-- you can also unrestrictly grep by visual selected
 vim.keymap.set('x', '<space>ul',
         function()
             vim.cmd('execute "normal \\<ESC>"')
-            -- deprecated, use FzfxLiveGrepUV instead
-            -- vim.cmd("FzfxUnrestrictedLiveGrepVisual")
             vim.cmd("FzfxLiveGrepUV")
         end,
         {silent=true, noremap=true, desc="Live grep"})
 
--- grep word
+-- live grep by cursor word, filter hidden and ignored files
 vim.keymap.set('n', '<space>wl',
         -- deprecated, use FzfxLiveGrepW instead
         -- '<cmd>FzfxGrepWord<cr>',
         '<cmd>FzfxLiveGrepW<cr>',
         {silent=true, noremap=true, desc="Grep word under cursor"})
+-- unrestrictly live grep by cursor word, include hidden and ignored files
 vim.keymap.set('n', '<space>uwl',
-        -- deprecated, use FzfxLiveGrepUW instead
-        -- '<cmd>FzfxUnrestrictedGrepWord<cr>',
         '<cmd>FzfxLiveGrepUW<cr>',
         {silent=true, noremap=true, desc="Unrestricted grep word under cursor"})
 
--- git branches
+-- ======== git branches ========
+
 vim.keymap.set('n', '<space>gb', '<cmd>FzfxBranches<cr>',
         {silent=true, noremap=true, desc="Search git branches"})
 ```
 
-Warning: to support visual mode key mapping, you must use one of below methods
-to make visual selection working correctly:
+Warning: to support visual mode, you must use one of below methods to make it
+working correctly:
 
 1. Speicify `vim.cmd('execute "normal \\<ESC>"')` to exit visual mode before
    calling fzfx command.
@@ -290,6 +256,8 @@ The variants are named following below rules:
 - Searching by cursor word variants use `W` suffix.
 
 ### FzfxFiles(UVW)
+
+https://github.com/linrongbin16/fzfx.vim/assets/6496887/4bc44577-345c-4b71-bd2f-f262d39bff9b
 
 - `FzfxFiles(U)` is almost the same with (`Fzf`)`Files`, except it's using fd command:
 
@@ -310,12 +278,14 @@ The variants are named following below rules:
 
 ### FzfxBuffers
 
+https://github.com/linrongbin16/fzfx.vim/assets/6496887/1864fde1-0cba-40d2-8e53-b72140fb7675
+
 - `FzfxBuffers` is almost the same with (`Fzf`)`Buffers`, except it's using `ctrl-d`
   to delete buffers:
 
-  https://github.com/linrongbin16/fzfx.vim/assets/6496887/1864fde1-0cba-40d2-8e53-b72140fb7675
-
 ### FzfxLiveGrep(UVW)
+
+https://github.com/linrongbin16/fzfx.vim/assets/6496887/0309bbd9-f344-4ee3-bca1-5dd115665504
 
 - `FzfxLiveGrep(U)` is almost the same with (`Fzf`)`RG`, except:
 
@@ -341,10 +311,10 @@ The variants are named following below rules:
 
 ### FzfxBranches
 
+https://github.com/linrongbin16/fzfx.vim/assets/6496887/e4b3e4b9-9b38-4fd7-bb8b-b7946fc49232
+
 - `FzfxBranches` can search git branches, and use `ENTER` to switch to the
   selected branch:
-
-  https://github.com/linrongbin16/fzfx.vim/assets/6496887/e4b3e4b9-9b38-4fd7-bb8b-b7946fc49232
 
 ### FzfxResumeLiveGrep/FzfxResumeFiles
 
