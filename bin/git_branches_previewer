@@ -11,20 +11,20 @@ fzfx_trim() {
     printf '%s' "$var"
 }
 
-content=$1
-content=$(fzfx_trim $content)
+content="$1"
+content=$(fzfx_trim "$content")
 arrow="->"
 
 if [ "${content:0:1}" = "*" ]; then
-    content=${content:1}
+    content="${content:1}"
 fi
 
 raw=${content#*$arrow}
 if [ ${#raw} -gt 0 ] && [ "$raw" != "$content" ]; then
-    raw=$(fzfx_trim $raw)
+    raw=$(fzfx_trim "$raw")
     # echo "raw:[$raw], content:[$content]"
-    git log --graph --color=always $raw
+    eval "git log --graph --color=always $raw"
 else
     # echo "content:[$content]"
-    git log --graph --color=always $content
+    eval "git log --graph --color=always $content"
 fi
