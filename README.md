@@ -4,7 +4,7 @@ E(x)tended fzf commands missing in fzf.vim.
 
 - [Requirement](#requirement)
   - [Rust commands](#rust-commands)
-  - [Git (for Windows)](#git-for-windows)
+  - [Git, MingW & Core Utils (for Windows)](#gitmingwcoreutilsforwindows)
 - [Install](#install)
   - [vim-plug](#vim-plug)
   - [packer.nvim](#packernvim)
@@ -42,36 +42,24 @@ cargo install --locked bat
 cargo install git-delta
 ```
 
-### Git (for Windows)
+### Git, MingW & Core Utils (for Windows)
 
 Since the cmd scripts on Windows are actually implemented by forwarding
-user input to linux shell scripts, thus we are relying on the embeded shell installed with
-[Git for Windows](https://git-scm.com/download/win).
+user input to linux shell scripts, thus we are relying on the embeded shell
+installed with [scoop](scoop.sh).
 
-Install with the below 3 options:
+Run PowerShell commands:
 
-1. In **Select Components**, select **Associate .sh files to be run with Bash**.
-   <!-- ![install-windows-git1](https://github.com/linrongbin16/fzfx.vim/assets/6496887/6e1065f4-9d94-4564-848f-3f505e3e5b0c) -->
-   <p align="center" width="70%">
-       <img alt="install-windows-git1.png" src="https://github.com/linrongbin16/fzfx.vim/assets/6496887/6e1065f4-9d94-4564-848f-3f505e3e5b0c"
-           width="70%" />
-   </p>
+```powershell
+# scoop
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+irm get.scoop.sh | iex
 
-2. In **Adjusting your PATH environment**, select **Use Git and optional Unix
-   tools from the Command Prompt**.
-   <!-- ![install-windows-git2](https://github.com/linrongbin16/fzfx.vim/assets/6496887/d1b73beb-c95f-4fba-83c7-2eaf369db692) -->
-   <p align="center" width="70%">
-       <img alt="install-windows-git2.png" src="https://github.com/linrongbin16/fzfx.vim/assets/6496887/d1b73beb-c95f-4fba-83c7-2eaf369db692"
-           width="70%" />
-   </p>
-
-3. In **Configuring the terminal emulator to use with Git Bash**, select **Use
-   Windows's default console window**.
-   <!-- ![install-windows-git3](https://github.com/linrongbin16/fzfx.vim/assets/6496887/1b05584f-a030-4555-b588-f344f933a523) -->
-   <p align="center" width="70%">
-       <img alt="install-windows-git3.png" src="https://github.com/linrongbin16/fzfx.vim/assets/6496887/1b05584f-a030-4555-b588-f344f933a523"
-           width="70%" />
-   </p>
+scoop bucket add extras
+scoop install git
+scoop install mingw
+scoop install uutils-coreutils
+```
 
 After this step, **git.exe** and Linux built-in commands(**sh.exe**, **cp.exe**,
 **mv.exe**, **ls.exe**, etc) will be available in **%PATH%**.
@@ -252,4 +240,127 @@ vim.keymap.set('n', '<space>gb', '<cmd>FzfxBranches<cr>',
 Warning: to support visual mode, you must use one of below methods to make it
 working correctly:
 
-1. Speicify `vim.cmd(
+1. Speicify `vim.cmd('execute "normal \\<ESC>"')` to exit visual mode before
+   calling fzfx command.
+
+2. Speicify `:<C-U>FzfxCommand<CR>` to calling fzfx command.
+
+For details please see: https://github.com/neovim/neovim/discussions/24055#discussioncomment-6213580.
+
+## Commands
+
+The variants are named following below rules:
+
+- Unrestricted searching (include hidden and ignored files) variants use `U` suffix.
+- Searching by visual selection variants use `V` suffix.
+- Searching by cursor word variants use `W` suffix.
+
+### FzfxFiles(UVW)
+
+https://github.com/linrongbin16/fzfx.vim/assets/6496887/4bc44577-345c-4b71-bd2f-f262d39bff9b
+
+- `FzfxFiles(U)` is almost the same with (`Fzf`)`Files`, except it's using fd command:
+
+  ```bash
+  # short version
+  fd -cnever -tf -tl -L -i
+  # e.g.
+  fd --color=never --type f --type symlink --follow --ignore-case
+  ```
+
+  Note: the unrestricted variants add `-u` option.
+
+- `FzfxFiles(U)V` is a variant of `FzfxFiles(U)`, except it searches by
+  visual selection.
+
+- `FzfxFiles(U)W` is a variant of `FzfxFiles(U)`, except it searches by
+  cursor word, e.g. `expand('<cword>')`.
+
+### FzfxBuffers
+
+https://github.com/linrongbin16/fzfx.vim/assets/6496887/1864fde1-0cba-40d2-8e53-b72140fb7675
+
+- `FzfxBuffers` is almost the same with (`Fzf`)`Buffers`, except it's using `ctrl-d`
+  to delete buffers:
+
+### FzfxLiveGrep(UVW)
+
+https://github.com/linrongbin16/fzfx.vim/assets/6496887/0309bbd9-f344-4ee3-bca1-5dd115665504
+
+- `FzfxLiveGrep(U)` is almost the same with (`Fzf`)`RG`, except:
+
+  1. it's using rg command:
+
+     ```bash
+     rg --column -n --no-heading --color=always -S
+     # e.g.
+     rg --column --line-number --no-heading --color=always --smart-case
+     ```
+
+     Note: the unrestricted variants add `-uu` options.
+
+  2. it allows user add rg's raw options by parsing `--` flag, treat the left part
+     as query content, the right side as rg's raw options. A most common use case
+     is searching by file type (via `--glob` or `--iglob` option):
+
+- `FzfxLiveGrep(U)V` is a variant of `FzfxLiveGrep(U)`, except it searches by
+  visual selection:
+
+- `FzfxLiveGrep(U)W` is a variant of `FzfxLiveGrep(U)`, except it searches by
+  cursor word, e.g. `expand('<cword>')`.
+
+### FzfxBranches
+
+https://github.com/linrongbin16/fzfx.vim/assets/6496887/e4b3e4b9-9b38-4fd7-bb8b-b7946fc49232
+
+- `FzfxBranches` can search git branches, and use `ENTER` to switch to the
+  selected branch:
+
+### FzfxResumeLiveGrep/FzfxResumeFiles
+
+- `FzfxResumeLiveGrep` can resume last live grep (include all variants).
+- `FzfxResumeFiles` can resume last files search (include all variants).
+
+## Config
+
+There're some global variables you can speicify to config:
+
+```vim
+""" ======== find/grep commands ========
+
+" live grep
+let g:fzfx_grep_command = 'rg --column -n --no-heading --color=always -S'
+let g:fzfx_unrestricted_grep_command = 'rg --column -n --no-heading --color=always -S -uu'
+
+" files
+let g:fzfx_find_command = 'fd -cnever -tf -tl -'
+let g:fzfx_unrestricted_find_command = 'fd -cnever -tf -tl -L -u'
+
+" git branches
+let g:fzfx_git_branch_command = 'git branch -a --color'
+
+""" ======== key actions ========
+
+" live grep
+let g:fzfx_live_grep_fzf_mode_action = 'ctrl-f'
+let g:fzfx_live_grep_rg_mode_action = 'ctrl-r'
+
+" buffers
+let g:fzfx_buffers_close_action = 'ctrl-d'
+
+""" ======== resume last search ========
+
+" live grep resume
+let g:fzfx_resume_live_grep_cache = '~/.cache/'.(has('nvim') ? 'nvim' : 'vim').'/fzfx.vim/resume_live_grep_cache'
+let g:fzfx_resume_live_grep_opts_cache = '~/.cache/'.(has('nvim') ? 'nvim' : 'vim').'/fzfx.vim/resume_live_grep_opts_cache'
+
+" files resume
+let g:fzfx_resume_files_cache = '~/.cache/'.(has('nvim') ? 'nvim' : 'vim').'/fzfx.vim/resume_files_cache'
+let g:fzfx_resume_files_opts_cache = '~/.cache/'.(has('nvim') ? 'nvim' : 'vim').'/fzfx.vim/resume_files_opts_cache'
+```
+
+## Credit
+
+- [fzf.vim](https://github.com/junegunn/fzf.vim): Things you can do with
+  [fzf](https://github.com/junegunn/fzf) and Vim.
+- [fzf-lua](https://github.com/ibhagwan/fzf-lua): Improved fzf.vim written in lua.
