@@ -4,7 +4,7 @@ E(x)tended fzf commands missing in fzf.vim.
 
 - [Requirement](#requirement)
   - [Rust commands](#rust-commands)
-  - [Git, MingW & Core Utils (for Windows)](#gitmingwcoreutilsforwindows)
+  - [Git, MingW & Core Utils (for Windows)](#git-mingw--core-utils-for-windows)
 - [Install](#install)
   - [vim-plug](#vim-plug)
   - [packer.nvim](#packernvim)
