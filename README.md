@@ -301,7 +301,8 @@ https://github.com/linrongbin16/fzfx.vim/assets/6496887/0309bbd9-f344-4ee3-bca1-
 
   2. it allows user add rg's raw options by parsing `--` flag, treat the left part
      as query content, the right side as rg's raw options. A most common use case
-     is searching by file type (via `--glob` or `--iglob` option):
+     is searching by file type (via `--glob` or `--iglob` option), for example
+     input `fzf -- -g '*.lua'` will search on lua files.
 
 - `FzfxLiveGrep(U)V` is a variant of `FzfxLiveGrep(U)`, except it searches by
   visual selection:
