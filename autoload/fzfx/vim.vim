@@ -26,6 +26,7 @@ else
 endif
 
 let s:_fzfx_enable_debug = get(g:, '_fzfx_enable_debug', 0)
+let $_FZFX_ENABLE_DEBUG = s:_fzfx_enable_debug
 
 function! s:exception(msg)
     throw "[fzfx.vim] Error! ".a:msg
