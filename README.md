@@ -26,9 +26,8 @@ E(x)tended fzf commands missing in fzf.vim.
 ## Requirement
 
 - Vim &ge; 7.4.1304 or Neovim.
-- [fzf](https://github.com/junegunn/fzf)
-- [fzf.vim](https://github.com/junegunn/fzf.vim)
-- [python3](https://www.python.org/downloads/) and [venv](https://docs.python.org/3/library/venv.html) (optional for google search).
+- [fzf](https://github.com/junegunn/fzf) and [fzf.vim](https://github.com/junegunn/fzf.vim).
+- [curl](https://curl.se/), [python3](https://www.python.org/downloads/) and [venv](https://docs.python.org/3/library/venv.html) (optional for google search).
 
 ### Rust commands
 
