@@ -1,0 +1,80 @@
+#!/usr/bin/env python3
+
+print("google-1")
+import os
+import sys
+
+import requests
+from bs4 import BeautifulSoup
+
+print("google-2")
+DOTS = "..."
+DOTS_LEN = len(DOTS)
+
+_FZFX_ENABLE_DEBUG = "_FZFX_ENABLE_DEBUG"
+DEBUG = _FZFX_ENABLE_DEBUG in os.environ and os.environ[_FZFX_ENABLE_DEBUG].lower() in [
+    "1",
+    "true",
+    "y",
+    "yes",
+]
+MAXLEN = max(DOTS_LEN, int(os.environ["_FZFX_GOOGLE_SEARCH_MAXLEN"]))
+
+
+def trim_len(s):
+    v = s
+    if len(s) > MAXLEN:
+        v = s[: MAXLEN - DOTS_LEN] + DOTS
+    return v
+
+
+args_list = sys.argv[1:]
+
+args = " ".join(args_list)
+if len(args) <= 0:
+    exit(0)
+
+DOUBLE_DASH = "--"
+double_dash_pos = args.find(DOUBLE_DASH)
+
+if double_dash_pos < 0:
+    query = args.strip()
+    opts = ""
+else:
+    query = args[:double_dash_pos].strip()
+    opts = args[double_dash_pos + 2 :].strip()
+
+if len(query) <= 0:
+    exit(0)
+
+params = {"q": query}
+if len(opts) > 0:
+    # first split by whitespace
+    opts_list = opts.split()
+    for opt in opts_list:
+        eq = opt.find("=")
+        if eq < 0:
+            continue
+        key = opt[:eq].strip()
+        val = opt[eq + 1 :].strip()
+        params[key] = val
+
+URL = f"https://www.google.com/search"
+if DEBUG:
+    print(f"DEBUG q:[{query}],opts:[{opts}],params:[{params}]")
+
+resp = requests.get(URL, params=params)
+soup = BeautifulSoup(resp.text, "lxml")
+search_dom = soup.find(id="search")
+sub_search_dom = search_dom.find("div").find("div")
+results_dom_list = sub_search_dom.find_all("div")
+
+if not isinstance(results_dom_list, list) or len(results_dom_list) <= 0:
+    exit(0)
+
+for item_dom in results_dom_list:
+    a_dom = item_dom.find("a")
+    link = a_dom["href"]
+    title = a_dom.find("h3").get_text().strip()
+    desc = trim_len(a_dom.get_text().strip())
+    print(f"{title}({link}):{desc}")

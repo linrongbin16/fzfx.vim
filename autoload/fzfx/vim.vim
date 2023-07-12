@@ -505,5 +505,26 @@ function! fzfx#vim#resume_files(fullscreen)
     call fzfx#vim#files(query, a:fullscreen, opts)
 endfunction
 
+" google search
+function! fzfx#vim#google_search(query, fullscreen, opts)
+    let provider=s:fzfx_bin.'google_search_provider'
+    " echo "query:".a:query.",provider:".provider.",fullscreen:".a:fullscreen
+    let command_fmt = provider.' %s || true'
+    let initial_command = printf(command_fmt, shellescape(a:query))
+    if s:is_win
+        let reload_command = printf('sleep 0.2 && '.command_fmt, '{q}')
+    else
+        let reload_command = printf('sleep 0.2;'.command_fmt, '{q}')
+    endif
+    let spec = {'options': [
+                \ '--disabled',
+                \ '--query', a:query,
+                \ '--bind', 'change:reload:'.reload_command,
+                \ '--prompt', 'Google> '
+                \ ]}
+    let spec = fzf#vim#with_preview(spec)
+    call fzf#vim#grep(initial_command, spec, a:fullscreen)
+endfunction
+
 let &cpo = s:cpo_save
 unlet s:cpo_save

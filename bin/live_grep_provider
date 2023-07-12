@@ -30,13 +30,13 @@ if [ ${#option} -gt 0 ] && [ "$option" != "$content" ]; then
     query_len=$((${#content} - ${#option} - ${#flag}))
     query=$(fzfx_trim "${content:0:query_len}")
     if [ $_FZFX_ENABLE_DEBUG -gt 0 ]; then
-        echo "DEBUG-\$grep:[$_FZFX_GREP_COMMAND],\$opt:[$option],\$q:[$query]"
+        echo "DEBUG \$grep:[$_FZFX_GREP_COMMAND],\$opt:[$option],\$q:[$query]"
     fi
     eval "$_FZFX_GREP_COMMAND $option -- \"$query\""
 else
     content=$(fzfx_trim "$content")
     if [ $_FZFX_ENABLE_DEBUG -gt 0 ]; then
-        echo "DEBUG-\$grep:[$_FZFX_GREP_COMMAND],\$q:[$content]"
+        echo "DEBUG \$grep:[$_FZFX_GREP_COMMAND],\$q:[$content]"
     fi
     eval "$_FZFX_GREP_COMMAND -- \"$content\""
 fi
