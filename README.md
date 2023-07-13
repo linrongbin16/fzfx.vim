@@ -257,7 +257,7 @@ The variants are named following below rules:
 
 ### FzfxFiles(UVW)
 
-https://github.com/linrongbin16/fzfx.vim/assets/6496887/24f936fe-50cc-48fe-b8e5-c0847c5f546a
+https://github.com/linrongbin16/fzfx.vim/assets/6496887/4bc44577-345c-4b71-bd2f-f262d39bff9b
 
 - `FzfxFiles(U)` is almost the same with (`Fzf`)`Files`, except it's using fd command:
 
@@ -285,7 +285,7 @@ https://github.com/linrongbin16/fzfx.vim/assets/6496887/1864fde1-0cba-40d2-8e53-
 
 ### FzfxLiveGrep(UVW)
 
-https://github.com/linrongbin16/fzfx.vim/assets/6496887/0309bbd9-f344-4ee3-bca1-5dd115665504
+https://github.com/linrongbin16/fzfx.vim/assets/6496887/24f936fe-50cc-48fe-b8e5-c0847c5f546a
 
 - `FzfxLiveGrep(U)` is almost the same with (`Fzf`)`RG`, except:
 
