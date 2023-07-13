@@ -46,8 +46,5 @@ command! -bang -nargs=* FzfxBranches call fzfx#vim#branches(<q-args>, <bang>0)
 command! -bang FzfxResumeLiveGrep call fzfx#vim#resume_live_grep(<bang>0)
 command! -bang FzfxResumeFiles call fzfx#vim#resume_files(<bang>0)
 
-" ======== resume ========
-command! -bang -nargs=* FzfxGoogleSearch call fzfx#vim#google_search(<q-args>, <bang>0, {})
-
 let s:cpo_save = &cpo
 set cpo&vim
