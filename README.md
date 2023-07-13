@@ -19,7 +19,6 @@ E(x)tended fzf commands missing in fzf.vim.
   - [FzfxLiveGrep(UVW)](#fzfxlivegrepuvw)
   - [FzfxBranches](#fzfxbranches)
   - [FzfxResumeLiveGrep/FzfxResumeFiles](#fzfxresumelivegrepfzfxresumefiles)
-  - [FzfxGoogle (optional)](#fzfxgoogle-optional)
 - [Config](#config)
 - [Credit](#credit)
 
@@ -27,7 +26,6 @@ E(x)tended fzf commands missing in fzf.vim.
 
 - Vim &ge; 7.4.1304 or Neovim.
 - [fzf](https://github.com/junegunn/fzf) and [fzf.vim](https://github.com/junegunn/fzf.vim).
-- [curl](https://curl.se/), [python3](https://www.python.org/downloads/) and [venv](https://docs.python.org/3/library/venv.html) (optional for google search).
 
 ### Rust commands
 
@@ -66,8 +64,6 @@ scoop install uutils-coreutils
 
 After this step, **git.exe** and Linux built-in commands(**sh.exe**, **cp.exe**,
 **mv.exe**, **ls.exe**, etc) will be available in **%PATH%**.
-
-### Google search (optional)
 
 ## Install
 
@@ -326,10 +322,6 @@ https://github.com/linrongbin16/fzfx.vim/assets/6496887/e4b3e4b9-9b38-4fd7-bb8b-
 
 - `FzfxResumeLiveGrep` can resume last live grep (include all variants).
 - `FzfxResumeFiles` can resume last files search (include all variants).
-
-### FzfxGoogle (optional)
-
-- `FzfxGoogle` can live search and preview results by `https://google.com/?q={query}`.
 
 ## Config
 
