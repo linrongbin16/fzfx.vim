@@ -339,11 +339,11 @@ let g:fzfx_unrestricted_grep_command = executable('rg')
         \ : "grep --recursive --line-number --color=always --no-messages --binary-files=without-match"
 
 " files
-let g:fzfx_find_command = (executable('fd') || executable('fdfind'))
-        \ ? (executable('fd') ? 'fd' : 'fdfind').' . --color=never --type f --type symlink --follow --ignore-case'
+let g:fzfx_find_command = executable('fd')
+        \ ? 'fd . --color=never --type f --type symlink --follow --ignore-case'
         \ : "find . -type f,l -not -path '*/.*'"
-let g:fzfx_unrestricted_find_command = (executable('fd') || executable('fdfind'))
-        \ ? (executable('fd') ? 'fd' : 'fdfind').' . --color=never --type f --type symlink --follow --ignore-case --unrestricted'
+let g:fzfx_unrestricted_find_command = executable('fd')
+        \ ? 'fd . --color=never --type f --type symlink --follow --ignore-case --unrestricted'
         \ : "find . -type f,l"
 
 " git branches

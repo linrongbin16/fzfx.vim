@@ -158,10 +158,10 @@ let s:fzfx_unrestricted_grep_command = get(g:, 'fzfx_unrestricted_grep_command',
 let $_FZFX_GREP_COMMAND = s:fzfx_grep_command
 let $_FZFX_UNRESTRICTED_GREP_COMMAND = s:fzfx_unrestricted_grep_command
 
-let s:default_fd_command = (executable('fd') ? 'fd' : 'fdfind').' . -cnever -tf -tl -L -i'
+let s:default_fd_command = 'fd . -cnever -tf -tl -L -i'
 let s:default_find_command = 'find . -type f,l'
-let s:fzfx_find_command = get(g:, 'fzfx_find_command', (executable('fd') || executable('fdfind')) ? s:default_fd_command : s:default_find_command." -not -path '*/.*'")
-let s:fzfx_unrestricted_find_command = get(g:, 'fzfx_unrestricted_find_command', (executable('fd') || executable('fdfind')) ? s:default_fd_command.' -u' : s:default_find_command)
+let s:fzfx_find_command = get(g:, 'fzfx_find_command', executable('fd') ? s:default_fd_command : s:default_find_command." -not -path '*/.*'")
+let s:fzfx_unrestricted_find_command = get(g:, 'fzfx_unrestricted_find_command', executable('fd') ? s:default_fd_command.' -u' : s:default_find_command)
 
 " `git branch -a --color`
 let s:fzfx_git_branch_command = get(g:, 'fzfx_git_branch_command', 'git branch -a --color')
