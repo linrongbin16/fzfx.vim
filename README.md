@@ -1,10 +1,12 @@
+<!-- markdownlint-disable MD013 MD034 -->
+
 # fzfx.vim
 
 E(x)tended fzf commands missing in fzf.vim.
 
 - [Requirement](#requirement)
   - [Rust commands](#rust-commands)
-  - [Git, MingW & Core Utils (for Windows)](#git-mingw--core-utils-for-windows)
+  - [Git, mingw & coreutils (for Windows)](#git-mingw--coreutils-for-windows)
 - [Install](#install)
   - [vim-plug](#vim-plug)
   - [packer.nvim](#packernvim)
@@ -23,8 +25,7 @@ E(x)tended fzf commands missing in fzf.vim.
 ## Requirement
 
 - Vim &ge; 7.4.1304 or Neovim.
-- [fzf](https://github.com/junegunn/fzf)
-- [fzf.vim](https://github.com/junegunn/fzf.vim)
+- [fzf](https://github.com/junegunn/fzf) and [fzf.vim](https://github.com/junegunn/fzf.vim).
 
 ### Rust commands
 
@@ -42,7 +43,7 @@ cargo install --locked bat
 cargo install git-delta
 ```
 
-### Git, MingW & Core Utils (for Windows)
+### Git, mingw & coreutils (for Windows)
 
 Since the cmd scripts on Windows are actually implemented by forwarding
 user input to linux shell scripts, thus we are relying on the embeded shell
@@ -330,12 +331,20 @@ There're some global variables you can speicify to config:
 """ ======== find/grep commands ========
 
 " live grep
-let g:fzfx_grep_command = 'rg --column -n --no-heading --color=always -S'
-let g:fzfx_unrestricted_grep_command = 'rg --column -n --no-heading --color=always -S -uu'
+let g:fzfx_grep_command = executable('rg')
+        \ ? 'rg --column --line-number --no-heading --color=always --smart-case'
+        \ : "grep --recursive --line-number --color=always --no-messages --binary-files=without-match --exclude-dir='*/.*'"
+let g:fzfx_unrestricted_grep_command = executable('rg')
+        \ ? 'rg --column --line-number --no-heading --color=always --smart-case --unrestricted --unrestricted'
+        \ : "grep --recursive --line-number --color=always --no-messages --binary-files=without-match"
 
 " files
-let g:fzfx_find_command = 'fd -cnever -tf -tl -'
-let g:fzfx_unrestricted_find_command = 'fd -cnever -tf -tl -L -u'
+let g:fzfx_find_command = executable('fd')
+        \ ? 'fd . --color=never --type f --type symlink --follow --ignore-case'
+        \ : "find . -type f,l -not -path '*/.*'"
+let g:fzfx_unrestricted_find_command = executable('fd')
+        \ ? 'fd . --color=never --type f --type symlink --follow --ignore-case --unrestricted'
+        \ : "find . -type f,l"
 
 " git branches
 let g:fzfx_git_branch_command = 'git branch -a --color'
