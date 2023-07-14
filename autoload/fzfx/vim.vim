@@ -305,6 +305,7 @@ function! s:visual_lines(mode)
 endfunction
 
 function! fzfx#vim#_visual_select()
+    execute "normal! \<ESC>"
     let query=''
     let mode=visualmode()
     if mode==?"v" || mode==?"\<C-V>"
