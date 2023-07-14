@@ -173,7 +173,7 @@ For Neovim:
 vim.keymap.set('n', '<space>f', '<cmd>FzfxFiles<cr>',
         {silent=true, noremap=true, desc="Search files"})
 -- you can also find by visual selected
-vim.keymap.set('x', '<space>f', ':<C-U>FzfxFilesV<CR>',
+vim.keymap.set('x', '<space>f', '<cmd>FzfxFilesV<CR>',
         {silent=true, noremap=true, desc="Search files"})
 -- unrestrictly find files, include hidden and ignored files
 vim.keymap.set('n', '<space>uf',
@@ -181,7 +181,7 @@ vim.keymap.set('n', '<space>uf',
         {silent=true, noremap=true, desc="Unrestricted search files"})
 -- you can also unrestrictly find by visual selected
 vim.keymap.set('x', '<space>uf',
-        ':<C-U>FzfxFilesUV<CR>',
+        '<cmd>FzfxFilesUV<CR>',
         {silent=true, noremap=true, desc="Unrestricted search files"})
 
 -- find files by cursor word
@@ -204,10 +204,7 @@ vim.keymap.set('n', '<space>l',
         {silent=true, noremap=true, desc="Live grep"})
 -- you can also grep by visual selected
 vim.keymap.set('x', '<space>l',
-        function()
-            vim.cmd('execute "normal \\<ESC>"')
-           vim.cmd("FzfxLiveGrepV")
-        end,
+        "<cmd>FzfxLiveGrepV<cr>",
         {silent=true, noremap=true, desc="Live grep"})
 -- unrestrictly live grep, include hidden and ignored files
 vim.keymap.set('n', '<space>ul',
@@ -215,10 +212,7 @@ vim.keymap.set('n', '<space>ul',
         {silent=true, noremap=true, desc="Unrestricted live grep"})
 -- you can also unrestrictly grep by visual selected
 vim.keymap.set('x', '<space>ul',
-        function()
-            vim.cmd('execute "normal \\<ESC>"')
-            vim.cmd("FzfxLiveGrepUV")
-        end,
+        "<cmd>FzfxLiveGrepUV<cr>",
         {silent=true, noremap=true, desc="Live grep"})
 
 -- live grep by cursor word, filter hidden and ignored files
@@ -237,16 +231,6 @@ vim.keymap.set('n', '<space>uwl',
 vim.keymap.set('n', '<space>gb', '<cmd>FzfxBranches<cr>',
         {silent=true, noremap=true, desc="Search git branches"})
 ```
-
-Warning: to support visual mode, you must use one of below methods to make it
-working correctly:
-
-1. Speicify `vim.cmd('execute "normal \\<ESC>"')` to exit visual mode before
-   calling fzfx command.
-
-2. Speicify `:<C-U>FzfxCommand<CR>` to calling fzfx command.
-
-For details please see: https://github.com/neovim/neovim/discussions/24055#discussioncomment-6213580.
 
 ## Commands
 
