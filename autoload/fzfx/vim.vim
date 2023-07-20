@@ -469,14 +469,12 @@ function! fzfx#vim#branches(query, fullscreen)
                 \ 'options': [
                 \   '--no-multi',
                 \   '--delimiter=:',
-                \   '--bind', 'ctrl-l:toggle-preview',
-                \   '--preview-window', 'right,50%',
                 \   '--prompt', 'Branches> ',
                 \   '--preview', git_branches_previewer.' {}',
                 \   '--header', git_branch_header,
                 \   s:expect_keys("enter", "double-click"),
                 \ ]}
-    call fzf#run(fzf#wrap('branches', spec, a:fullscreen))
+    call fzf#run(fzf#wrap('branches', fzf#vim#with_preview(spec), a:fullscreen))
 endfunction
 
 " resume
@@ -508,9 +506,17 @@ endfunction
 
 " lsp diagnostics
 function! fzfx#vim#lsp_document_diagnostics(query, fullscreen)
+    if !has('nvim')
+        call s:exception("Lsp diagnostics only support on nvim!")
+        return
+    endif
 endfunction
 
 function! fzfx#vim#lsp_workspace_diagnostics(query, fullscreen)
+    if !has('nvim')
+        call s:exception("Lsp diagnostics only support on nvim!")
+        return
+    endif
 endfunction
 
 let &cpo = s:cpo_save
