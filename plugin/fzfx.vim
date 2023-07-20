@@ -48,8 +48,8 @@ command! -bang FzfxResumeFiles call fzfx#vim#resume_files(<bang>0)
 
 " ======== lsp ========
 " severity: 1-ERROR, 2-WARN, 3-INFO, 4-HINT
-command! -bang FzfxLspDocumentDiagnostics call fzfx#vim#lsp_diagnostics(<q-args>, <bang>0, {'workspace': 1, 'severity': 'HINT'})
 command! -bang FzfxLspWorkspaceDiagnostics call fzfx#vim#lsp_diagnostics(<q-args>, <bang>0, {'workspace': 0, 'severity': 'HINT'})
+command! -bang FzfxLspDocumentDiagnostics call fzfx#vim#lsp_diagnostics(<q-args>, <bang>0, {'workspace': 1, 'severity': 'HINT'})
 
 let s:cpo_save = &cpo
 set cpo&vim

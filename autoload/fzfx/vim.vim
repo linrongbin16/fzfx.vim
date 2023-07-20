@@ -25,7 +25,7 @@ else
     let s:vim='vim'
 endif
 
-let s:_fzfx_enable_debug = get(g:, '_fzfx_enable_debug', 0)
+let s:_fzfx_enable_debug = get(g:, '_fzfx_enable_debug', 1)
 let $_FZFX_ENABLE_DEBUG = s:_fzfx_enable_debug
 
 function! s:exception(msg)
@@ -537,7 +537,8 @@ function! fzfx#vim#lsp_diagnostics(query, fullscreen, opts)
         return
     endif
 
-    let lua_expr = "require('fzfx').lsp_diagnostics({workspace=".string(a:opts.workspace).",severity='".string(a:opts.severity)."'},{green_func_name='".s:green_func_name."',blue_func_name='".s:blue_func_name."'})"
+    let lua_expr = "require('fzfx').lsp_diagnostics({workspace=".string(a:opts.workspace).",severity=".string(a:opts.severity)."},{green_func_name='".s:green_func_name."',blue_func_name='".s:blue_func_name."'})"
+    call s:debug("lua_expr:[".lua_expr."]")
     let diagnostics_list = luaeval(lua_expr)
     let spec = {
                 \ 'source': diagnostics_list,
