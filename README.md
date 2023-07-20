@@ -88,10 +88,7 @@ return require('packer').startup(function(use)
     use { "junegunn/fzf.vim", requires = { "junegunn/fzf" } }
     use {
         "linrongbin16/fzfx.vim",
-        requires = {
-            "junegunn/fzf",
-            "junegunn/fzf.vim",
-        },
+        requires = { "junegunn/fzf", "junegunn/fzf.vim" },
     }
 
 end)
@@ -106,10 +103,7 @@ return {
     { "junegunn/fzf.vim", dependencies = { "junegunn/fzf" } },
     {
         "linrongbin16/fzfx.vim",
-        dependencies = {
-            "junegunn/fzf",
-            "junegunn/fzf.vim"
-        },
+        dependencies = { "junegunn/fzf", "junegunn/fzf.vim" },
     },
 
 }
