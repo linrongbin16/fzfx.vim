@@ -505,18 +505,32 @@ function! fzfx#vim#resume_files(fullscreen)
 endfunction
 
 " lsp diagnostics
-function! fzfx#vim#lsp_document_diagnostics(query, fullscreen)
+function! fzfx#vim#lsp_diagnostics(query, fullscreen, opts)
     if !has('nvim')
         call s:exception("Lsp diagnostics only support on nvim!")
         return
     endif
-endfunction
+    let git_branch_header=':: Press '.call(s:magenta_ref, ['ENTER', 'Special']).' to switch branch'
+    let git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
+    if len(a:query) > 0
+        let command_fmt = s:fzfx_git_branch_command.' --list %s'
+        let initial_command = printf(command_fmt, shellescape(a:query))
+    else
+        let initial_command = s:fzfx_git_branch_command
+    endif
 
-function! fzfx#vim#lsp_workspace_diagnostics(query, fullscreen)
-    if !has('nvim')
-        call s:exception("Lsp diagnostics only support on nvim!")
-        return
-    endif
+    let spec = {
+                \ 'source': initial_command,
+                \ 'sink*': {lines -> s:branches_sink(lines)},
+                \ 'options': [
+                \   '--no-multi',
+                \   '--delimiter=:',
+                \   '--prompt', 'Branches> ',
+                \   '--preview', git_branches_previewer.' {}',
+                \   '--header', git_branch_header,
+                \   s:expect_keys("enter", "double-click"),
+                \ ]}
+    call fzf#run(fzf#wrap('branches', fzf#vim#with_preview(spec), a:fullscreen))
 endfunction
 
 let &cpo = s:cpo_save

@@ -24,7 +24,7 @@ E(x)tended fzf commands missing in fzf.vim.
 
 ## Requirement
 
-- Vim &ge; 7.4.1304 or Neovim.
+- Vim &ge; 7.4.1304 or Neovim (Neovim &ge 0.8 for optional lsp diagnostics).
 - [fzf](https://github.com/junegunn/fzf) and [fzf.vim](https://github.com/junegunn/fzf.vim).
 
 ### Rust commands
