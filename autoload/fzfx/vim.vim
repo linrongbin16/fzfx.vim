@@ -138,14 +138,21 @@ endfunction
 
 let s:fzf_autoload_sid = s:get_fzf_autoload_sid()
 
+function! s:get_fzf_autoload_func_name(sid, name)
+    return '<SNR>'.a:sid.'_'.a:name
+endfunction
+
 function! s:get_fzf_autoload_func_ref(sid, name)
-    return function('<SNR>'.a:sid.'_'.a:name)
+    return function(s:get_fzf_autoload_func_name(a:sid, a:name))
 endfunction
 
 " script local functions import from fzf.vim autoload.
 let s:action_for_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "action_for")
 let s:magenta_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "magenta")
 let s:bufopen_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "bufopen")
+
+let s:green_func_name = s:get_fzf_autoload_func_name(s:fzf_autoload_sid, "green")
+let s:blue_func_name = s:get_fzf_autoload_func_name(s:fzf_autoload_sid, "blue")
 
 " ======== defaults ========
 
@@ -505,32 +512,43 @@ function! fzfx#vim#resume_files(fullscreen)
 endfunction
 
 " lsp diagnostics
+function! s:lsp_diagnostics_sink(lines)
+    " echo "lines0:".string(a:lines)
+    if len(a:lines) < 2
+        return
+    endif
+    let b = matchstr(a:lines[1], '\[\zs[0-9]*\ze\]')
+    let bufname=split(a:lines[1])[-1]
+    let action = a:lines[0]
+    " echo "lines0.5:".string(a:lines).",b:".b."(".string(bufname).")"
+    if action ==? s:fzfx_buffers_close_action
+        execute 'bdelete' b
+        " echo "lines2:".string(a:lines).",bdelete:".b."(".bufname.")"
+        call fzfx#vim#buffers(a:query, a:fullscreen)
+    else
+        call call(s:bufopen_ref, [a:lines])
+    endif
+endfunction
+
+
 function! fzfx#vim#lsp_diagnostics(query, fullscreen, opts)
     if !has('nvim')
         call s:exception("Lsp diagnostics only support on nvim!")
         return
     endif
-    let git_branch_header=':: Press '.call(s:magenta_ref, ['ENTER', 'Special']).' to switch branch'
-    let git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
-    if len(a:query) > 0
-        let command_fmt = s:fzfx_git_branch_command.' --list %s'
-        let initial_command = printf(command_fmt, shellescape(a:query))
-    else
-        let initial_command = s:fzfx_git_branch_command
-    endif
 
+    let lua_expr = "require('fzfx').lsp_diagnostics({workspace=".string(a:opts.workspace).",severity='".string(a:opts.severity)."'},{green_func_name='".s:green_func_name."',blue_func_name='".s:blue_func_name."'})"
+    let diagnostics_list = luaeval(lua_expr)
     let spec = {
-                \ 'source': initial_command,
-                \ 'sink*': {lines -> s:branches_sink(lines)},
+                \ 'source': diagnostics_list,
+                \ 'sink*': {lines -> s:lsp_diagnostics_sink(lines)},
                 \ 'options': [
                 \   '--no-multi',
                 \   '--delimiter=:',
-                \   '--prompt', 'Branches> ',
-                \   '--preview', git_branches_previewer.' {}',
-                \   '--header', git_branch_header,
+                \   '--prompt', 'Diagnostics> ',
                 \   s:expect_keys("enter", "double-click"),
                 \ ]}
-    call fzf#run(fzf#wrap('branches', fzf#vim#with_preview(spec), a:fullscreen))
+    call fzf#run(fzf#wrap('diagnostics', fzf#vim#with_preview(spec), a:fullscreen))
 endfunction
 
 let &cpo = s:cpo_save
