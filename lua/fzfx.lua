@@ -39,7 +39,7 @@ for _, sign in ipairs(DIAGNOSTIC_SIGNS_LIST) do
     end
 end
 
-local function colorize(ref_func_name, text, hl)
+local function colorize(ref_name, text, hl)
     if type(text) == "string" then
         text = "'" .. text .. "'"
     end
@@ -47,7 +47,7 @@ local function colorize(ref_func_name, text, hl)
         hl = "'" .. hl .. "'"
         return vim.api.nvim_eval(
             "call(function('"
-                .. ref_func_name
+                .. ref_name
                 .. "'), ["
                 .. text
                 .. ", "
@@ -56,7 +56,7 @@ local function colorize(ref_func_name, text, hl)
         )
     else
         return vim.api.nvim_eval(
-            "call(function('" .. ref_func_name .. "'), [" .. text .. "])"
+            "call(function('" .. ref_name .. "'), [" .. text .. "])"
         )
     end
 end
@@ -76,13 +76,11 @@ local function make_diagnostic_entry(entry, sid_refs)
     end
 
     local SEVERITY_COLOR_MAP = {
-        [1] = "red_func_name",
-        [2] = "yellow_func_name",
-        [3] = "green_func_name",
-        [4] = "cyan_func_name",
+        [1] = "red_ref_name",
+        [2] = "yellow_ref_name",
+        [3] = "green_ref_name",
+        [4] = "magenta_ref_name",
     }
-
-    local magenta_func_name = sid_refs["magenta_func_name"]
 
     local abs_filename = vim.api.nvim_buf_get_name(entry.bufnr)
     local rel_filename = vim.fn.fnamemodify(abs_filename, ":~:.")
@@ -93,12 +91,12 @@ local function make_diagnostic_entry(entry, sid_refs)
     local sign = nil
     local sign_text = " "
     local sign_texthl = nil
-    local sign_texthl_func_name = nil
+    local sign_texthl_ref_name = nil
     if DIAGNOSTIC_SIGNS_MAP[entry.severity] ~= nil then
         sign = DIAGNOSTIC_SIGNS_MAP[entry.severity]
         sign_texthl = sign.texthl
-        sign_texthl_func_name = sid_refs[SEVERITY_COLOR_MAP[entry.severity]]
-        sign_text = colorize(sign_texthl_func_name, sign.text, sign_texthl)
+        sign_texthl_ref_name = sid_refs[SEVERITY_COLOR_MAP[entry.severity]]
+        sign_text = colorize(sign_texthl_ref_name, sign.text, sign_texthl)
     end
     local message = has_message
             and string.format("%s%s", sign_text, vim.trim(entry.message))
@@ -107,7 +105,7 @@ local function make_diagnostic_entry(entry, sid_refs)
     local result = string.format(
         "%s:%s:%s:%s%s",
         rel_filename,
-        colorize(magenta_func_name, entry.lnum),
+        entry.lnum,
         entry.col,
         has_message and " " or "",
         message

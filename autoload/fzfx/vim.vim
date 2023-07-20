@@ -151,11 +151,11 @@ let s:action_for_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "action_f
 let s:magenta_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "magenta")
 let s:bufopen_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "bufopen")
 
-let s:red_func_name = s:get_fzf_autoload_func_name(s:fzf_autoload_sid, "red")
-let s:yellow_func_name = s:get_fzf_autoload_func_name(s:fzf_autoload_sid, "yellow")
-let s:green_func_name = s:get_fzf_autoload_func_name(s:fzf_autoload_sid, "green")
-let s:cyan_func_name = s:get_fzf_autoload_func_name(s:fzf_autoload_sid, "cyan")
-let s:magenta_func_name = s:get_fzf_autoload_func_name(s:fzf_autoload_sid, "magenta")
+let s:red_ref_name = s:get_fzf_autoload_func_name(s:fzf_autoload_sid, "red")
+let s:yellow_ref_name = s:get_fzf_autoload_func_name(s:fzf_autoload_sid, "yellow")
+let s:green_ref_name = s:get_fzf_autoload_func_name(s:fzf_autoload_sid, "green")
+let s:cyan_ref_name = s:get_fzf_autoload_func_name(s:fzf_autoload_sid, "cyan")
+let s:magenta_ref_name = s:get_fzf_autoload_func_name(s:fzf_autoload_sid, "magenta")
 
 " ======== defaults ========
 
@@ -540,7 +540,7 @@ function! fzfx#vim#lsp_diagnostics(query, fullscreen, opts)
         return
     endif
 
-    let lua_expr = "require('fzfx').lsp_diagnostics({workspace=".string(a:opts.workspace).",severity=".string(a:opts.severity)."},{green_func_name='".s:green_func_name."',red_func_name='".s:red_func_name."',cyan_func_name='".s:cyan_func_name."',yellow_func_name='".s:yellow_func_name."',magenta_func_name='".s:magenta_func_name."'})"
+    let lua_expr = "require('fzfx').lsp_diagnostics({workspace=".string(a:opts.workspace).",severity=".string(a:opts.severity)."},{green_ref_name='".s:green_ref_name."',red_ref_name='".s:red_ref_name."',cyan_ref_name='".s:cyan_ref_name."',yellow_ref_name='".s:yellow_ref_name."',magenta_ref_name='".s:magenta_ref_name."'})"
     call fzfx#vim#_debug("lua_expr:[".lua_expr."]")
     let diagnostics_list = luaeval(lua_expr)
     let spec = {
