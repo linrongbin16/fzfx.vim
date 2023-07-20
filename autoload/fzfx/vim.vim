@@ -506,5 +506,12 @@ function! fzfx#vim#resume_files(fullscreen)
     call fzfx#vim#files(query, a:fullscreen, opts)
 endfunction
 
+" lsp diagnostics
+function! fzfx#vim#lsp_document_diagnostics(query, fullscreen)
+endfunction
+
+function! fzfx#vim#lsp_workspace_diagnostics(query, fullscreen)
+endfunction
+
 let &cpo = s:cpo_save
 unlet s:cpo_save

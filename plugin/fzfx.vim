@@ -46,5 +46,9 @@ command! -bang -nargs=* FzfxBranches call fzfx#vim#branches(<q-args>, <bang>0)
 command! -bang FzfxResumeLiveGrep call fzfx#vim#resume_live_grep(<bang>0)
 command! -bang FzfxResumeFiles call fzfx#vim#resume_files(<bang>0)
 
+" ======== lsp ========
+command! -bang FzfxLspDocumentDiagnostics call fzfx#vim#lsp_document_diagnostics(<q-args>, <bang>0)
+command! -bang FzfxLspWorkspaceDiagnostics call fzfx#vim#lsp_workspace_diagnostics(<q-args>, <bang>0)
+
 let s:cpo_save = &cpo
 set cpo&vim
