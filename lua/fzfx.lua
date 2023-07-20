@@ -83,8 +83,8 @@ local function lsp_diagnostics(opts, sid_refs)
             severity = opts.severity
         end
         if type(opts.severity) == "string" then
-            if SEVERITY_MAP[opts.severity] ~= nil then
-                severity = SEVERITY_MAP[opts.severity]
+            if SEVERITY_MAP[opts.severity:upper()] ~= nil then
+                severity = SEVERITY_MAP[opts.severity:upper()]
             end
         end
     end
