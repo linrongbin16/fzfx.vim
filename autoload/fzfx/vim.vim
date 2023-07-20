@@ -28,21 +28,21 @@ endif
 let s:_fzfx_enable_debug = get(g:, '_fzfx_enable_debug', 1)
 let $_FZFX_ENABLE_DEBUG = s:_fzfx_enable_debug
 
-function! s:exception(msg)
+function! fzfx#vim#_exception(msg)
     throw "[fzfx.vim] Error! ".a:msg
 endfunction
 
-function! s:warning(msg)
+function! fzfx#vim#_warning(msg)
     echohl WarningMsg
     echomsg "[fzfx.vim] Warning! ".a:msg
     echohl None
 endfunction
 
-function! s:message(msg)
+function! fzfx#vim#_info(msg)
     echomsg "[fzfx.vim] ".a:msg
 endfunction
 
-function! s:debug(msg)
+function! fzfx#vim#_debug(msg)
     if s:_fzfx_enable_debug
         echomsg "[fzfx.vim|debug] ".a:msg
     endif
@@ -68,7 +68,7 @@ function! s:get_sid(scriptname)
                 let matched_line = normalized_line
             else
                 " multiple matches, unexpected.
-                call s:warning("Found multiple '".a:scriptname."' files with same name.")
+                call fzfx#vim#_warning("Found multiple '".a:scriptname."' files with same name.")
             endif
         endif
     endfor
@@ -82,7 +82,7 @@ function! s:get_sid(scriptname)
     " extract the first number before : and return it as the scriptID
     let matched_splits = split(matched_line)
     if len(matched_splits) != 2
-        call s:warning('Failed to parse matched line: '.matched_line)
+        call fzfx#vim#_warning('Failed to parse matched line: '.matched_line)
         return [v:null, v:null]
     endif
 
@@ -112,7 +112,7 @@ function! s:get_fzf_autoload_sid()
     let [plugin_sid, plugin_path] = s:get_sid("fzf.vim/plugin/fzf.vim")
     " echo "get_fzf_sid-2, plugin_sid:[".plugin_sid."], plugin_path:[".plugin_path."]"
     if plugin_sid is v:null
-        call s:exception("Failed to find vimscript 'fzf.vim/plugin/fzf.vim'")
+        call fzfx#vim#_exception("Failed to find vimscript 'fzf.vim/plugin/fzf.vim'")
         return v:null
     endif
 
@@ -122,7 +122,7 @@ function! s:get_fzf_autoload_sid()
     if filereadable(autoload_path)
         execute "source ".autoload_path
     else
-        call s:exception("Failed to source vimscript '".autoload_path."'")
+        call fzfx#vim#_exception("Failed to source vimscript '".autoload_path."'")
         return v:null
     endif
 
@@ -132,7 +132,7 @@ function! s:get_fzf_autoload_sid()
         return autoload_sid2
     endif
 
-    call s:exception("Failed to find vimscript '".autoload_path."' SID")
+    call fzfx#vim#_exception("Failed to find vimscript '".autoload_path."' SID")
     return v:null
 endfunction
 
@@ -151,8 +151,11 @@ let s:action_for_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "action_f
 let s:magenta_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "magenta")
 let s:bufopen_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "bufopen")
 
+let s:red_func_name = s:get_fzf_autoload_func_name(s:fzf_autoload_sid, "red")
+let s:yellow_func_name = s:get_fzf_autoload_func_name(s:fzf_autoload_sid, "yellow")
 let s:green_func_name = s:get_fzf_autoload_func_name(s:fzf_autoload_sid, "green")
-let s:blue_func_name = s:get_fzf_autoload_func_name(s:fzf_autoload_sid, "blue")
+let s:cyan_func_name = s:get_fzf_autoload_func_name(s:fzf_autoload_sid, "cyan")
+let s:magenta_func_name = s:get_fzf_autoload_func_name(s:fzf_autoload_sid, "magenta")
 
 " ======== defaults ========
 
@@ -355,32 +358,32 @@ endfunction
 
 " deprecated
 function! fzfx#vim#unrestricted_live_grep(query, fullscreen)
-    call s:warning("'FzfxUnrestrictedLiveGrep' is deprecated, use 'FzfxLiveGrepU'!")
+    call fzfx#vim#_warning("'FzfxUnrestrictedLiveGrep' is deprecated, use 'FzfxLiveGrepU'!")
     call fzfx#vim#live_grep(a:query, a:fullscreen, {'unrestricted': 1})
 endfunction
 " deprecated
 function! fzfx#vim#live_grep_visual(fullscreen)
-    call s:warning("'FzfxLiveGrepVisual' is deprecated, use 'FzfxLiveGrepV'!")
+    call fzfx#vim#_warning("'FzfxLiveGrepVisual' is deprecated, use 'FzfxLiveGrepV'!")
     let query=fzfx#vim#_visual_select()
     call fzfx#vim#live_grep(query, a:fullscreen, {'unrestricted': 0})
 endfunction
 
 " deprecated
 function! fzfx#vim#unrestricted_live_grep_visual(fullscreen)
-    call s:warning("'FzfxUnrestrictedLiveGrepVisual' is deprecated, use 'FzfxLiveGrepUV'!")
+    call fzfx#vim#_warning("'FzfxUnrestrictedLiveGrepVisual' is deprecated, use 'FzfxLiveGrepUV'!")
     let query=fzfx#vim#_visual_select()
     call fzfx#vim#live_grep(query, a:fullscreen, {'unrestricted': 1})
 endfunction
 
 " deprecated
 function! fzfx#vim#grep_word(fullscreen)
-    call s:warning("'FzfxGrepWord' is deprecated, use 'FzfxLiveGrepW'!")
+    call fzfx#vim#_warning("'FzfxGrepWord' is deprecated, use 'FzfxLiveGrepW'!")
     call fzfx#vim#live_grep(expand('<cword>'), a:fullscreen, {'unrestricted': 0})
 endfunction
 
 " deprecated
 function! fzfx#vim#unrestricted_grep_word(fullscreen)
-    call s:warning("'FzfxUnrestrictedGrepWord' is deprecated, use 'FzfxLiveGrepUW'!")
+    call fzfx#vim#_warning("'FzfxUnrestrictedGrepWord' is deprecated, use 'FzfxLiveGrepUW'!")
     call fzfx#vim#live_grep(expand('<cword>'), a:fullscreen, {'unrestricted': 1})
 endfunction
 
@@ -401,7 +404,7 @@ endfunction
 
 " deprecated
 function! fzfx#vim#unrestricted_files(query, fullscreen)
-    call s:warning("'FzfxUnrestrictedFiles' is deprecated, use 'FzfxFilesU'!")
+    call fzfx#vim#_warning("'FzfxUnrestrictedFiles' is deprecated, use 'FzfxFilesU'!")
     call fzfx#vim#files(a:query, a:fullscreen, {'unrestricted':1})
 endfunction
 
@@ -502,11 +505,11 @@ function! fzfx#vim#resume_files(fullscreen)
     let opts = {'unrestricted': 0}
     if s:cache_has(s:fzfx_resume_files_cache)
         let query = s:cache_get(s:fzfx_resume_files_cache)
-        call s:debug("resume_files-1, query:".query)
+        call fzfx#vim#_debug("resume_files-1, query:".query)
     endif
     if s:cache_has(s:fzfx_resume_files_opts_cache)
         let opts = s:cache_get_object(s:fzfx_resume_files_opts_cache)
-        call s:debug("resume_files-2, opts:".string(opts))
+        call fzfx#vim#_debug("resume_files-2, opts:".string(opts))
     endif
     call fzfx#vim#files(query, a:fullscreen, opts)
 endfunction
@@ -533,12 +536,12 @@ endfunction
 
 function! fzfx#vim#lsp_diagnostics(query, fullscreen, opts)
     if !has('nvim')
-        call s:exception("Lsp diagnostics only support on nvim!")
+        call fzfx#vim#_exception("Lsp diagnostics only support on nvim!")
         return
     endif
 
-    let lua_expr = "require('fzfx').lsp_diagnostics({workspace=".string(a:opts.workspace).",severity=".string(a:opts.severity)."},{green_func_name='".s:green_func_name."',blue_func_name='".s:blue_func_name."'})"
-    call s:debug("lua_expr:[".lua_expr."]")
+    let lua_expr = "require('fzfx').lsp_diagnostics({workspace=".string(a:opts.workspace).",severity=".string(a:opts.severity)."},{green_func_name='".s:green_func_name."',red_func_name='".s:red_func_name."',cyan_func_name='".s:cyan_func_name."',yellow_func_name='".s:yellow_func_name."',magenta_func_name='".s:magenta_func_name."'})"
+    call fzfx#vim#_debug("lua_expr:[".lua_expr."]")
     let diagnostics_list = luaeval(lua_expr)
     let spec = {
                 \ 'source': diagnostics_list,
