@@ -88,10 +88,7 @@ return require('packer').startup(function(use)
     use { "junegunn/fzf.vim", requires = { "junegunn/fzf" } }
     use {
         "linrongbin16/fzfx.vim",
-        requires = {
-            "junegunn/fzf",
-            "junegunn/fzf.vim",
-        },
+        requires = { "junegunn/fzf", "junegunn/fzf.vim" },
     }
 
 end)
@@ -106,10 +103,7 @@ return {
     { "junegunn/fzf.vim", dependencies = { "junegunn/fzf" } },
     {
         "linrongbin16/fzfx.vim",
-        dependencies = {
-            "junegunn/fzf",
-            "junegunn/fzf.vim"
-        },
+        dependencies = { "junegunn/fzf", "junegunn/fzf.vim" },
     },
 
 }
@@ -358,3 +352,13 @@ let g:fzfx_resume_files_opts_cache = '~/.cache/'.(has('nvim') ? 'nvim' : 'vim').
 - [fzf.vim](https://github.com/junegunn/fzf.vim): Things you can do with
   [fzf](https://github.com/junegunn/fzf) and Vim.
 - [fzf-lua](https://github.com/ibhagwan/fzf-lua): Improved fzf.vim written in lua.
+
+## Contribute
+
+Please open [issue](https://github.com/linrongbin16/fzfx.vim/issues)/[PR](https://github.com/linrongbin16/fzfx.vim/pulls) for anything about fzfx.vim.
+
+Like fzfx.vim? Consider
+
+[![buymeacoffee](https://img.shields.io/badge/-Buy%20Me%20a%20Coffee-ff5f5f?logo=ko-fi&logoColor=white)](https://www.buymeacoffee.com/linrongbin16)
+[![Wechat Pay](https://img.shields.io/badge/-Tip%20Me%20on%20WeChat-brightgreen?logo=wechat&logoColor=white)](https://github.com/linrongbin16/lin.nvim/wiki/Sponsor)
+[![Alipay](https://img.shields.io/badge/-Tip%20Me%20on%20Alipay-blue?logo=alipay&logoColor=white)](https://github.com/linrongbin16/lin.nvim/wiki/Sponsor)
