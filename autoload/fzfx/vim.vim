@@ -208,10 +208,10 @@ else
     let s:fzfx_resume_files_cache = s:fzfx_resume_cache_dir.s:_path_slash.'resume_files_cache'
 endif
 if exists("g:fzfx_resume_files_opts_cache")
-    call s:warning("Config 'g:fzfx_resume_files_opts_cache' is deprecated, please use 'g:fzfx_resume_opts_cache_dir'!")
+    call s:warning("Config 'g:fzfx_resume_files_opts_cache' is deprecated, please use 'g:fzfx_resume_cache_dir'!")
     let s:fzfx_resume_files_opts_cache = expand(get(g:, 'fzfx_resume_files_opts_cache', '~/.opts_cache/'.s:vim.'/fzfx.vim/resume_files_opts_cache'))
 else
-    let s:fzfx_resume_files_opts_cache = s:fzfx_resume_opts_cache_dir.s:_path_slash.'resume_files_opts_cache'
+    let s:fzfx_resume_files_opts_cache = s:fzfx_resume_cache_dir.s:_path_slash.'resume_files_opts_cache'
 endif
 
 let $_FZFX_RESUME_LIVE_GREP_CACHE = s:fzfx_resume_live_grep_cache

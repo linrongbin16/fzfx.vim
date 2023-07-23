@@ -338,13 +338,8 @@ let g:fzfx_buffers_close_action = 'ctrl-d'
 
 """ ======== resume last search ========
 
-" live grep resume
-let g:fzfx_resume_live_grep_cache = '~/.cache/'.(has('nvim') ? 'nvim' : 'vim').'/fzfx.vim/resume_live_grep_cache'
-let g:fzfx_resume_live_grep_opts_cache = '~/.cache/'.(has('nvim') ? 'nvim' : 'vim').'/fzfx.vim/resume_live_grep_opts_cache'
-
-" files resume
-let g:fzfx_resume_files_cache = '~/.cache/'.(has('nvim') ? 'nvim' : 'vim').'/fzfx.vim/resume_files_cache'
-let g:fzfx_resume_files_opts_cache = '~/.cache/'.(has('nvim') ? 'nvim' : 'vim').'/fzfx.vim/resume_files_opts_cache'
+" cache dir
+let g:fzfx_resume_cache_dir = has('nvim') ? stdpath('data').'/fzfx.vim' : '~/.cache/vim/fzfx.vim'
 ```
 
 ## Credit
