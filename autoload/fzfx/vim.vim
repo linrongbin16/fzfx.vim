@@ -68,7 +68,7 @@ function! s:get_sid(scriptname)
                 let matched_line = normalized_line
             else
                 " multiple matches, unexpected.
-                call s:warning("Found multiple '".a:scriptname."' files with same name.")
+                call s:warning("Found multiple '".a:scriptname."' files with same name!")
             endif
         endif
     endfor
@@ -82,7 +82,7 @@ function! s:get_sid(scriptname)
     " extract the first number before : and return it as the scriptID
     let matched_splits = split(matched_line)
     if len(matched_splits) != 2
-        call s:warning('Failed to parse matched line: '.matched_line)
+        call s:warning('Failed to parse matched line: '.matched_line.'!')
         return [v:null, v:null]
     endif
 
@@ -182,10 +182,37 @@ let s:default_action = {
 
 " cache
 
-let s:fzfx_resume_live_grep_cache = expand(get(g:, 'fzfx_resume_live_grep_cache', '~/.cache/'.s:vim.'/fzfx.vim/resume_live_grep_cache'))
-let s:fzfx_resume_live_grep_opts_cache = expand(get(g:, 'fzfx_resume_live_grep_opts_cache', '~/.cache/'.s:vim.'/fzfx.vim/resume_live_grep_opts_cache'))
-let s:fzfx_resume_files_cache = expand(get(g:, 'fzfx_resume_files_cache', '~/.cache/'.s:vim.'/fzfx.vim/resume_files_cache'))
-let s:fzfx_resume_files_opts_cache = expand(get(g:, 'fzfx_resume_files_opts_cache', '~/.cache/'.s:vim.'/fzfx.vim/resume_files_opts_cache'))
+let s:default_cache_dir = '~/.cache/vim/fzfx.vim'
+let s:_path_slash = s:is_win ? '\' : '/'
+if has('nvim')
+    let s:default_cache_dir = stdpath('data').s:_path_slash.'fzfx.vim'
+endif
+let s:fzfx_resume_cache_dir = expand(get(g:, 'fzfx_resume_cache_dir', s:default_cache_dir))
+
+if exists("g:fzfx_resume_live_grep_cache")
+    call s:warning("Config 'g:fzfx_resume_live_grep_cache' is deprecated, please use 'g:fzfx_resume_cache_dir'!")
+    let s:fzfx_resume_live_grep_cache = expand(get(g:, 'fzfx_resume_live_grep_cache', '~/.cache/'.s:vim.'/fzfx.vim/resume_live_grep_cache'))
+else
+    let s:fzfx_resume_live_grep_cache = s:fzfx_resume_cache_dir.s:_path_slash.'resume_live_grep_cache'
+endif
+if exists("g:fzfx_resume_live_grep_cache")
+    call s:warning("Config 'g:fzfx_resume_live_grep_opts_cache' is deprecated, please use 'g:fzfx_resume_cache_dir'!")
+    let s:fzfx_resume_live_grep_opts_cache = expand(get(g:, 'fzfx_resume_live_grep_opts_cache', '~/.cache/'.s:vim.'/fzfx.vim/resume_live_grep_opts_cache'))
+else
+    let s:fzfx_resume_live_grep_opts_cache = s:fzfx_resume_cache_dir.s:_path_slash.'resume_live_grep_opts_cache'
+endif
+if exists("g:fzfx_resume_files_cache")
+    call s:warning("Config 'g:fzfx_resume_files_cache' is deprecated, please use 'g:fzfx_resume_cache_dir'!")
+    let s:fzfx_resume_files_cache = expand(get(g:, 'fzfx_resume_files_cache', '~/.cache/'.s:vim.'/fzfx.vim/resume_files_cache'))
+else
+    let s:fzfx_resume_files_cache = s:fzfx_resume_cache_dir.s:_path_slash.'resume_files_cache'
+endif
+if exists("g:fzfx_resume_files_opts_cache")
+    call s:warning("Config 'g:fzfx_resume_files_opts_cache' is deprecated, please use 'g:fzfx_resume_cache_dir'!")
+    let s:fzfx_resume_files_opts_cache = expand(get(g:, 'fzfx_resume_files_opts_cache', '~/.opts_cache/'.s:vim.'/fzfx.vim/resume_files_opts_cache'))
+else
+    let s:fzfx_resume_files_opts_cache = s:fzfx_resume_cache_dir.s:_path_slash.'resume_files_opts_cache'
+endif
 
 let $_FZFX_RESUME_LIVE_GREP_CACHE = s:fzfx_resume_live_grep_cache
 let $_FZFX_RESUME_FILES_CACHE = s:fzfx_resume_files_cache
