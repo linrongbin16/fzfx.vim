@@ -622,7 +622,7 @@ function! s:history_files_format(idx, val, today_y, today_mon, today_d, today_h,
     if exists('*getftime') && exists('*strftime')
         let timestamp = getftime(expand(a:val))
         if timestamp > 0
-            let builder = ''
+            let diff_builder = ''
             let that_datetime = split(strftime('%Y %m %d %H %M', timestamp))
             let that_y = str2nr(that_datetime[0])
             let that_mon = str2nr(that_datetime[1])
@@ -652,38 +652,58 @@ function! s:history_files_format(idx, val, today_y, today_mon, today_d, today_h,
             endif
             if diff_y >= 0 && diff_mon >= 0 && diff_d >= 0 && diff_h >= 0 && diff_min >= 0
                 if diff_y > 0
-                    let builder = s:str_append(builder, string(diff_y).' year'.(diff_y > 1 ? 's' : ''), ' ')
+                    let diff_builder = s:str_append(diff_builder, string(diff_y).' year'.(diff_y > 1 ? 's' : ''), ' ')
                 endif
                 if diff_mon > 0
-                    let builder = s:str_append(builder, string(diff_mon).' month'.(diff_mon > 1 ? 's' : ''), ' ')
+                    let diff_builder = s:str_append(diff_builder, string(diff_mon).' month'.(diff_mon > 1 ? 's' : ''), ' ')
                 endif
                 if diff_d > 0
-                    let builder = s:str_append(builder, string(diff_d).' day'.(diff_d > 1 ? 's' : ''), ' ')
+                    let diff_builder = s:str_append(diff_builder, string(diff_d).' day'.(diff_d > 1 ? 's' : ''), ' ')
                 endif
                 " if in same day, diff in hours and minutes
                 if diff_y == 0 && diff_mon == 0 && diff_d == 0
                     if diff_h > 0
-                        let builder = s:str_append(builder, string(diff_h).' hour'.(diff_h > 1 ? 's' : ''), ' ')
+                        let diff_builder = s:str_append(diff_builder, string(diff_h).' hour'.(diff_h > 1 ? 's' : ''), ' ')
                     endif
                     if diff_min > 0
-                        let builder = s:str_append(builder, string(diff_min).' min'.(diff_min > 1 ? 'utes' : ''), ' ')
+                        let diff_builder = s:str_append(diff_builder, string(diff_min).' min'.(diff_min > 1 ? 'utes' : ''), ' ')
                     endif
                 endif
-                if len(builder) > 0
-                    let builder = s:str_append(builder, "ago", ' ')
+                if len(diff_builder) > 0
+                    let diff_builder = s:str_append(diff_builder, "ago", ' ')
                 endif
             endif
-            if diff_y != 0
-                let time = strftime('%Y-%m-%d %H:%M:%S %Z', timestamp)
-            elseif diff_mon != 0
-                let time = strftime('%m-%d %H:%M:%S %Z', timestamp)
-            elseif diff_d != 0
-                let time = strftime('%m-%d %H:%M:%S %Z', timestamp)
+            let time_builder = ''
+            let has_new_diff = 0
+            if a:today_y != that_y
+                if a:today_y - that_y == 1
+                    let time_builder = 'last year'
+                    let has_new_diff = 1
+                else
+                    let time = strftime('%Y-%m-%d %H:%M:%S %Z', timestamp)
+                endif
+            elseif a:today_mon != that_mon
+                if a:today_mon - that_mon == 1
+                    let time_builder = s:str_append(time_builder, 'last month', ', ')
+                    let has_new_diff = 1
+                elseif
+                    let time = strftime('%m-%d %H:%M:%S %Z', timestamp)
+                endif
+            elseif a:today_d != that_d
+                if a:today_d - that_d == 1
+                    let time_builder = s:str_append(time_builder, 'yesterday', ', ')
+                    let has_new_diff = 1
+                elseif
+                    let time = strftime('%m-%d %H:%M:%S %Z', timestamp)
+                endif
             else
                 let time = strftime('%H:%M:%S %Z', timestamp)
             endif
-            if len(builder) > 0
-                let datetime = s:str_append(time, builder, ',')
+            if has_new_diff
+                let time = s:str_append(time_builder, strftime('%H:%M:%S %Z', timestamp), ', ')
+            endif
+            if len(diff_builder) > 0
+                let datetime = s:str_append(time, diff_builder, ',')
             else
                 let datetime = time
             endif
