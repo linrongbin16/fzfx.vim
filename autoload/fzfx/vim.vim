@@ -678,7 +678,7 @@ function! s:history_files_format(idx, val, today_y, today_mon, today_d, today_h,
             elseif a:today_mon != that_mon
                 let time = strftime('%m-%d %H:%M:%S %Z', timestamp)
             elseif a:today_d != that_d
-                let time = strftime('%m-%d '.((a:today_d - that_d == 1 ? '(yesterday)' : '')).' %H:%M:%S %Z', timestamp)
+                let time = strftime('%m-%d'.((a:today_d - that_d == 1 ? ' (yesterday)' : '')).' %H:%M:%S %Z', timestamp)
             else
                 let time = strftime('%H:%M:%S %Z', timestamp)
             endif
