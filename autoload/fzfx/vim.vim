@@ -25,7 +25,7 @@ else
     let s:vim='vim'
 endif
 
-let s:_fzfx_enable_debug = get(g:, '_fzfx_enable_debug', 0)
+let s:_fzfx_enable_debug = get(g:, '_fzfx_enable_debug', 1)
 let $_FZFX_ENABLE_DEBUG = s:_fzfx_enable_debug
 
 function! s:exception(msg)
@@ -373,6 +373,19 @@ function! fzfx#vim#live_grep(query, fullscreen, opts)
     call fzf#vim#grep(initial_command, spec, a:fullscreen)
 endfunction
 
+" resume grep
+function! fzfx#vim#resume_live_grep(fullscreen)
+    let query = ''
+    let opts = {'unrestricted': 0}
+    if s:cache_has(s:fzfx_resume_live_grep_cache)
+        let query = s:cache_get(s:fzfx_resume_live_grep_cache)
+    endif
+    if s:cache_has(s:fzfx_resume_live_grep_opts_cache)
+        let opts = s:cache_get_object(s:fzfx_resume_live_grep_opts_cache)
+    endif
+    call fzfx#vim#live_grep(query, a:fullscreen, opts)
+endfunction
+
 " deprecated
 function! fzfx#vim#unrestricted_live_grep(query, fullscreen)
     call s:warning("'FzfxUnrestrictedLiveGrep' is deprecated, use 'FzfxLiveGrepU'!")
@@ -417,6 +430,21 @@ function! fzfx#vim#files(query, fullscreen, opts)
     call s:cache_set(s:fzfx_resume_files_cache, a:query)
     call s:cache_set_object(s:fzfx_resume_files_opts_cache, a:opts)
     call fzf#vim#files('', spec, a:fullscreen)
+endfunction
+
+" resume files
+function! fzfx#vim#resume_files(fullscreen)
+    let query = ''
+    let opts = {'unrestricted': 0}
+    if s:cache_has(s:fzfx_resume_files_cache)
+        let query = s:cache_get(s:fzfx_resume_files_cache)
+        call s:debug("resume_files-1, query:".query)
+    endif
+    if s:cache_has(s:fzfx_resume_files_opts_cache)
+        let opts = s:cache_get_object(s:fzfx_resume_files_opts_cache)
+        call s:debug("resume_files-2, opts:".string(opts))
+    endif
+    call fzfx#vim#files(query, a:fullscreen, opts)
 endfunction
 
 " deprecated
@@ -480,7 +508,7 @@ function! s:branches_sink(lines) abort
 endfunction
 
 " branches
-function! fzfx#vim#branches(query, fullscreen)
+function! fzfx#vim#gitbranches(query, fullscreen)
     let git_branch_header=':: Press '.call(s:magenta_ref, ['ENTER', 'Special']).' to switch branch'
     let git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
     if len(a:query) > 0
@@ -504,31 +532,15 @@ function! fzfx#vim#branches(query, fullscreen)
     call fzf#run(fzf#wrap('branches', fzf#vim#with_preview(spec), a:fullscreen))
 endfunction
 
-" resume
-function! fzfx#vim#resume_live_grep(fullscreen)
-    let query = ''
-    let opts = {'unrestricted': 0}
-    if s:cache_has(s:fzfx_resume_live_grep_cache)
-        let query = s:cache_get(s:fzfx_resume_live_grep_cache)
-    endif
-    if s:cache_has(s:fzfx_resume_live_grep_opts_cache)
-        let opts = s:cache_get_object(s:fzfx_resume_live_grep_opts_cache)
-    endif
-    call fzfx#vim#live_grep(query, a:fullscreen, opts)
+function! fzfx#vim#branches(query, fullscreen)
+    call s:warning("'FzfxBranches' is deprecated, use 'FzfxGBranches'!")
+    call fzfx#vim#gitbranches(a:query, a:fullscreen)
 endfunction
 
-function! fzfx#vim#resume_files(fullscreen)
-    let query = ''
-    let opts = {'unrestricted': 0}
-    if s:cache_has(s:fzfx_resume_files_cache)
-        let query = s:cache_get(s:fzfx_resume_files_cache)
-        call s:debug("resume_files-1, query:".query)
-    endif
-    if s:cache_has(s:fzfx_resume_files_opts_cache)
-        let opts = s:cache_get_object(s:fzfx_resume_files_opts_cache)
-        call s:debug("resume_files-2, opts:".string(opts))
-    endif
-    call fzfx#vim#files(query, a:fullscreen, opts)
+" history files
+function! fzfx#vim#history_files(query, fullscreen)
+    let recent_files = fzf#vim#_recent_files()
+    call s:debug("recent files:".string(recent_files))
 endfunction
 
 let &cpo = s:cpo_save
