@@ -620,7 +620,7 @@ function! s:history_files_format(idx, val, today_y, today_m, today_d)
                 let builder = s:str_append(builder, string(a:today_y-that_y).' year'.((a:today_y-that_y) > 1 ? 's' : ''), ' ')
             endif
             if that_m != a:today_m
-                let builder = s:str_append(builder, string(a:today_m-that_m).' mmonth'.((a:today_m-that_m) > 1 ? 's' : ''), ' ')
+                let builder = s:str_append(builder, string(a:today_m-that_m).' month'.((a:today_m-that_m) > 1 ? 's' : ''), ' ')
             endif
             if that_d != a:today_d
                 let builder = s:str_append(builder, string(a:today_d-that_d).' day'.((a:today_d-that_d) > 1 ? 's' : ''), ' ')
@@ -630,7 +630,7 @@ function! s:history_files_format(idx, val, today_y, today_m, today_d)
             endif
             let time = strftime('%H:%M:%S %Z', timestamp)
             if len(builder) > 0
-                let datetime = s:str_append(builder, time, ' ')
+                let datetime = s:str_append(time, builder, ',')
             else
                 let datetime = time
             endif
