@@ -611,7 +611,7 @@ endfunction
 
 function! s:history_files_format(idx, val, today_y, today_m, today_d)
     if exists('*getftime') && exists('*strftime')
-        let timestamp = getftime(a:val)
+        let timestamp = getftime(expand(a:val))
         if timestamp > 0
             let builder = ''
             let date = split(strftime('%Y %m %d', timestamp))
