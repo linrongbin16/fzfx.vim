@@ -651,21 +651,21 @@ function! s:history_files_format(idx, val, today_y, today_mon, today_d, today_h,
                 let diff_y = diff_y - 1
             endif
             if diff_y >= 0 && diff_mon >= 0 && diff_d >= 0 && diff_h >= 0 && diff_min >= 0
-                if that_y != a:today_y
+                if diff_y > 0
                     let builder = s:str_append(builder, string(diff_y).' year'.(diff_y > 1 ? 's' : ''), ' ')
                 endif
-                if that_mon != a:today_mon
+                if diff_mon > 0
                     let builder = s:str_append(builder, string(diff_mon).' month'.(diff_mon > 1 ? 's' : ''), ' ')
                 endif
-                if that_d != a:today_d
+                if diff_d > 0
                     let builder = s:str_append(builder, string(diff_d).' day'.(diff_d > 1 ? 's' : ''), ' ')
                 endif
                 " if in same day, diff in hours and minutes
                 if diff_y == 0 && diff_mon == 0 && diff_d == 0
-                    if that_h != a:today_h
+                    if diff_h > 0
                         let builder = s:str_append(builder, string(diff_h).' hour'.(diff_h > 1 ? 's' : ''), ' ')
                     endif
-                    if that_min != a:today_min
+                    if diff_min > 0
                         let builder = s:str_append(builder, string(diff_min).' min'.(diff_min > 1 ? 'utes' : ''), ' ')
                     endif
                 endif
@@ -726,7 +726,7 @@ function! fzfx#vim#history_files(query, fullscreen)
                 \   ),
                 \   'fnamemodify(v:val, ":~:.")'
                 \ )),
-                \ {idx, val -> s:history_files_format(idx, val, today_y, today_mon, today_d)})
+                \ {idx, val -> s:history_files_format(idx, val, today_y, today_mon, today_d, today_h, today_min)})
     " call s:debug("recent files:".string(recent_files))
     let spec = {
                 \ 'source': recent_files,
