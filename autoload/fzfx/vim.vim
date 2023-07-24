@@ -674,40 +674,21 @@ function! s:history_files_format(idx, val, today_y, today_mon, today_d, today_h,
                 endif
             endif
             let time_builder = ''
-            let has_new_diff = 0
             if a:today_y != that_y
-                if a:today_y - that_y == 1
-                    let time_builder = 'last year'
-                    let has_new_diff = 1
-                else
-                    let time = strftime('%Y-%m-%d %H:%M:%S %Z', timestamp)
-                endif
+                let time = strftime('%Y-%m-%d %H:%M:%S %Z', timestamp)
             elseif a:today_mon != that_mon
-                if a:today_mon - that_mon == 1
-                    let time_builder = s:str_append(time_builder, 'last month', ', ')
-                    let has_new_diff = 1
-                elseif
-                    let time = strftime('%m-%d %H:%M:%S %Z', timestamp)
-                endif
+                let time = strftime('%m-%d %H:%M:%S %Z', timestamp)
             elseif a:today_d != that_d
-                if a:today_d - that_d == 1
-                    let time_builder = s:str_append(time_builder, 'yesterday', ', ')
-                    let has_new_diff = 1
-                elseif
-                    let time = strftime('%m-%d %H:%M:%S %Z', timestamp)
-                endif
+                let time = strftime('%m-%d '.((a:today_d - that_d == 1 ? '(yesterday)' : '')).' %H:%M:%S %Z', timestamp)
             else
                 let time = strftime('%H:%M:%S %Z', timestamp)
-            endif
-            if has_new_diff
-                let time = s:str_append(time_builder, strftime('%H:%M:%S %Z', timestamp), ', ')
             endif
             if len(diff_builder) > 0
                 let datetime = s:str_append(time, diff_builder, ',')
             else
                 let datetime = time
             endif
-            return s:_history_files_render(a:val).':modified at '.call(s:cyan_ref, [datetime, 'Constant'])
+            return s:_history_files_render(a:val).':'.call(s:cyan_ref, [datetime, 'Constant'])
         else
             return s:_history_files_render(a:val).':'.call(s:cyan_ref, ['?', 'Constant'])
         endif
