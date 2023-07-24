@@ -565,7 +565,6 @@ function! s:history_files_compare(a, b, cwd_path, home_path)
     " then sort by:
     "   1. last modified time, if getftime exists
     "   2. full path length
-
     let full_a = expand(a:a)
     let full_b = expand(a:b)
     let a_in_home = len(full_a) >= len(a:home_path) && full_a[0:len(a:home_path)-1] ==# a:home_path
