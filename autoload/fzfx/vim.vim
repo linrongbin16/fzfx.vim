@@ -654,10 +654,10 @@ function! s:history_files_format(idx, val, today_y, today_mon, today_d, today_h,
                 if diff_y > 0
                     let builder = s:str_append(builder, string(diff_y).' year'.(diff_y > 1 ? 's' : ''), ', ')
                 endif
-                if diff_mon > 0
+                if diff_y == 0 && diff_mon > 0
                     let builder = s:str_append(builder, string(diff_mon).' month'.(diff_mon > 1 ? 's' : ''), ', ')
                 endif
-                if diff_d > 0
+                if diff_y == 0 && diff_mon == 0 && diff_d > 0
                     let builder = s:str_append(builder, string(diff_d).' day'.(diff_d > 1 ? 's' : ''), ', ')
                 endif
                 " if in same day, diff in hours and minutes
@@ -665,7 +665,7 @@ function! s:history_files_format(idx, val, today_y, today_mon, today_d, today_h,
                     if diff_h > 0
                         let builder = s:str_append(builder, string(diff_h).' hour'.(diff_h > 1 ? 's' : ''), ', ')
                     endif
-                    if diff_min > 0
+                    if diff_h == 0 && diff_min > 0
                         let builder = s:str_append(builder, string(diff_min).' min'.(diff_min > 1 ? 'utes' : ''), ', ')
                     endif
                 endif
