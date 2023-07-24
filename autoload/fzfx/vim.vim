@@ -604,7 +604,7 @@ endfunction
 function! s:_history_files_render(name)
     let parent_dir = fnamemodify(a:name, ':h')
     let filebase = fnamemodify(a:name, ':t')
-    return parent_dir.call(s:red_ref, [filebase, 'Exception'])
+    return parent_dir.'/'.call(s:red_ref, [filebase, 'Exception'])
 endfunction
 
 function! s:history_files_format(idx, val, today_y, today_m, today_d)
