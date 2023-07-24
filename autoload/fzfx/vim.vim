@@ -145,6 +145,8 @@ endfunction
 " script local functions import from fzf.vim autoload.
 let s:action_for_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "action_for")
 let s:magenta_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "magenta")
+let s:red_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "red")
+let s:red_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "red")
 let s:bufopen_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "bufopen")
 
 " ======== defaults ========
@@ -549,15 +551,53 @@ function! s:history_files_filter(idx, val)
     return s:fzfx_disabled_history_filetypes[ft] <= 0
 endfunction
 
-function! s:history_files_format(idx, val)
+function! s:history_files_compare(a, b, cwd_path, home_path)
+    " first sort by:
+    "   1. files under current folder
+    "   2. user home
+    "   3. other folder outside of user home
+    " then sort by last modified time
+
+    let full_a = expand(a:a)
+    let full_b = expand(a:b)
+    let a_is_home = len(full_a) >= len(a:home_path) && full_a[0:len(a:home_path)-1] ==# a:home_path
+    let b_is_home = len(full_b) >= len(a:home_path) && full_b[0:len(a:home_path)-1] ==# a:home_path
+endfunction
+
+function! s:history_files_format(idx, val, today_y, today_m, today_d)
+    function! BuilderAppend(s, val)
+        return len(a:s) > 0 ? a:s.' '.a:val : a:s.a:val
+    endfunction
+
     if exists('*getftime') && exists('*strftime')
         let timestamp = getftime(a:val)
         let datetime = 'unknown'
         if timestamp >= 0
-            let date = strftime('%Y-%m-%d', timestamp)
-            let time = strftime('%H:%M:%S %z %Z', timestamp)
+            let builder = ''
+            let date = split(strftime('%Y %m %d', timestamp))
+            let that_y = str2nr(date[0])
+            let that_m = str2nr(date[1])
+            let that_d = str2nr(date[2])
+            if that_y != a:today_y
+                let builder = BuilderAppend(builder, string(a:today_y-that_y).' year'.((a:today_y-that_y) > 1 ? 's' : ''))
+            endif
+            if that_m != a:today_m
+                let builder = BuilderAppend(builder, string(a:today_m-that_m).' mmonth'.((a:today_m-that_m) > 1 ? 's' : ''))
+            endif
+            if that_d != a:today_d
+                let builder = BuilderAppend(builder, string(a:today_d-that_d).' day'.((a:today_d-that_d) > 1 ? 's' : ''))
+            endif
+            if len(builder) > 0
+                let builder = append(builder, "ago")
+            endif
+            let time = strftime('%H:%M:%S %Z', timestamp)
+            if len(builder) > 0
+                let datetime = append(builder, time)
+            else
+                let datetime = time
+            endif
         endif
-        return a:val.' (last modified:'.datetime.')'
+        return a:val.':last modified at '.datetime
     else
         return a:val
     endif
@@ -568,9 +608,24 @@ function! s:history_files_sink(lines)
 endfunction
 
 function! fzfx#vim#history_files(query, fullscreen)
+    if exists('*strftime')
+        let today = split(strftime('%Y %m %d'))
+        let today_y = str2nr(today[0])
+        let today_m = str2nr(today[1])
+        let today_d = str2nr(today[2])
+    else
+        let today_y = -1
+        let today_m = -1
+        let today_d = -1
+    endif
+    let cwd_path = getcwd()
+    let home_path = expand('~')
     let recent_files = map(
-                \ filter(fzf#vim#_recent_files(), function('s:history_files_filter')),
-                \ function('s:history_files_format'))
+                \ sort(
+                \   filter(fzf#vim#_recent_files(), function('s:history_files_filter')),
+                \   {a, b -> s:history_files_compare(a, b, cwd_path, home_path)},
+                \ ),
+                \ {idx, val -> s:history_files_format(idx, val, today_y, today_m, today_d)})
     " call s:debug("recent files:".string(recent_files))
     let spec = {
                 \ 'source': recent_files,
@@ -581,8 +636,9 @@ function! fzfx#vim#history_files(query, fullscreen)
                 \   '--prompt', 'History Files> ',
                 \   '--header-lines', !empty(expand('%')),
                 \   s:expect_keys("enter", "double-click"),
-                \ ]}
-    call fzf#run(fzf#wrap('history-files', fzf#vim#with_preview(spec), a:fullscreen))
+                \ ],
+                \ 'placeholder':  '{1}'}
+    return fzf#run(fzf#wrap('history-files', fzf#vim#with_preview(spec), a:fullscreen))
 endfunction
 
 let &cpo = s:cpo_save
