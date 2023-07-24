@@ -543,6 +543,12 @@ function! fzfx#vim#branches(query, fullscreen)
 endfunction
 
 " history files
+function! s:recent_files()
+    return filter([expand('%')], 'len(v:val)')
+                \ + filter(map(fzf#vim#_buflisted_sorted(), 'bufname(v:val)'), 'len(v:val)')
+                \ + filter(copy(v:oldfiles), "filereadable(fnamemodify(v:val, ':p'))")
+endfunction
+
 function! s:history_files_filter(idx, val)
     let ft = getbufvar(a:val, "&filetype")
     if !has_key(s:fzfx_disabled_history_filetypes, ft)
@@ -556,12 +562,40 @@ function! s:history_files_compare(a, b, cwd_path, home_path)
     "   1. files under current folder
     "   2. user home
     "   3. other folder outside of user home
-    " then sort by last modified time
+    " then sort by:
+    "   1. last modified time, if getftime exists
+    "   2. full path length
 
     let full_a = expand(a:a)
     let full_b = expand(a:b)
-    let a_is_home = len(full_a) >= len(a:home_path) && full_a[0:len(a:home_path)-1] ==# a:home_path
-    let b_is_home = len(full_b) >= len(a:home_path) && full_b[0:len(a:home_path)-1] ==# a:home_path
+    let a_in_home = len(full_a) >= len(a:home_path) && full_a[0:len(a:home_path)-1] ==# a:home_path
+    let a_in_cwd = len(full_a) >= len(a:cwd_path) && full_a[0:len(a:cwd_path)-1] ==# a:cwd_path
+    let b_in_home = len(full_b) >= len(a:home_path) && full_b[0:len(a:home_path)-1] ==# a:home_path
+    let b_in_cwd = len(full_b) >= len(a:cwd_path) && full_b[0:len(a:cwd_path)-1] ==# a:cwd_path
+    " both a and b not in home
+    if !a_in_home && !b_in_home
+        return exists('*getftime') ? (getftime(full_a) - getftime(full_b)) : (len(full_a) - len(full_b))
+    endif
+    " either a or b in home
+    if !a_in_home
+        return 1
+    endif
+    if !b_in_home
+        return -1
+    endif
+    " both a and b in home, and not in cwd
+    if !a_in_cwd && !b_in_cwd
+        return exists('*getftime') ? (getftime(full_a) - getftime(full_b)) : (len(full_a) - len(full_b))
+    endif
+    " either a or b in cwd
+    if !a_in_cwd
+        return 1
+    endif
+    if !b_in_cwd
+        return -1
+    endif
+    " both a and b in cwd
+    return exists('*getftime') ? (getftime(full_a) - getftime(full_b)) : (len(full_a) - len(full_b))
 endfunction
 
 function! s:history_files_format(idx, val, today_y, today_m, today_d)
@@ -571,7 +605,6 @@ function! s:history_files_format(idx, val, today_y, today_m, today_d)
 
     if exists('*getftime') && exists('*strftime')
         let timestamp = getftime(a:val)
-        let datetime = 'unknown'
         if timestamp >= 0
             let builder = ''
             let date = split(strftime('%Y %m %d', timestamp))
@@ -596,8 +629,10 @@ function! s:history_files_format(idx, val, today_y, today_m, today_d)
             else
                 let datetime = time
             endif
+            return a:val.':last modified at '.datetime
+        else
+            return a:val
         endif
-        return a:val.':last modified at '.datetime
     else
         return a:val
     endif
@@ -621,10 +656,13 @@ function! fzfx#vim#history_files(query, fullscreen)
     let cwd_path = getcwd()
     let home_path = expand('~')
     let recent_files = map(
-                \ sort(
-                \   filter(fzf#vim#_recent_files(), function('s:history_files_filter')),
-                \   {a, b -> s:history_files_compare(a, b, cwd_path, home_path)},
-                \ ),
+                \ fzf#vim#_uniq(map(
+                \   sort(
+                \       filter(s:recent_files(), function('s:history_files_filter')),
+                \       {a, b -> s:history_files_compare(a, b, cwd_path, home_path)},
+                \   ),
+                \   'fnamemodify(v:val, ":~:.")'
+                \ )),
                 \ {idx, val -> s:history_files_format(idx, val, today_y, today_m, today_d)})
     " call s:debug("recent files:".string(recent_files))
     let spec = {
