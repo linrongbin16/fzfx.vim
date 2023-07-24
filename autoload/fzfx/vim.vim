@@ -602,9 +602,11 @@ function! s:str_append(builder, value, extra)
 endfunction
 
 function! s:_history_files_render(name)
+    let backslash = stridx(a:name, '\')
+    let slash = backslash >= 0 ? '\' : '/'
     let parent_dir = fnamemodify(a:name, ':h')
     let filebase = fnamemodify(a:name, ':t')
-    return parent_dir.'/'.call(s:red_ref, [filebase, 'Exception'])
+    return parent_dir.slash.call(s:red_ref, [filebase, 'Exception'])
 endfunction
 
 function! s:history_files_format(idx, val, today_y, today_m, today_d)
@@ -636,10 +638,10 @@ function! s:history_files_format(idx, val, today_y, today_m, today_d)
             endif
             return s:_history_files_render(a:val).':modified at '.call(s:cyan_ref, [datetime, 'Constant'])
         else
-            return s:_history_files_render(a:val).':?'
+            return s:_history_files_render(a:val).':'.call(s:cyan_ref, ['?', 'Constant'])
         endif
     else
-        return s:_history_files_render(a:val).':?'
+        return s:_history_files_render(a:val).':'.call(s:cyan_ref, ['?', 'Constant'])
     endif
 endfunction
 
