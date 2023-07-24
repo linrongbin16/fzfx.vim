@@ -217,6 +217,9 @@ endif
 let $_FZFX_RESUME_LIVE_GREP_CACHE = s:fzfx_resume_live_grep_cache
 let $_FZFX_RESUME_FILES_CACHE = s:fzfx_resume_files_cache
 
+" disabled filetype
+let s:fzfx_disabled_history_filetypes = get(g:, 'fzfx_disabled_history_filetypes', {'NvimTree':1, 'neo-tree':1, 'CHADTree':1, 'undotree':1, 'vista':1})
+
 " ======== utils ========
 
 function! s:trim(s)
@@ -538,8 +541,18 @@ function! fzfx#vim#branches(query, fullscreen)
 endfunction
 
 " history files
+function! s:disabled_history_filetypes(idx, val)
+    let ft = getbufvar(a:val, "&filetype")
+    if !has_key(s:fzfx_disabled_history_filetypes, ft)
+        return v:false
+    endif
+    return s:fzfx_disabled_history_filetypes[ft] > 0
+endfunction
+
 function! fzfx#vim#history_files(query, fullscreen)
-    let recent_files = fzf#vim#_recent_files()
+    let recent_files = map(
+                \ filter(fzf#vim#_recent_files(), function('s:disabled_history_filetypes')), 
+                \ "v:val.' '.strftime(getftime(v:val), '%Y-%m-%d %H:%M:%S %z %Z')")
     call s:debug("recent files:".string(recent_files))
 endfunction
 
