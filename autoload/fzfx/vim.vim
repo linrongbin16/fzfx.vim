@@ -598,7 +598,7 @@ endfunction
 
 function! s:str_append(builder, value, extra)
     let ex = a:extra is v:null ? '' : a:extra
-    return a:builder.ex.a:value
+    return len(a:builder) > 0 ? a:builder.ex.a:value : a:value
 endfunction
 
 function! s:leap_year(y)
@@ -652,21 +652,21 @@ function! s:history_files_format(idx, val, today_y, today_mon, today_d, today_h,
             endif
             if diff_y >= 0 && diff_mon >= 0 && diff_d >= 0 && diff_h >= 0 && diff_min >= 0
                 if diff_y > 0
-                    let builder = s:str_append(builder, string(diff_y).' year'.(diff_y > 1 ? 's' : ''), ' ')
+                    let builder = s:str_append(builder, string(diff_y).' year'.(diff_y > 1 ? 's' : ''), ', ')
                 endif
                 if diff_mon > 0
-                    let builder = s:str_append(builder, string(diff_mon).' month'.(diff_mon > 1 ? 's' : ''), ' ')
+                    let builder = s:str_append(builder, string(diff_mon).' month'.(diff_mon > 1 ? 's' : ''), ', ')
                 endif
                 if diff_d > 0
-                    let builder = s:str_append(builder, string(diff_d).' day'.(diff_d > 1 ? 's' : ''), ' ')
+                    let builder = s:str_append(builder, string(diff_d).' day'.(diff_d > 1 ? 's' : ''), ', ')
                 endif
                 " if in same day, diff in hours and minutes
                 if diff_y == 0 && diff_mon == 0 && diff_d == 0
                     if diff_h > 0
-                        let builder = s:str_append(builder, string(diff_h).' hour'.(diff_h > 1 ? 's' : ''), ' ')
+                        let builder = s:str_append(builder, string(diff_h).' hour'.(diff_h > 1 ? 's' : ''), ', ')
                     endif
                     if diff_min > 0
-                        let builder = s:str_append(builder, string(diff_min).' min'.(diff_min > 1 ? 'utes' : ''), ' ')
+                        let builder = s:str_append(builder, string(diff_min).' min'.(diff_min > 1 ? 'utes' : ''), ', ')
                     endif
                 endif
                 if len(builder) > 0
@@ -683,7 +683,7 @@ function! s:history_files_format(idx, val, today_y, today_mon, today_d, today_h,
                 let time = strftime('%H:%M:%S %Z', timestamp)
             endif
             if len(builder) > 0
-                let datetime = s:str_append(time, builder, ',')
+                let datetime = time.' ('.builder.')'
             else
                 let datetime = time
             endif
