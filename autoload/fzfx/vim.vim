@@ -601,6 +601,15 @@ function! s:str_append(builder, value, extra)
     return a:builder.ex.a:value
 endfunction
 
+function! s:leap_year(y)
+    return a:y % 4 == 0 && (a:y % 100 != 0 || a:y % 400 == 0)
+endfunction
+
+function! s:days_of_month(y, m)
+    let days_map = [-1, 31, s:leap_year(a:y) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    return days_map[a:m]
+endfunction
+
 function! s:_history_files_render(name)
     let backslash = stridx(a:name, '\')
     let slash = backslash >= 0 ? '\' : '/'
@@ -609,28 +618,70 @@ function! s:_history_files_render(name)
     return parent_dir.slash.call(s:red_ref, [filebase, 'Exception'])
 endfunction
 
-function! s:history_files_format(idx, val, today_y, today_m, today_d)
+function! s:history_files_format(idx, val, today_y, today_mon, today_d, today_h, today_min)
     if exists('*getftime') && exists('*strftime')
         let timestamp = getftime(expand(a:val))
         if timestamp > 0
             let builder = ''
-            let date = split(strftime('%Y %m %d', timestamp))
-            let that_y = str2nr(date[0])
-            let that_m = str2nr(date[1])
-            let that_d = str2nr(date[2])
-            if that_y != a:today_y
-                let builder = s:str_append(builder, string(a:today_y-that_y).' year'.((a:today_y-that_y) > 1 ? 's' : ''), ' ')
+            let that_datetime = split(strftime('%Y %m %d %H %M', timestamp))
+            let that_y = str2nr(that_datetime[0])
+            let that_mon = str2nr(that_datetime[1])
+            let that_d = str2nr(that_datetime[2])
+            let that_h = str2nr(that_datetime[3])
+            let that_min = str2nr(that_datetime[4])
+            let diff_y = a:today_y - that_y
+            let diff_mon = a:today_mon - that_mon
+            let diff_d = a:today_d - that_d
+            let diff_h = a:today_h - that_h
+            let diff_min = a:today_min - that_min
+            if diff_min < 0
+                let diff_min = diff_min + 60
+                let diff_h = diff_h - 1
             endif
-            if that_m != a:today_m
-                let builder = s:str_append(builder, string(a:today_m-that_m).' month'.((a:today_m-that_m) > 1 ? 's' : ''), ' ')
+            if diff_h < 0
+                let diff_h = diff_h + 24
+                let diff_d = diff_d - 1
             endif
-            if that_d != a:today_d
-                let builder = s:str_append(builder, string(a:today_d-that_d).' day'.((a:today_d-that_d) > 1 ? 's' : ''), ' ')
+            if diff_d < 0
+                let diff_d = diff_d + s:days_of_month(that_y, that_mon)
+                let diff_mon = diff_mon - 1
             endif
-            if len(builder) > 0
-                let builder = s:str_append(builder, "ago", ' ')
+            if diff_mon < 0
+                let diff_mon = diff_mon + 12
+                let diff_y = diff_y - 1
             endif
-            let time = strftime('%H:%M:%S %Z', timestamp)
+            if diff_y >= 0 && diff_mon >= 0 && diff_d >= 0 && diff_h >= 0 && diff_min >= 0
+                if that_y != a:today_y
+                    let builder = s:str_append(builder, string(diff_y).' year'.(diff_y > 1 ? 's' : ''), ' ')
+                endif
+                if that_mon != a:today_mon
+                    let builder = s:str_append(builder, string(diff_mon).' month'.(diff_mon > 1 ? 's' : ''), ' ')
+                endif
+                if that_d != a:today_d
+                    let builder = s:str_append(builder, string(diff_d).' day'.(diff_d > 1 ? 's' : ''), ' ')
+                endif
+                " if in same day, diff in hours and minutes
+                if diff_y == 0 && diff_mon == 0 && diff_d == 0
+                    if that_h != a:today_h
+                        let builder = s:str_append(builder, string(diff_h).' hour'.(diff_h > 1 ? 's' : ''), ' ')
+                    endif
+                    if that_min != a:today_min
+                        let builder = s:str_append(builder, string(diff_min).' min'.(diff_min > 1 ? 'utes' : ''), ' ')
+                    endif
+                endif
+                if len(builder) > 0
+                    let builder = s:str_append(builder, "ago", ' ')
+                endif
+            endif
+            if diff_y != 0
+                let time = strftime('%Y-%m-%d %H:%M:%S %Z', timestamp)
+            elseif diff_mon != 0
+                let time = strftime('%m-%d %H:%M:%S %Z', timestamp)
+            elseif diff_d != 0
+                let time = strftime('%m-%d %H:%M:%S %Z', timestamp)
+            else
+                let time = strftime('%H:%M:%S %Z', timestamp)
+            endif
             if len(builder) > 0
                 let datetime = s:str_append(time, builder, ',')
             else
@@ -651,14 +702,18 @@ endfunction
 
 function! fzfx#vim#history_files(query, fullscreen)
     if exists('*strftime')
-        let today = split(strftime('%Y %m %d'))
-        let today_y = str2nr(today[0])
-        let today_m = str2nr(today[1])
-        let today_d = str2nr(today[2])
+        let now = split(strftime('%Y %m %d %H %M'))
+        let today_y = str2nr(now[0])
+        let today_mon = str2nr(now[1])
+        let today_d = str2nr(now[2])
+        let today_h = str2nr(now[3])
+        let today_min = str2nr(now[4])
     else
         let today_y = -1
-        let today_m = -1
+        let today_mon = -1
         let today_d = -1
+        let today_h = -1
+        let today_min = -1
     endif
     let cwd_path = getcwd()
     let home_path = expand('~')
@@ -671,7 +726,7 @@ function! fzfx#vim#history_files(query, fullscreen)
                 \   ),
                 \   'fnamemodify(v:val, ":~:.")'
                 \ )),
-                \ {idx, val -> s:history_files_format(idx, val, today_y, today_m, today_d)})
+                \ {idx, val -> s:history_files_format(idx, val, today_y, today_mon, today_d)})
     " call s:debug("recent files:".string(recent_files))
     let spec = {
                 \ 'source': recent_files,
