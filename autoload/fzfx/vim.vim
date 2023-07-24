@@ -544,8 +544,7 @@ endfunction
 
 " history files
 function! s:recent_files()
-    return filter([expand('%')], 'len(v:val)')
-                \ + filter(map(fzf#vim#_buflisted_sorted(), 'bufname(v:val)'), 'len(v:val)')
+    return filter(map(fzf#vim#_buflisted_sorted(), 'bufname(v:val)'), 'len(v:val)')
                 \ + filter(copy(v:oldfiles), "filereadable(fnamemodify(v:val, ':p'))")
 endfunction
 
@@ -662,6 +661,7 @@ function! fzfx#vim#history_files(query, fullscreen)
     let home_path = expand('~')
     let recent_files = map(
                 \ fzf#vim#_uniq(map(
+                \   filter([expand('%')], 'len(v:val)') +
                 \   sort(
                 \       filter(s:recent_files(), function('s:history_files_filter')),
                 \       {a, b -> s:history_files_compare(a, b, cwd_path, home_path)},
