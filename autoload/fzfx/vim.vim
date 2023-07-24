@@ -583,7 +583,7 @@ function! s:history_files_compare(a, b, cwd_path, home_path)
     endif
     " both a and b in home, and not in cwd
     if !a_in_cwd && !b_in_cwd
-        return exists('*getftime') ? (getftime(full_a) - getftime(full_b)) : (len(full_a) - len(full_b))
+        return exists('*getftime') ? (getftime(full_b) - getftime(full_a)) : (len(full_a) - len(full_b))
     endif
     " either a or b in cwd
     if !a_in_cwd
@@ -593,7 +593,7 @@ function! s:history_files_compare(a, b, cwd_path, home_path)
         return -1
     endif
     " both a and b in cwd
-    return exists('*getftime') ? (getftime(full_a) - getftime(full_b)) : (len(full_a) - len(full_b))
+    return exists('*getftime') ? (getftime(full_b) - getftime(full_a)) : (len(full_a) - len(full_b))
 endfunction
 
 function! s:str_append(builder, value, extra)
