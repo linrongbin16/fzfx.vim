@@ -636,10 +636,10 @@ function! s:history_files_format(idx, val, today_y, today_m, today_d)
             endif
             return s:_history_files_render(a:val).':last modified at '.call(s:cyan_ref, [datetime, 'Constant'])
         else
-            return s:_history_files_render(a:val)
+            return s:_history_files_render(a:val).':last modified unknown'
         endif
     else
-        return s:_history_files_render(a:val)
+        return s:_history_files_render(a:val).':last modified unknown'
     endif
 endfunction
 
