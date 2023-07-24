@@ -489,7 +489,8 @@ function! fzfx#vim#buffers(query, fullscreen)
     call fzf#vim#buffers(a:query, fzf#vim#with_preview(spec), a:fullscreen)
 endfunction
 
-function! s:parse_branch(branch)
+" gbranches
+function! s:parse_gitbranch(branch)
     let branch=s:trim(a:branch)
     if len(branch) > 0 && branch[0:1] ==? '*'
         let branch=branch[1:]
@@ -501,16 +502,15 @@ function! s:parse_branch(branch)
     return branch
 endfunction
 
-function! s:branches_sink(lines) abort
+function! s:gitbranches_sink(lines) abort
     " echo "lines:".string(a:lines)
     let action=a:lines[0]
     if action==?'enter' || action==?'double-click'
-        let branch = s:parse_branch(a:lines[1])
+        let branch = s:parse_gitbranch(a:lines[1])
         execute '!git checkout '.branch
     endif
 endfunction
 
-" branches
 function! fzfx#vim#gitbranches(query, fullscreen)
     let git_branch_header=':: Press '.call(s:magenta_ref, ['ENTER', 'Special']).' to switch branch'
     let git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
@@ -523,7 +523,7 @@ function! fzfx#vim#gitbranches(query, fullscreen)
 
     let spec = {
                 \ 'source': initial_command,
-                \ 'sink*': {lines -> s:branches_sink(lines)},
+                \ 'sink*': {lines -> s:gitbranches_sink(lines)},
                 \ 'options': [
                 \   '--no-multi',
                 \   '--delimiter=:',
@@ -541,19 +541,48 @@ function! fzfx#vim#branches(query, fullscreen)
 endfunction
 
 " history files
-function! s:disabled_history_filetypes(idx, val)
+function! s:history_files_filter(idx, val)
     let ft = getbufvar(a:val, "&filetype")
     if !has_key(s:fzfx_disabled_history_filetypes, ft)
-        return v:false
+        return v:true
     endif
-    return s:fzfx_disabled_history_filetypes[ft] > 0
+    return s:fzfx_disabled_history_filetypes[ft] <= 0
+endfunction
+
+function! s:history_files_format(idx, val)
+    if exists('*getftime') && exists('*strftime')
+        let timestamp = getftime(a:val)
+        let datetime = 'unknown'
+        if timestamp >= 0
+            let date = strftime('%Y-%m-%d', timestamp)
+            let time = strftime('%H:%M:%S %z %Z', timestamp)
+        endif
+        return a:val.' (last modified:'.datetime.')'
+    else
+        return a:val
+    endif
+endfunction
+
+function! s:history_files_sink(lines)
+    call s:debug("lines:".string(a:lines))
 endfunction
 
 function! fzfx#vim#history_files(query, fullscreen)
     let recent_files = map(
-                \ filter(fzf#vim#_recent_files(), function('s:disabled_history_filetypes')), 
-                \ "v:val.' '.strftime(getftime(v:val), '%Y-%m-%d %H:%M:%S %z %Z')")
-    call s:debug("recent files:".string(recent_files))
+                \ filter(fzf#vim#_recent_files(), function('s:history_files_filter')),
+                \ function('s:history_files_format'))
+    " call s:debug("recent files:".string(recent_files))
+    let spec = {
+                \ 'source': recent_files,
+                \ 'sink*': {lines -> s:history_files_sink(lines)},
+                \ 'options': [
+                \   '--no-multi',
+                \   '--delimiter=:',
+                \   '--prompt', 'History Files> ',
+                \   '--header-lines', !empty(expand('%')),
+                \   s:expect_keys("enter", "double-click"),
+                \ ]}
+    call fzf#run(fzf#wrap('history-files', fzf#vim#with_preview(spec), a:fullscreen))
 endfunction
 
 let &cpo = s:cpo_save
