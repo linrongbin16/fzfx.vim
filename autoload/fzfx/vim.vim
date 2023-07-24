@@ -146,7 +146,7 @@ endfunction
 let s:action_for_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "action_for")
 let s:magenta_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "magenta")
 let s:red_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "red")
-let s:red_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "red")
+let s:cyan_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "cyan")
 let s:bufopen_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "bufopen")
 
 " ======== defaults ========
@@ -597,11 +597,17 @@ function! s:history_files_compare(a, b, cwd_path, home_path)
     return exists('*getftime') ? (getftime(full_a) - getftime(full_b)) : (len(full_a) - len(full_b))
 endfunction
 
-function! s:history_files_format(idx, val, today_y, today_m, today_d)
-    function! BuilderAppend(s, val)
-        return len(a:s) > 0 ? a:s.' '.a:val : a:s.a:val
-    endfunction
+function! s:_history_files_append(builder, value)
+    return len(a:builder) > 0 ? a:builder.' '.a:value : a:builder.a:value
+endfunction
 
+function! s:_history_files_render(name)
+    let parent_dir = fnamemodify(a:name, ':h')
+    let filebase = fnamemodify(a:name, ':t')
+    return parent_dir.call(s:red_ref, [filebase, 'Exception'])
+endfunction
+
+function! s:history_files_format(idx, val, today_y, today_m, today_d)
     if exists('*getftime') && exists('*strftime')
         let timestamp = getftime(a:val)
         if timestamp >= 0
@@ -611,13 +617,13 @@ function! s:history_files_format(idx, val, today_y, today_m, today_d)
             let that_m = str2nr(date[1])
             let that_d = str2nr(date[2])
             if that_y != a:today_y
-                let builder = BuilderAppend(builder, string(a:today_y-that_y).' year'.((a:today_y-that_y) > 1 ? 's' : ''))
+                let builder = s:_history_files_append(builder, string(a:today_y-that_y).' year'.((a:today_y-that_y) > 1 ? 's' : ''))
             endif
             if that_m != a:today_m
-                let builder = BuilderAppend(builder, string(a:today_m-that_m).' mmonth'.((a:today_m-that_m) > 1 ? 's' : ''))
+                let builder = s:_history_files_append(builder, string(a:today_m-that_m).' mmonth'.((a:today_m-that_m) > 1 ? 's' : ''))
             endif
             if that_d != a:today_d
-                let builder = BuilderAppend(builder, string(a:today_d-that_d).' day'.((a:today_d-that_d) > 1 ? 's' : ''))
+                let builder = s:_history_files_append(builder, string(a:today_d-that_d).' day'.((a:today_d-that_d) > 1 ? 's' : ''))
             endif
             if len(builder) > 0
                 let builder = append(builder, "ago")
@@ -628,12 +634,12 @@ function! s:history_files_format(idx, val, today_y, today_m, today_d)
             else
                 let datetime = time
             endif
-            return a:val.':last modified at '.datetime
+            return s:_history_files_render(a:val).':last modified at '.call(s:cyan_ref, [datetime, 'Constant'])
         else
-            return a:val
+            return s:_history_files_render(a:val)
         endif
     else
-        return a:val
+        return s:_history_files_render(a:val)
     endif
 endfunction
 
