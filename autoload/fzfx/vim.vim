@@ -596,8 +596,9 @@ function! s:history_files_compare(a, b, cwd_path, home_path)
     return exists('*getftime') ? (getftime(full_a) - getftime(full_b)) : (len(full_a) - len(full_b))
 endfunction
 
-function! s:_history_files_append(builder, value)
-    return len(a:builder) > 0 ? a:builder.' '.a:value : a:builder.a:value
+function! s:str_append(builder, value, extra)
+    let ex = a:extra is v:null ? '' : a:extra
+    return a:builder.ex.a:value
 endfunction
 
 function! s:_history_files_render(name)
@@ -616,29 +617,29 @@ function! s:history_files_format(idx, val, today_y, today_m, today_d)
             let that_m = str2nr(date[1])
             let that_d = str2nr(date[2])
             if that_y != a:today_y
-                let builder = s:_history_files_append(builder, string(a:today_y-that_y).' year'.((a:today_y-that_y) > 1 ? 's' : ''))
+                let builder = s:str_append(builder, string(a:today_y-that_y).' year'.((a:today_y-that_y) > 1 ? 's' : ''), ' ')
             endif
             if that_m != a:today_m
-                let builder = s:_history_files_append(builder, string(a:today_m-that_m).' mmonth'.((a:today_m-that_m) > 1 ? 's' : ''))
+                let builder = s:str_append(builder, string(a:today_m-that_m).' mmonth'.((a:today_m-that_m) > 1 ? 's' : ''), ' ')
             endif
             if that_d != a:today_d
-                let builder = s:_history_files_append(builder, string(a:today_d-that_d).' day'.((a:today_d-that_d) > 1 ? 's' : ''))
+                let builder = s:str_append(builder, string(a:today_d-that_d).' day'.((a:today_d-that_d) > 1 ? 's' : ''), ' ')
             endif
             if len(builder) > 0
-                let builder = append(builder, "ago")
+                let builder = s:str_append(builder, "ago", ' ')
             endif
             let time = strftime('%H:%M:%S %Z', timestamp)
             if len(builder) > 0
-                let datetime = append(builder, time)
+                let datetime = s:str_append(builder, time, ' ')
             else
                 let datetime = time
             endif
-            return s:_history_files_render(a:val).':last modified at '.call(s:cyan_ref, [datetime, 'Constant'])
+            return s:_history_files_render(a:val).':modified at '.call(s:cyan_ref, [datetime, 'Constant'])
         else
-            return s:_history_files_render(a:val).':last modified unknown'
+            return s:_history_files_render(a:val).':?'
         endif
     else
-        return s:_history_files_render(a:val).':last modified unknown'
+        return s:_history_files_render(a:val).':?'
     endif
 endfunction
 
