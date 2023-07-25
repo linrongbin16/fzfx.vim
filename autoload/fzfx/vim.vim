@@ -215,8 +215,8 @@ endif
 let $_FZFX_RESUME_LIVE_GREP_CACHE = s:fzfx_resume_live_grep_cache
 let $_FZFX_RESUME_FILES_CACHE = s:fzfx_resume_files_cache
 
-" disabled filetype
-let s:fzfx_disabled_history_filetypes = get(g:, 'fzfx_disabled_history_filetypes', {'NvimTree':1, 'neo-tree':1, 'CHADTree':1, 'undotree':1, 'vista':1})
+" ignored filetype
+let s:fzfx_ignored_history_filetypes = get(g:, 'fzfx_ignored_history_filetypes', {'NvimTree':1, 'neo-tree':1, 'CHADTree':1, 'undotree':1, 'vista':1})
 
 " ======== utils ========
 
@@ -548,10 +548,10 @@ endfunction
 
 function! s:history_files_filter(idx, val)
     let ft = getbufvar(a:val, "&filetype")
-    if !has_key(s:fzfx_disabled_history_filetypes, ft)
+    if !has_key(s:fzfx_ignored_history_filetypes, ft)
         return v:true
     endif
-    return s:fzfx_disabled_history_filetypes[ft] <= 0
+    return s:fzfx_ignored_history_filetypes[ft] <= 0
 endfunction
 
 function! s:history_files_compare(a, b, cwd_path, home_path)
