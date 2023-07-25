@@ -703,12 +703,12 @@ function! s:history_files_format(idx, val, today_y, today_mon, today_d, today_h,
             else
                 let datetime = time
             endif
-            return printf('%s\t%s', s:_history_files_render(a:val), call(s:cyan_ref, [datetime, 'Constant']))
+            return printf("%s\t%s", s:_history_files_render(a:val), call(s:cyan_ref, [datetime, 'Constant']))
         else
-            return printf('%s\t%s', s:_history_files_render(a:val), call(s:cyan_ref, ['?', 'Constant']))
+            return printf("%s\t%s", s:_history_files_render(a:val), call(s:cyan_ref, ['?', 'Constant']))
         endif
     else
-        return printf('%s\t\%s', s:_history_files_render(a:val), call(s:cyan_ref, ['?', 'Constant']))
+        return printf("%s\t\%s", s:_history_files_render(a:val), call(s:cyan_ref, ['?', 'Constant']))
     endif
 endfunction
 
