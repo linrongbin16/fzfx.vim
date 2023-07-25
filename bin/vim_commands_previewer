@@ -72,21 +72,21 @@ else
         if [ $_FZFX_ENABLE_DEBUG -gt 0 ]; then
             echo "DEBUG \$vim_call_colon_rest:[$vim_call_colon_rest]"
         fi
-        echo "$vim_call_colon_rest" | $BATNAME --style="${BAT_STYLE:-numbers}" --color=always
+        echo "$vim_call_colon_rest" | $BATNAME --style="numbers" --color=always
     else
         vim_call_rest=${content#*$vim_call}
         if [ ${#vim_call_rest} -gt 0 ] && [ "$vim_call_rest" != "$content" ]; then
             if [ $_FZFX_ENABLE_DEBUG -gt 0 ]; then
                 echo "DEBUG \$vim_call_rest:[$vim_call_rest]"
             fi
-            echo "$vim_call_rest" | $BATNAME --style="${BAT_STYLE:-numbers}" --color=always
+            echo "$vim_call_rest" | $BATNAME --style="numbers" --color=always
         else
             if [ $_FZFX_ENABLE_DEBUG -gt 0 ]; then
                 echo "DEBUG \$content2:[$content]"
             fi
             trim_content=$(echo "$content" | tr -s ' ')
             trim_content=$(fzfx_trim "$trim_content")
-            echo "$trim_content" |  $BATNAME --style="${BAT_STYLE:-numbers}" --color=always
+            echo "$trim_content" |  $BATNAME --style="numbers" --color=always
         fi
     fi
 fi
