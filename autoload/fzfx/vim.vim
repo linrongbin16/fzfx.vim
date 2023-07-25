@@ -494,7 +494,7 @@ function! fzfx#vim#buffers(query, fullscreen)
 endfunction
 
 " gbranches
-function! s:parse_gitbranch(branch)
+function! s:branches_parse(branch)
     let branch=s:trim(a:branch)
     if len(branch) > 0 && branch[0:1] ==? '*'
         let branch=branch[1:]
@@ -506,7 +506,7 @@ function! s:parse_gitbranch(branch)
     return branch
 endfunction
 
-function! s:gitbranches_sink(lines) abort
+function! s:branches_sink(lines) abort
     " echo "lines:".string(a:lines)
     if len(a:lines) < 2
         return
@@ -514,7 +514,7 @@ function! s:gitbranches_sink(lines) abort
     normal! m'
     let action = a:lines[0]
     if action==?'enter' || action==?'double-click'
-        let branch = s:parse_gitbranch(a:lines[1])
+        let branch = s:branches_parse(a:lines[1])
         execute '!git checkout '.branch
     endif
     normal! ^zvzz
@@ -532,7 +532,7 @@ function! fzfx#vim#branches(query, fullscreen)
 
     let spec = {
                 \ 'source': initial_command,
-                \ 'sink*': {lines -> s:gitbranches_sink(lines)},
+                \ 'sink*': {lines -> s:branches_sink(lines)},
                 \ 'options': [
                 \   '--no-multi',
                 \   '--delimiter=:',
