@@ -387,31 +387,27 @@ https://github.com/linrongbin16/fzfx.vim/assets/6496887/c67c404e-06c7-4e00-b10e-
 Here're some global variables that you can speicify:
 
 ```vim
-""" ======== find/grep commands ========
-" enable debug
+""" enable debug
 let g:_fzfx_enable_debug = 0
 
-" live grep
-let g:fzfx_grep_command = 'rg --column --line-number --no-heading --color=always --smart-case'
-let g:fzfx_unrestricted_grep_command = 'rg --column --line-number --no-heading --color=always --smart-case --unrestricted --unrestricted'
-
-" files
+""" files
 let g:fzfx_find_command = (executable('fd') ? 'fd' : 'fdfind').' . --color=never --type f --type symlink --follow --ignore-case'
 let g:fzfx_unrestricted_find_command = (executable('fd') ? 'fd' : 'fdfind').' . --color=never --type f --type symlink --follow --ignore-case --unrestricted'
 
-" git branches
-let g:fzfx_git_branch_command = 'git branch -a --color'
-
-""" ======== key actions ========
-
-" live grep
+""" live grep
+let g:fzfx_grep_command = 'rg --column --line-number --no-heading --color=always --smart-case'
+let g:fzfx_unrestricted_grep_command = 'rg --column --line-number --no-heading --color=always --smart-case --unrestricted --unrestricted'
+" live grep action keys
 let g:fzfx_live_grep_fzf_mode_action = 'ctrl-f'
 let g:fzfx_live_grep_rg_mode_action = 'ctrl-r'
 
-" buffers
+""" git branches
+let g:fzfx_git_branch_command = 'git branch -a --color'
+
+""" buffers
 let g:fzfx_buffers_close_action = 'ctrl-d'
 
-" history files
+""" history files
 let g:fzfx_ignored_history_filetypes = {
     \ 'NvimTree': 1,
     \ 'neo-tree': 1,
@@ -422,9 +418,7 @@ let g:fzfx_ignored_history_filetypes = {
     \ 'qf': 1,
     \ }
 
-""" ======== resume last search ========
-
-" cache dir
+""" resume cache dir
 let g:fzfx_resume_cache_dir = has('nvim') ? stdpath('data').'/fzfx.vim' : '~/.cache/vim/fzfx.vim'
 ```
 
