@@ -1,0 +1,92 @@
+#!/bin/sh
+
+# set -x
+
+fzfx_trim() {
+	var="$*"
+	# remove leading whitespace characters
+	var="${var#"${var%%[![:space:]]*}"}"
+	# remove trailing whitespace characters
+	var="${var%"${var##*[![:space:]]}"}"
+	printf '%s' "$var"
+}
+
+if command -v batcat > /dev/null; then
+    BATNAME="batcat"
+elif command -v bat > /dev/null; then
+    BATNAME="bat"
+fi
+
+content="$1"
+content=$(fzfx_trim "$content")
+# if [ $_FZFX_ENABLE_DEBUG -gt 0 ]; then
+# 	echo "DEBUG \$content:[$content]"
+# fi
+
+lua_function="<Lua function>"
+lua_source="<Lua "
+vim_call_colon=" :call "
+vim_call=" call "
+
+lua_function_rest=${content#*$lua_function}
+lua_source_rest=${lua_function_rest#*$lua_source}
+
+if [ ${#lua_source_rest} -gt 0 ] && [ "$lua_source_rest" != "$lua_function_rest" ]; then
+	if [ $_FZFX_ENABLE_DEBUG -gt 0 ]; then
+		echo "DEBUG \$lua_source_rest1:[$lua_source_rest]"
+	fi
+	oIFS="$IFS"
+	IFS=":"
+    declare -a split_lua_source=($lua_source_rest)
+    IFS=$oIFS
+    unset oIFS
+    FILE=$(fzfx_trim "${split_lua_source[1]}")
+    FILE="${FILE/#\~/$HOME}"
+    CENTER="${split_lua_source[2]%>*}"
+    LINERANGE=$((CENTER - 15))
+    LINERANGE=$((LINERANGE < 1 ? 1 : LINERANGE))
+	if [ $_FZFX_ENABLE_DEBUG -gt 0 ]; then
+		echo "DEBUG \$FILE:[$FILE]"
+		echo "DEBUG \$CENTER:[$CENTER]"
+	fi
+
+    if [ -z "$FZF_PREVIEW_COMMAND" ] && [ "${BATNAME:+x}" ]; then
+        ${BATNAME} --style="${BAT_STYLE:-numbers}" --color=always --highlight-line=$CENTER --line-range=$LINERANGE: -- "$FILE"
+        exit $?
+    fi
+
+    FILE_LENGTH=${#FILE}
+    MIME=$(file --dereference --mime -- "$FILE")
+    if [[ "${MIME:FILE_LENGTH}" =~ binary ]]; then
+      echo "$MIME"
+      exit 0
+    fi
+
+    DEFAULT_COMMAND="cat {}"
+    CMD=${FZF_PREVIEW_COMMAND:-$DEFAULT_COMMAND}
+    CMD=${CMD//{\}/$(printf %q "$FILE")}
+    eval "$CMD" 2> /dev/null
+else
+    vim_call_colon_rest=${content#*$vim_call_colon}
+    if [ ${#vim_call_colon_rest} -gt 0 ] && [ "$vim_call_colon_rest" != "$content" ]; then
+        if [ $_FZFX_ENABLE_DEBUG -gt 0 ]; then
+            echo "DEBUG \$vim_call_colon_rest:[$vim_call_colon_rest]"
+        fi
+        echo ":call $vim_call_colon_rest" | $BATNAME --style="${BAT_STYLE:-numbers}" --color=always --language=vim
+    else
+        vim_call_rest=${content#*$vim_call}
+        if [ ${#vim_call_rest} -gt 0 ] && [ "$vim_call_rest" != "$content" ]; then
+            if [ $_FZFX_ENABLE_DEBUG -gt 0 ]; then
+                echo "DEBUG \$vim_call_rest:[$vim_call_rest]"
+            fi
+            echo "call $vim_call_rest" | $BATNAME --style="${BAT_STYLE:-numbers}" --color=always --language=vim
+        else
+            if [ $_FZFX_ENABLE_DEBUG -gt 0 ]; then
+                echo "DEBUG \$content2:[$content]"
+            fi
+            trim_content=$(echo "$content" | tr -s ' ')
+            trim_content=$(fzfx_trim "$trim_content")
+            echo "$trim_content" |  $BATNAME --style="${BAT_STYLE:-numbers}" --color=always --language=vim
+        fi
+    fi
+fi
