@@ -389,37 +389,6 @@ function! fzfx#vim#resume_live_grep(fullscreen)
     return fzfx#vim#live_grep(query, a:fullscreen, opts)
 endfunction
 
-" deprecated
-function! fzfx#vim#unrestricted_live_grep(query, fullscreen)
-    call s:warning("'FzfxUnrestrictedLiveGrep' is deprecated, use 'FzfxLiveGrepU'!")
-    return fzfx#vim#live_grep(a:query, a:fullscreen, {'unrestricted': 1})
-endfunction
-" deprecated
-function! fzfx#vim#live_grep_visual(fullscreen)
-    call s:warning("'FzfxLiveGrepVisual' is deprecated, use 'FzfxLiveGrepV'!")
-    let query=fzfx#vim#_visual_select()
-    return fzfx#vim#live_grep(query, a:fullscreen, {'unrestricted': 0})
-endfunction
-
-" deprecated
-function! fzfx#vim#unrestricted_live_grep_visual(fullscreen)
-    call s:warning("'FzfxUnrestrictedLiveGrepVisual' is deprecated, use 'FzfxLiveGrepUV'!")
-    let query=fzfx#vim#_visual_select()
-    return fzfx#vim#live_grep(query, a:fullscreen, {'unrestricted': 1})
-endfunction
-
-" deprecated
-function! fzfx#vim#grep_word(fullscreen)
-    call s:warning("'FzfxGrepWord' is deprecated, use 'FzfxLiveGrepW'!")
-    return fzfx#vim#live_grep(expand('<cword>'), a:fullscreen, {'unrestricted': 0})
-endfunction
-
-" deprecated
-function! fzfx#vim#unrestricted_grep_word(fullscreen)
-    call s:warning("'FzfxUnrestrictedGrepWord' is deprecated, use 'FzfxLiveGrepUW'!")
-    return fzfx#vim#live_grep(expand('<cword>'), a:fullscreen, {'unrestricted': 1})
-endfunction
-
 " files
 function! fzfx#vim#files(query, fullscreen, opts)
     let provider = a:opts.unrestricted ? s:fzfx_unrestricted_find_command : s:fzfx_find_command
@@ -448,12 +417,6 @@ function! fzfx#vim#resume_files(fullscreen)
         call s:debug("resume_files-2, opts:".string(opts))
     endif
     return fzfx#vim#files(query, a:fullscreen, opts)
-endfunction
-
-" deprecated
-function! fzfx#vim#unrestricted_files(query, fullscreen)
-    call s:warning("'FzfxUnrestrictedFiles' is deprecated, use 'FzfxFilesU'!")
-    return fzfx#vim#files(a:query, a:fullscreen, {'unrestricted':1})
 endfunction
 
 " buffers

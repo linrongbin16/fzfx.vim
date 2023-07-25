@@ -18,9 +18,6 @@ command! -bang FzfxFilesUW call fzfx#vim#files(expand('<cword>'), <bang>0, {'unr
 " resume
 command! -bang FzfxResumeFiles call fzfx#vim#resume_files(<bang>0)
 
-" deprecated
-command! -bang -nargs=? -complete=dir FzfxUnrestrictedFiles call fzfx#vim#unrestricted_files(<q-args>, <bang>0)
-
 " ======== history files ========
 command! -bang -nargs=* FzfxHistoryFiles call fzfx#vim#history_files(<q-args>, <bang>0)
 " visual
@@ -46,13 +43,6 @@ command! -bang FzfxLiveGrepW call fzfx#vim#live_grep(expand('<cword>'), <bang>0,
 command! -bang FzfxLiveGrepUW call fzfx#vim#live_grep(expand('<cword>'), <bang>0, {'unrestricted': 1})
 " resume
 command! -bang FzfxResumeLiveGrep call fzfx#vim#resume_live_grep(<bang>0)
-
-" deprecated
-command! -bang -nargs=* FzfxUnrestrictedLiveGrep call fzfx#vim#unrestricted_live_grep(<q-args>, <bang>0)
-command! -bang FzfxLiveGrepVisual call fzfx#vim#live_grep_visual(<bang>0)
-command! -bang FzfxUnrestrictedLiveGrepVisual call fzfx#vim#unrestricted_live_grep_visual(<bang>0)
-command! -bang FzfxGrepWord call fzfx#vim#grep_word(<bang>0)
-command! -bang FzfxUnrestrictedGrepWord call fzfx#vim#unrestricted_grep_word(<bang>0)
 
 " ======== git ========
 command! -bang -nargs=* FzfxBranches call fzfx#vim#branches(<q-args>, <bang>0)
