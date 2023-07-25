@@ -746,11 +746,10 @@ function! fzfx#vim#history_files(query, fullscreen)
                 \ 'source': recent_files,
                 \ 'sink*': {lines -> s:history_files_sink(lines)},
                 \ 'options': [
-                \   '--no-multi',
+                \   '--multi',
                 \   '--delimiter=:',
                 \   '--prompt', 'History Files> ',
                 \   '--header-lines', !empty(expand('%')),
-                \   s:expect_keys("enter", "double-click"),
                 \ ],
                 \ 'placeholder':  '{1}'}
     return fzf#run(fzf#wrap('history-files', fzf#vim#with_preview(spec), a:fullscreen))
