@@ -693,22 +693,22 @@ function! s:history_files_format(idx, val, today_y, today_mon, today_d, today_h,
                 let time = strftime('%H:%M:%S %Z', timestamp)
             endif
             if len(new_diff_y) > 0
-                let datetime = time.' ('.new_diff_y.')'
+                let datetime = time.', '.new_diff_y
             elseif len(new_diff_mon) > 0
-                let datetime = time.' ('.new_diff_mon.')'
+                let datetime = time.', '.new_diff_mon
             elseif len(new_diff_d) > 0
-                let datetime = time.' ('.new_diff_d.')'
+                let datetime = time.', '.new_diff_d
             elseif len(builder) > 0
-                let datetime = time.' ('.builder.')'
+                let datetime = time.', '.builder
             else
                 let datetime = time
             endif
-            return printf("%s\t modified at %s", s:_history_files_render(a:val), call(s:cyan_ref, [datetime, 'Constant']))
+            return printf("%s\t (modified at %s)", s:_history_files_render(a:val), call(s:cyan_ref, [datetime, 'Constant']))
         else
-            return printf("%s\t modified at %s", s:_history_files_render(a:val), call(s:cyan_ref, ['?', 'Constant']))
+            return printf("%s\t (modified at %s)", s:_history_files_render(a:val), call(s:cyan_ref, ['?', 'Constant']))
         endif
     else
-        return printf("%s\t modified at %s", s:_history_files_render(a:val), call(s:cyan_ref, ['?', 'Constant']))
+        return printf("%s\t (modified at %s)", s:_history_files_render(a:val), call(s:cyan_ref, ['?', 'Constant']))
     endif
 endfunction
 
