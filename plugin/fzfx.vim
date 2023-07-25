@@ -44,9 +44,6 @@ command! -bang FzfxGrepWord call fzfx#vim#grep_word(<bang>0)
 command! -bang FzfxUnrestrictedGrepWord call fzfx#vim#unrestricted_grep_word(<bang>0)
 
 " ======== git ========
-command! -bang -nargs=* FzfxGBranches call fzfx#vim#gitbranches(<q-args>, <bang>0)
-
-" deprecated
 command! -bang -nargs=* FzfxBranches call fzfx#vim#branches(<q-args>, <bang>0)
 
 " ======== history files ========

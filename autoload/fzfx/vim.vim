@@ -520,7 +520,7 @@ function! s:gitbranches_sink(lines) abort
     normal! ^zvzz
 endfunction
 
-function! fzfx#vim#gitbranches(query, fullscreen)
+function! fzfx#vim#branches(query, fullscreen)
     let git_branch_header=':: Press '.call(s:magenta_ref, ['ENTER', 'Special']).' to switch branch'
     let git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
     if len(a:query) > 0
@@ -542,11 +542,6 @@ function! fzfx#vim#gitbranches(query, fullscreen)
                 \   s:expect_keys("enter", "double-click"),
                 \ ]}
     return fzf#run(fzf#wrap('branches', fzf#vim#with_preview(spec), a:fullscreen))
-endfunction
-
-function! fzfx#vim#branches(query, fullscreen)
-    call s:warning("'FzfxBranches' is deprecated, use 'FzfxGBranches'!")
-    return fzfx#vim#gitbranches(a:query, a:fullscreen)
 endfunction
 
 " history files
