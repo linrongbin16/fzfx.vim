@@ -48,6 +48,10 @@ command! -bang -nargs=* FzfxBranches call fzfx#vim#branches(<q-args>, <bang>0)
 
 " ======== history files ========
 command! -bang -nargs=* FzfxHistoryFiles call fzfx#vim#history_files(<q-args>, <bang>0)
+" find visual
+command! -bang -range FzfxHistoryFilesV call fzfx#vim#history_files(fzfx#vim#_visual_select(), <bang>0)
+" find word
+command! -bang -range FzfxHistoryFilesW call fzfx#vim#history_files(expand('<cword>'), <bang>0)
 
 let s:cpo_save = &cpo
 set cpo&vim
