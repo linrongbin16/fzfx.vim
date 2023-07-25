@@ -636,19 +636,15 @@ function! s:history_files_format(idx, val, today_y, today_mon, today_d, today_h,
             let diff_min = a:today_min - that_min
             if diff_min < 0
                 let diff_min = diff_min + 60
-                let diff_h = diff_h - 1
             endif
             if diff_h < 0
                 let diff_h = diff_h + 24
-                let diff_d = diff_d - 1
             endif
             if diff_d < 0
                 let diff_d = diff_d + s:days_of_month(that_y, that_mon)
-                let diff_mon = diff_mon - 1
             endif
             if diff_mon < 0
                 let diff_mon = diff_mon + 12
-                let diff_y = diff_y - 1
             endif
             if diff_y >= 0 && diff_mon >= 0 && diff_d >= 0 && diff_h >= 0 && diff_min >= 0
                 if diff_y > 0
@@ -673,16 +669,34 @@ function! s:history_files_format(idx, val, today_y, today_mon, today_d, today_h,
                     let builder = s:str_append(builder, "ago", ' ')
                 endif
             endif
+            let new_diff_y = ''
+            let new_diff_mon = ''
+            let new_diff_d = ''
             if a:today_y != that_y
+                if a:today_y - that_y == 1
+                    let new_diff_y = 'last year'
+                endif
                 let time = strftime('%Y-%m-%d %H:%M:%S %Z', timestamp)
             elseif a:today_mon != that_mon
+                if a:today_mon - that_mon == 1
+                    let new_diff_mon = 'last month'
+                endif
                 let time = strftime('%m-%d %H:%M:%S %Z', timestamp)
             elseif a:today_d != that_d
-                let time = strftime('%m-%d'.((a:today_d - that_d == 1 ? ' (yesterday)' : '')).' %H:%M:%S %Z', timestamp)
+                if a:today_d - that_d == 1
+                    let new_diff_d = 'yesterday'
+                endif
+                let time = strftime('%m-%d %H:%M:%S %Z', timestamp)
             else
                 let time = strftime('%H:%M:%S %Z', timestamp)
             endif
-            if len(builder) > 0
+            if len(new_diff_y) > 0
+                let datetime = time.' ('.new_diff_y.')'
+            elseif len(new_diff_mon) > 0
+                let datetime = time.' ('.new_diff_mon.')'
+            elseif len(new_diff_d) > 0
+                let datetime = time.' ('.new_diff_d.')'
+            elseif len(builder) > 0
                 let datetime = time.' ('.builder.')'
             else
                 let datetime = time
