@@ -502,6 +502,7 @@ function! fzfx#vim#branches(query, fullscreen)
                 \ 'source': initial_command,
                 \ 'sink*': {lines -> s:branches_sink(lines)},
                 \ 'options': [
+                \   '--ansi',
                 \   '--no-multi',
                 \   '--delimiter=:',
                 \   '--query', a:query,
