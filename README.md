@@ -336,6 +336,16 @@ let g:fzfx_live_grep_rg_mode_action = 'ctrl-r'
 " buffers
 let g:fzfx_buffers_close_action = 'ctrl-d'
 
+" history files
+let g:fzfx_disabled_history_filetypes = {
+    \ 'NvimTree': 1,
+    \ 'neo-tree': 1,
+    \ 'CHADTree': 1,
+    \ 'undotree': 1,
+    \ 'diff': 1,
+    \ 'vista': 1,
+    \ }
+
 """ ======== resume last search ========
 
 " cache dir
