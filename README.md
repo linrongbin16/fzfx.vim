@@ -337,20 +337,12 @@ There're some global variables you can speicify to config:
 """ ======== find/grep commands ========
 
 " live grep
-let g:fzfx_grep_command = executable('rg')
-        \ ? 'rg --column --line-number --no-heading --color=always --smart-case'
-        \ : "grep --recursive --line-number --color=always --no-messages --binary-files=without-match --exclude-dir='*/.*'"
-let g:fzfx_unrestricted_grep_command = executable('rg')
-        \ ? 'rg --column --line-number --no-heading --color=always --smart-case --unrestricted --unrestricted'
-        \ : "grep --recursive --line-number --color=always --no-messages --binary-files=without-match"
+let g:fzfx_grep_command = 'rg --column --line-number --no-heading --color=always --smart-case'
+let g:fzfx_unrestricted_grep_command = 'rg --column --line-number --no-heading --color=always --smart-case --unrestricted --unrestricted'
 
 " files
-let g:fzfx_find_command = executable('fd')
-        \ ? 'fd . --color=never --type f --type symlink --follow --ignore-case'
-        \ : "find . -type f,l -not -path '*/.*'"
-let g:fzfx_unrestricted_find_command = executable('fd')
-        \ ? 'fd . --color=never --type f --type symlink --follow --ignore-case --unrestricted'
-        \ : "find . -type f,l"
+let g:fzfx_find_command = (executable('fd') ? 'fd' : 'fdfind').' . --color=never --type f --type symlink --follow --ignore-case'
+let g:fzfx_unrestricted_find_command = (executable('fd') ? 'fd' : 'fdfind').' . --color=never --type f --type symlink --follow --ignore-case --unrestricted'
 
 " git branches
 let g:fzfx_git_branch_command = 'git branch -a --color'
