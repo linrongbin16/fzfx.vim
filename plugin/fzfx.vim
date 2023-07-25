@@ -52,11 +52,11 @@ command! -bang -range FzfxBranchesV call fzfx#vim#branches(fzfx#vim#_visual_sele
 command! -bang FzfxBranchesW call fzfx#vim#branches(expand('<cword>'), <bang>0)
 
 " ======== commands ========
-command! -bang -nargs=* -complete=command FzfxCommands call fzfx#vim#commands(<q-args>, <bang>0)
+command! -bang -nargs=? -complete=command FzfxCommands call fzfx#vim#commands(<q-args>, <bang>0)
 " visual
 command! -bang -range FzfxCommandsV call fzfx#vim#commands(fzfx#vim#_visual_select(), <bang>0)
 " cword
-command! -bang FzfxCommands call fzfx#vim#commands(expand('<cword>'), <bang>0)
+command! -bang FzfxCommandsW call fzfx#vim#commands(expand('<cword>'), <bang>0)
 
 let s:cpo_save = &cpo
 set cpo&vim
