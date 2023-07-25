@@ -18,7 +18,7 @@ E(x)tended fzf commands missing in fzf.vim.
   - [FzfxBuffers](#fzfxbuffers)
   - [FzfxLiveGrep(UVW)](#fzfxlivegrepuvw)
   - [FzfxBranches](#fzfxbranches)
-  - [FzfxResumeLiveGrep/FzfxResumeFiles](#fzfxresumelivegrepfzfxresumefiles)
+  - [FzfxHistoryFiles](#fzfxhistoryfiles)
 - [Config](#config)
 - [Credit](#credit)
 
@@ -132,6 +132,13 @@ nnoremap <space>wf :\<C-U>FzfxFilesW<CR>
 " unrestrictly find files by cursor word
 nnoremap <space>uwf :\<C-U>FzfxFilesUW<CR>
 
+" ======== history files ========
+nnoremap <space>hf :\<C-U>FzfxHistoryFiles<CR>
+" find history files by visual selected
+xnoremap <space>hf :\<C-U>FzfxHistoryFilesV<CR>
+" find history files by cursor word
+nnoremap <space>whf :\<C-U>FzfxHistoryFilesW<CR>
+
 " ======== buffers ========
 
 nnoremap <space>b :\<C-U>FzfxBuffers<CR>
@@ -165,25 +172,37 @@ For Neovim:
 
 -- find files, filter hidden and ignored files
 vim.keymap.set('n', '<space>f', '<cmd>FzfxFiles<cr>',
-        {silent=true, noremap=true, desc="Search files"})
+        {silent=true, noremap=true, desc="Find files"})
 -- you can also find by visual selected
 vim.keymap.set('x', '<space>f', '<cmd>FzfxFilesV<CR>',
-        {silent=true, noremap=true, desc="Search files"})
+        {silent=true, noremap=true, desc="Find files"})
 -- unrestrictly find files, include hidden and ignored files
 vim.keymap.set('n', '<space>uf',
         '<cmd>FzfxFilesU<cr>',
-        {silent=true, noremap=true, desc="Unrestricted search files"})
+        {silent=true, noremap=true, desc="Unrestricted find files"})
 -- you can also unrestrictly find by visual selected
 vim.keymap.set('x', '<space>uf',
         '<cmd>FzfxFilesUV<CR>',
-        {silent=true, noremap=true, desc="Unrestricted search files"})
+        {silent=true, noremap=true, desc="Unrestricted find files"})
 
 -- find files by cursor word
 vim.keymap.set('n', '<space>wf', '<cmd>FzfxFilesW<cr>',
-        {silent=true, noremap=true, desc="Search files by cursor word"})
+        {silent=true, noremap=true, desc="Find files by cursor word"})
 -- unrestrictly find files by cursor word
 vim.keymap.set('n', '<space>uwf', '<cmd>FzfxFilesUW<cr>',
-        {silent=true, noremap=true, desc="Unrestricted search files by cursor word"})
+        {silent=true, noremap=true, desc="Unrestricted find files by cursor word"})
+
+-- ======== history files ========
+
+-- find history files
+vim.keymap.set('n', '<space>hf', '<cmd>FzfxHistoryFiles<cr>',
+        {silent=true, noremap=true, desc="Find history files"})
+-- find history files by visual selected
+vim.keymap.set('x', '<space>hf', '<cmd>FzfxHistoryFilesV<CR>',
+        {silent=true, noremap=true, desc="Find history files"})
+-- find history files by cursor word
+vim.keymap.set('n', '<space>whf', '<cmd>FzfxHistoryFilesW<CR>',
+        {silent=true, noremap=true, desc="Find history files by cursor word"})
 
 -- ======== buffers ========
 
@@ -255,6 +274,8 @@ https://github.com/linrongbin16/fzfx.vim/assets/6496887/4bc44577-345c-4b71-bd2f-
 - `FzfxFiles(U)W` is a variant of `FzfxFiles(U)`, except it searches by
   cursor word, e.g. `expand('<cword>')`.
 
+- `FzfxResumeFiles` can resume last files search (include all above variants).
+
 ### FzfxBuffers
 
 https://github.com/linrongbin16/fzfx.vim/assets/6496887/1864fde1-0cba-40d2-8e53-b72140fb7675
@@ -289,17 +310,18 @@ https://github.com/linrongbin16/fzfx.vim/assets/6496887/24f936fe-50cc-48fe-b8e5-
 - `FzfxLiveGrep(U)W` is a variant of `FzfxLiveGrep(U)`, except it searches by
   cursor word, e.g. `expand('<cword>')`.
 
+- `FzfxResumeLiveGrep` can resume last live grep (include all above variants).
+
 ### FzfxBranches
 
 https://github.com/linrongbin16/fzfx.vim/assets/6496887/e4b3e4b9-9b38-4fd7-bb8b-b7946fc49232
 
 - `FzfxBranches` can search git branches, and use `ENTER` to switch to the
-  selected branch:
+  selected branch.
 
-### FzfxResumeLiveGrep/FzfxResumeFiles
+### FzfxHistoryFiles
 
-- `FzfxResumeLiveGrep` can resume last live grep (include all variants).
-- `FzfxResumeFiles` can resume last files search (include all variants).
+- `FzfxHistoryFiles` can search history files (old opened files by `v:oldfiles` and opened buffers).
 
 ## Config
 

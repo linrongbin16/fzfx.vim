@@ -703,12 +703,12 @@ function! s:history_files_format(idx, val, today_y, today_mon, today_d, today_h,
             else
                 let datetime = time
             endif
-            return printf("%s\t%s", s:_history_files_render(a:val), call(s:cyan_ref, [datetime, 'Constant']))
+            return printf("%s\t modified at %s", s:_history_files_render(a:val), call(s:cyan_ref, [datetime, 'Constant']))
         else
-            return printf("%s\t%s", s:_history_files_render(a:val), call(s:cyan_ref, ['?', 'Constant']))
+            return printf("%s\t modified at %s", s:_history_files_render(a:val), call(s:cyan_ref, ['?', 'Constant']))
         endif
     else
-        return printf("%s\t\%s", s:_history_files_render(a:val), call(s:cyan_ref, ['?', 'Constant']))
+        return printf("%s\t modified at %s", s:_history_files_render(a:val), call(s:cyan_ref, ['?', 'Constant']))
     endif
 endfunction
 
@@ -723,7 +723,7 @@ function! s:history_files_sink(lines)
         execute 'silent' cmd
     endif
 
-    let keys = split(a:lines[1], ':')
+    let keys = split(a:lines[1], '\t')
     execute 'edit' keys[0]
     normal! ^zvzz
 endfunction
@@ -762,6 +762,7 @@ function! fzfx#vim#history_files(query, fullscreen)
                 \ 'options': [
                 \   '--multi',
                 \   '--tabstop=1',
+                \   '--query', a:query,
                 \   '--prompt', 'History Files> ',
                 \   '--header-lines', !empty(expand('%')),
                 \   s:expect_keys("enter", "double-click"),
