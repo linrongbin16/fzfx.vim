@@ -502,6 +502,7 @@ function! fzfx#vim#branches(query, fullscreen)
                 \ 'source': initial_command,
                 \ 'sink*': {lines -> s:branches_sink(lines)},
                 \ 'options': [
+                \   '--ansi',
                 \   '--no-multi',
                 \   '--delimiter=:',
                 \   '--query', a:query,
@@ -731,6 +732,7 @@ function! fzfx#vim#history_files(query, fullscreen)
                 \ 'source': recent_files,
                 \ 'sink*': {lines -> s:history_files_sink(lines)},
                 \ 'options': [
+                \   '--ansi',
                 \   '--multi',
                 \   '--tabstop=1',
                 \   '--query', a:query,
