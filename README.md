@@ -323,7 +323,7 @@ https://github.com/linrongbin16/fzfx.vim/assets/6496887/e4b3e4b9-9b38-4fd7-bb8b-
 
 ![FzfxHistoryFiles-v1](https://github.com/linrongbin16/fzfx.vim/assets/6496887/b0b05f0e-b593-4703-a6c0-078343eeb745)
 
-- `FzfxHistoryFiles` can search history files (old opened files by `v:oldfiles` and opened buffers).
+- `FzfxHistoryFiles` is almost the same with (`Fzf`)`History`, except it add highlight colors and last modified time.
 
 ## Config
 
