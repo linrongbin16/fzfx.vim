@@ -25,7 +25,7 @@ else
     let s:vim='vim'
 endif
 
-let s:_fzfx_enable_debug = get(g:, '_fzfx_enable_debug', 0)
+let s:_fzfx_enable_debug = get(g:, '_fzfx_enable_debug', 1)
 let $_FZFX_ENABLE_DEBUG = s:_fzfx_enable_debug
 
 function! s:exception(msg)
@@ -769,6 +769,11 @@ endfunction
 
 " commands
 function! fzfx#vim#commands(query, fullscreen)
+    let vim_commands_previewer=s:fzfx_bin.'vim_commands_previewer'
+    let spec = { 'options': [
+                \   '--preview', vim_commands_previewer.' {}',
+                \ ]}
+    return fzf#vim#commands(spec, a:fullscreen)
 endfunction
 
 let &cpo = s:cpo_save
