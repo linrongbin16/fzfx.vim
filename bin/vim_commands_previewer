@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# set -x
+
+fzfx_trim() {
+	var="$*"
+	# remove leading whitespace characters
+	var="${var#"${var%%[![:space:]]*}"}"
+	# remove trailing whitespace characters
+	var="${var%"${var##*[![:space:]]}"}"
+	printf '%s' "$var"
+}
+
+content="$1"
+content=$(fzfx_trim "$content")
+if [ $_FZFX_ENABLE_DEBUG -gt 0 ]; then
+	echo "DEBUG \$content:[$content]"
+fi
