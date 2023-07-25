@@ -769,10 +769,6 @@ endfunction
 
 " commands
 function! fzfx#vim#commands(query, fullscreen)
-    redir => cout
-    silent command
-    redir END
-    let commands_list = split(cout, "\n")
 endfunction
 
 let &cpo = s:cpo_save
