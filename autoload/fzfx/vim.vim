@@ -145,23 +145,21 @@ endfunction
 " script local functions import from fzf.vim autoload.
 let s:action_for_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "action_for")
 let s:magenta_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "magenta")
+let s:red_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "red")
+let s:cyan_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "cyan")
 let s:bufopen_ref = s:get_fzf_autoload_func_ref(s:fzf_autoload_sid, "bufopen")
 
 " ======== defaults ========
 
 " grep/find commands
-let s:default_rg_command = "rg --column -n --no-heading --color=always -S"
-let s:default_grep_command = "grep -R -n --color=always -s -I"
-let s:fzfx_grep_command = get(g:, 'fzfx_grep_command', executable('rg') ? s:default_rg_command : s:default_grep_command." --exclude-dir='*/.*'")
-let s:fzfx_unrestricted_grep_command = get(g:, 'fzfx_unrestricted_grep_command', executable('rg') ? s:default_rg_command.' -uu' : s:default_grep_command)
+let s:fzfx_grep_command = get(g:, 'fzfx_grep_command', 'rg --column -n --no-heading --color=always -S')
+let s:fzfx_unrestricted_grep_command = get(g:, 'fzfx_unrestricted_grep_command', 'rg --column -n --no-heading --color=always -S -uu')
 
 let $_FZFX_GREP_COMMAND = s:fzfx_grep_command
 let $_FZFX_UNRESTRICTED_GREP_COMMAND = s:fzfx_unrestricted_grep_command
 
-let s:default_fd_command = 'fd . -cnever -tf -tl -L -i'
-let s:default_find_command = 'find . -type f,l'
-let s:fzfx_find_command = get(g:, 'fzfx_find_command', executable('fd') ? s:default_fd_command : s:default_find_command." -not -path '*/.*'")
-let s:fzfx_unrestricted_find_command = get(g:, 'fzfx_unrestricted_find_command', executable('fd') ? s:default_fd_command.' -u' : s:default_find_command)
+let s:fzfx_find_command = get(g:, 'fzfx_find_command', (executable('fd') ? 'fd' : 'fdfind').' . -cnever -tf -tl -L -i')
+let s:fzfx_unrestricted_find_command = get(g:, 'fzfx_unrestricted_find_command', (executable('fd') ? 'fd' : 'fdfind').' . -cnever -tf -tl -L -i -u')
 
 " `git branch -a --color`
 let s:fzfx_git_branch_command = get(g:, 'fzfx_git_branch_command', 'git branch -a --color')
@@ -216,6 +214,9 @@ endif
 
 let $_FZFX_RESUME_LIVE_GREP_CACHE = s:fzfx_resume_live_grep_cache
 let $_FZFX_RESUME_FILES_CACHE = s:fzfx_resume_files_cache
+
+" ignored filetype
+let s:fzfx_ignored_history_filetypes = get(g:, 'fzfx_ignored_history_filetypes', {'NvimTree':1, 'neo-tree':1, 'CHADTree':1, 'undotree':1, 'vista':1})
 
 " ======== utils ========
 
@@ -298,7 +299,7 @@ endfunction
 
 function! s:cache_set_object(key, value)
     let j = json_encode(a:value)
-    call s:cache_set(a:key, j)
+    return s:cache_set(a:key, j)
 endfunction
 
 
@@ -370,38 +371,51 @@ function! fzfx#vim#live_grep(query, fullscreen, opts)
                 \ ]}
     let spec = fzf#vim#with_preview(spec)
     call s:cache_set_object(s:fzfx_resume_live_grep_opts_cache, a:opts)
-    call fzf#vim#grep(initial_command, spec, a:fullscreen)
+    return fzf#vim#grep(initial_command, spec, a:fullscreen)
+endfunction
+
+" resume grep
+function! fzfx#vim#resume_live_grep(fullscreen)
+    let query = ''
+    let opts = {'unrestricted': 0}
+    if s:cache_has(s:fzfx_resume_live_grep_cache)
+        let query = s:cache_get(s:fzfx_resume_live_grep_cache)
+    endif
+    if s:cache_has(s:fzfx_resume_live_grep_opts_cache)
+        let opts = s:cache_get_object(s:fzfx_resume_live_grep_opts_cache)
+    endif
+    return fzfx#vim#live_grep(query, a:fullscreen, opts)
 endfunction
 
 " deprecated
 function! fzfx#vim#unrestricted_live_grep(query, fullscreen)
     call s:warning("'FzfxUnrestrictedLiveGrep' is deprecated, use 'FzfxLiveGrepU'!")
-    call fzfx#vim#live_grep(a:query, a:fullscreen, {'unrestricted': 1})
+    return fzfx#vim#live_grep(a:query, a:fullscreen, {'unrestricted': 1})
 endfunction
 " deprecated
 function! fzfx#vim#live_grep_visual(fullscreen)
     call s:warning("'FzfxLiveGrepVisual' is deprecated, use 'FzfxLiveGrepV'!")
     let query=fzfx#vim#_visual_select()
-    call fzfx#vim#live_grep(query, a:fullscreen, {'unrestricted': 0})
+    return fzfx#vim#live_grep(query, a:fullscreen, {'unrestricted': 0})
 endfunction
 
 " deprecated
 function! fzfx#vim#unrestricted_live_grep_visual(fullscreen)
     call s:warning("'FzfxUnrestrictedLiveGrepVisual' is deprecated, use 'FzfxLiveGrepUV'!")
     let query=fzfx#vim#_visual_select()
-    call fzfx#vim#live_grep(query, a:fullscreen, {'unrestricted': 1})
+    return fzfx#vim#live_grep(query, a:fullscreen, {'unrestricted': 1})
 endfunction
 
 " deprecated
 function! fzfx#vim#grep_word(fullscreen)
     call s:warning("'FzfxGrepWord' is deprecated, use 'FzfxLiveGrepW'!")
-    call fzfx#vim#live_grep(expand('<cword>'), a:fullscreen, {'unrestricted': 0})
+    return fzfx#vim#live_grep(expand('<cword>'), a:fullscreen, {'unrestricted': 0})
 endfunction
 
 " deprecated
 function! fzfx#vim#unrestricted_grep_word(fullscreen)
     call s:warning("'FzfxUnrestrictedGrepWord' is deprecated, use 'FzfxLiveGrepUW'!")
-    call fzfx#vim#live_grep(expand('<cword>'), a:fullscreen, {'unrestricted': 1})
+    return fzfx#vim#live_grep(expand('<cword>'), a:fullscreen, {'unrestricted': 1})
 endfunction
 
 " files
@@ -416,13 +430,28 @@ function! fzfx#vim#files(query, fullscreen, opts)
     let spec = fzf#vim#with_preview(spec)
     call s:cache_set(s:fzfx_resume_files_cache, a:query)
     call s:cache_set_object(s:fzfx_resume_files_opts_cache, a:opts)
-    call fzf#vim#files('', spec, a:fullscreen)
+    return fzf#vim#files('', spec, a:fullscreen)
+endfunction
+
+" resume files
+function! fzfx#vim#resume_files(fullscreen)
+    let query = ''
+    let opts = {'unrestricted': 0}
+    if s:cache_has(s:fzfx_resume_files_cache)
+        let query = s:cache_get(s:fzfx_resume_files_cache)
+        call s:debug("resume_files-1, query:".query)
+    endif
+    if s:cache_has(s:fzfx_resume_files_opts_cache)
+        let opts = s:cache_get_object(s:fzfx_resume_files_opts_cache)
+        call s:debug("resume_files-2, opts:".string(opts))
+    endif
+    return fzfx#vim#files(query, a:fullscreen, opts)
 endfunction
 
 " deprecated
 function! fzfx#vim#unrestricted_files(query, fullscreen)
     call s:warning("'FzfxUnrestrictedFiles' is deprecated, use 'FzfxFilesU'!")
-    call fzfx#vim#files(a:query, a:fullscreen, {'unrestricted':1})
+    return fzfx#vim#files(a:query, a:fullscreen, {'unrestricted':1})
 endfunction
 
 " buffers
@@ -431,17 +460,19 @@ function! s:buffers_sink(lines, query, fullscreen)
     if len(a:lines) < 2
         return
     endif
+    normal! m'
     let b = matchstr(a:lines[1], '\[\zs[0-9]*\ze\]')
-    let bufname=split(a:lines[1])[-1]
+    let bufname = split(a:lines[1])[-1]
     let action = a:lines[0]
     " echo "lines0.5:".string(a:lines).",b:".b."(".string(bufname).")"
     if action ==? s:fzfx_buffers_close_action
         execute 'bdelete' b
         " echo "lines2:".string(a:lines).",bdelete:".b."(".bufname.")"
-        call fzfx#vim#buffers(a:query, a:fullscreen)
+        return fzfx#vim#buffers(a:query, a:fullscreen)
     else
-        call call(s:bufopen_ref, [a:lines])
+        return call(s:bufopen_ref, [a:lines])
     endif
+    normal! ^zvzz
 endfunction
 
 function! fzfx#vim#buffers(query, fullscreen)
@@ -450,15 +481,16 @@ function! fzfx#vim#buffers(query, fullscreen)
     let spec = { 'sink*': {lines -> s:buffers_sink(lines, a:query, a:fullscreen)},
                 \ 'options': [
                 \   '--header', close_buffer_header,
-                \   '--prompt', 'Buffer> ',
+                \   '--prompt', 'Buffers> ',
                 \   s:expect_keys(close_key),
                 \ ],
                 \ 'placeholder': '{1}'
                 \ }
-    call fzf#vim#buffers(a:query, fzf#vim#with_preview(spec), a:fullscreen)
+    return fzf#vim#buffers(a:query, fzf#vim#with_preview(spec), a:fullscreen)
 endfunction
 
-function! s:parse_branch(branch)
+" gbranches
+function! s:branches_parse(branch)
     let branch=s:trim(a:branch)
     if len(branch) > 0 && branch[0:1] ==? '*'
         let branch=branch[1:]
@@ -472,14 +504,18 @@ endfunction
 
 function! s:branches_sink(lines) abort
     " echo "lines:".string(a:lines)
-    let action=a:lines[0]
+    if len(a:lines) < 2
+        return
+    endif
+    normal! m'
+    let action = a:lines[0]
     if action==?'enter' || action==?'double-click'
-        let branch = s:parse_branch(a:lines[1])
+        let branch = s:branches_parse(a:lines[1])
         execute '!git checkout '.branch
     endif
+    normal! ^zvzz
 endfunction
 
-" branches
 function! fzfx#vim#branches(query, fullscreen)
     let git_branch_header=':: Press '.call(s:magenta_ref, ['ENTER', 'Special']).' to switch branch'
     let git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
@@ -501,34 +537,234 @@ function! fzfx#vim#branches(query, fullscreen)
                 \   '--header', git_branch_header,
                 \   s:expect_keys("enter", "double-click"),
                 \ ]}
-    call fzf#run(fzf#wrap('branches', fzf#vim#with_preview(spec), a:fullscreen))
+    return fzf#run(fzf#wrap('branches', fzf#vim#with_preview(spec), a:fullscreen))
 endfunction
 
-" resume
-function! fzfx#vim#resume_live_grep(fullscreen)
-    let query = ''
-    let opts = {'unrestricted': 0}
-    if s:cache_has(s:fzfx_resume_live_grep_cache)
-        let query = s:cache_get(s:fzfx_resume_live_grep_cache)
-    endif
-    if s:cache_has(s:fzfx_resume_live_grep_opts_cache)
-        let opts = s:cache_get_object(s:fzfx_resume_live_grep_opts_cache)
-    endif
-    call fzfx#vim#live_grep(query, a:fullscreen, opts)
+" history files
+function! s:recent_files()
+    return filter(map(fzf#vim#_buflisted_sorted(), 'bufname(v:val)'), 'len(v:val)')
+                \ + filter(copy(v:oldfiles), "filereadable(fnamemodify(v:val, ':p'))")
 endfunction
 
-function! fzfx#vim#resume_files(fullscreen)
-    let query = ''
-    let opts = {'unrestricted': 0}
-    if s:cache_has(s:fzfx_resume_files_cache)
-        let query = s:cache_get(s:fzfx_resume_files_cache)
-        call s:debug("resume_files-1, query:".query)
+function! s:history_files_filter(idx, val)
+    let ft = getbufvar(a:val, "&filetype")
+    if !has_key(s:fzfx_ignored_history_filetypes, ft)
+        return v:true
     endif
-    if s:cache_has(s:fzfx_resume_files_opts_cache)
-        let opts = s:cache_get_object(s:fzfx_resume_files_opts_cache)
-        call s:debug("resume_files-2, opts:".string(opts))
+    return s:fzfx_ignored_history_filetypes[ft] <= 0
+endfunction
+
+function! s:history_files_compare(a, b, cwd_path, home_path)
+    " first sort by:
+    "   1. files under current folder
+    "   2. user home
+    "   3. other folder outside of user home
+    " then sort by:
+    "   1. latest modified time
+    "   2. full path length
+    let full_a = expand(a:a)
+    let full_b = expand(a:b)
+    let a_in_home = len(full_a) >= len(a:home_path) && full_a[0:len(a:home_path)-1] ==# a:home_path
+    let a_in_cwd = len(full_a) >= len(a:cwd_path) && full_a[0:len(a:cwd_path)-1] ==# a:cwd_path
+    let b_in_home = len(full_b) >= len(a:home_path) && full_b[0:len(a:home_path)-1] ==# a:home_path
+    let b_in_cwd = len(full_b) >= len(a:cwd_path) && full_b[0:len(a:cwd_path)-1] ==# a:cwd_path
+    " both a and b not in home
+    if !a_in_home && !b_in_home
+        return exists('*getftime') ? (getftime(full_a) - getftime(full_b)) : (len(full_a) - len(full_b))
     endif
-    call fzfx#vim#files(query, a:fullscreen, opts)
+    " either a or b in home
+    if !a_in_home
+        return 1
+    endif
+    if !b_in_home
+        return -1
+    endif
+    " both a and b in home, and not in cwd
+    if !a_in_cwd && !b_in_cwd
+        return exists('*getftime') ? (getftime(full_b) - getftime(full_a)) : (len(full_a) - len(full_b))
+    endif
+    " either a or b in cwd
+    if !a_in_cwd
+        return 1
+    endif
+    if !b_in_cwd
+        return -1
+    endif
+    " both a and b in cwd
+    return exists('*getftime') ? (getftime(full_b) - getftime(full_a)) : (len(full_a) - len(full_b))
+endfunction
+
+function! s:str_append(builder, value, extra)
+    let ex = a:extra is v:null ? '' : a:extra
+    return len(a:builder) > 0 ? a:builder.ex.a:value : a:value
+endfunction
+
+function! s:leap_year(y)
+    return a:y % 4 == 0 && (a:y % 100 != 0 || a:y % 400 == 0)
+endfunction
+
+function! s:days_of_month(y, m)
+    let days_map = [-1, 31, s:leap_year(a:y) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    return days_map[a:m]
+endfunction
+
+function! s:_history_files_render(name)
+    let backslash = stridx(a:name, '\')
+    let slash = backslash >= 0 ? '\' : '/'
+    let parent_dir = fnamemodify(a:name, ':h')
+    let filebase = fnamemodify(a:name, ':t')
+    return parent_dir.slash.call(s:red_ref, [filebase, 'Exception'])
+endfunction
+
+function! s:history_files_format(idx, val, today_y, today_mon, today_d, today_h, today_min)
+    if exists('*getftime') && exists('*strftime')
+        let timestamp = getftime(expand(a:val))
+        if timestamp > 0
+            let builder = ''
+            let that_datetime = split(strftime('%Y %m %d %H %M', timestamp))
+            let that_y = str2nr(that_datetime[0])
+            let that_mon = str2nr(that_datetime[1])
+            let that_d = str2nr(that_datetime[2])
+            let that_h = str2nr(that_datetime[3])
+            let that_min = str2nr(that_datetime[4])
+            let diff_y = a:today_y - that_y
+            let diff_mon = a:today_mon - that_mon
+            let diff_d = a:today_d - that_d
+            let diff_h = a:today_h - that_h
+            let diff_min = a:today_min - that_min
+            if diff_min < 0
+                let diff_min = diff_min + 60
+            endif
+            if diff_h < 0
+                let diff_h = diff_h + 24
+            endif
+            if diff_d < 0
+                let diff_d = diff_d + s:days_of_month(that_y, that_mon)
+            endif
+            if diff_mon < 0
+                let diff_mon = diff_mon + 12
+            endif
+            if diff_y >= 0 && diff_mon >= 0 && diff_d >= 0 && diff_h >= 0 && diff_min >= 0
+                if diff_y > 0
+                    let builder = s:str_append(builder, string(diff_y).' year'.(diff_y > 1 ? 's' : ''), ', ')
+                endif
+                if diff_y == 0 && diff_mon > 0
+                    let builder = s:str_append(builder, string(diff_mon).' month'.(diff_mon > 1 ? 's' : ''), ', ')
+                endif
+                if diff_y == 0 && diff_mon == 0 && diff_d > 0
+                    let builder = s:str_append(builder, string(diff_d).' day'.(diff_d > 1 ? 's' : ''), ', ')
+                endif
+                " if in same day, diff in hours and minutes
+                if diff_y == 0 && diff_mon == 0 && diff_d == 0
+                    if diff_h > 0
+                        let builder = s:str_append(builder, string(diff_h).' hour'.(diff_h > 1 ? 's' : ''), ', ')
+                    endif
+                    if diff_h == 0 && diff_min > 0
+                        let builder = s:str_append(builder, string(diff_min).' min'.(diff_min > 1 ? 'utes' : ''), ', ')
+                    endif
+                endif
+                if len(builder) > 0
+                    let builder = s:str_append(builder, "ago", ' ')
+                endif
+            endif
+            let new_diff_y = ''
+            let new_diff_mon = ''
+            let new_diff_d = ''
+            if a:today_y != that_y
+                if a:today_y - that_y == 1
+                    let new_diff_y = 'last year'
+                endif
+                let time = strftime('%Y-%m-%d %H:%M:%S %Z', timestamp)
+            elseif a:today_mon != that_mon
+                if a:today_mon - that_mon == 1
+                    let new_diff_mon = 'last month'
+                endif
+                let time = strftime('%m-%d %H:%M:%S %Z', timestamp)
+            elseif a:today_d != that_d
+                if a:today_d - that_d == 1
+                    let new_diff_d = 'yesterday'
+                endif
+                let time = strftime('%m-%d %H:%M:%S %Z', timestamp)
+            else
+                let time = strftime('%H:%M:%S %Z', timestamp)
+            endif
+            if len(new_diff_y) > 0
+                let datetime = time.', '.new_diff_y
+            elseif len(new_diff_mon) > 0
+                let datetime = time.', '.new_diff_mon
+            elseif len(new_diff_d) > 0
+                let datetime = time.', '.new_diff_d
+            elseif len(builder) > 0
+                let datetime = time.', '.builder
+            else
+                let datetime = time
+            endif
+            return printf("%s\t (modified at %s)", s:_history_files_render(a:val), call(s:cyan_ref, [datetime, 'Constant']))
+        else
+            return printf("%s\t (modified at %s)", s:_history_files_render(a:val), call(s:cyan_ref, ['?', 'Constant']))
+        endif
+    else
+        return printf("%s\t (modified at %s)", s:_history_files_render(a:val), call(s:cyan_ref, ['?', 'Constant']))
+    endif
+endfunction
+
+function! s:history_files_sink(lines)
+    call s:debug('lines:'.string(a:lines))
+    if len(a:lines) < 2
+        return
+    endif
+    normal! m'
+    let cmd = call(s:action_for_ref, [a:lines[0]])
+    if !empty(cmd) && stridx('edit', cmd) < 0
+        execute 'silent' cmd
+    endif
+
+    let keys = split(a:lines[1], '\t')
+    execute 'edit' keys[0]
+    normal! ^zvzz
+endfunction
+
+function! fzfx#vim#history_files(query, fullscreen)
+    if exists('*strftime')
+        let now = split(strftime('%Y %m %d %H %M'))
+        let today_y = str2nr(now[0])
+        let today_mon = str2nr(now[1])
+        let today_d = str2nr(now[2])
+        let today_h = str2nr(now[3])
+        let today_min = str2nr(now[4])
+    else
+        let today_y = -1
+        let today_mon = -1
+        let today_d = -1
+        let today_h = -1
+        let today_min = -1
+    endif
+    let cwd_path = getcwd()
+    let home_path = expand('~')
+    let recent_files = map(
+                \ fzf#vim#_uniq(map(
+                \   filter([expand('%')], 'len(v:val)') +
+                \   sort(
+                \       filter(s:recent_files(), function('s:history_files_filter')),
+                \       {a, b -> s:history_files_compare(a, b, cwd_path, home_path)},
+                \   ),
+                \   'fnamemodify(v:val, ":~:.")'
+                \ )),
+                \ {idx, val -> s:history_files_format(idx, val, today_y, today_mon, today_d, today_h, today_min)})
+    " call s:debug("recent files:".string(recent_files))
+    let spec = {
+                \ 'source': recent_files,
+                \ 'sink*': {lines -> s:history_files_sink(lines)},
+                \ 'options': [
+                \   '--multi',
+                \   '--tabstop=1',
+                \   '--query', a:query,
+                \   '--prompt', 'History Files> ',
+                \   '--header-lines', !empty(expand('%')),
+                \   s:expect_keys("enter", "double-click"),
+                \ ],
+                \ 'placeholder':  '{1}'}
+    return fzf#run(fzf#wrap('history-files', fzf#vim#with_preview(spec), a:fullscreen))
 endfunction
 
 let &cpo = s:cpo_save
