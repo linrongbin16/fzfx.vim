@@ -18,7 +18,7 @@ E(x)tended fzf commands missing in fzf.vim.
   - [FzfxBuffers](#fzfxbuffers)
   - [FzfxLiveGrep(UVW)](#fzfxlivegrepuvw)
   - [FzfxBranches](#fzfxbranches)
-  - [FzfxHistoryFiles](#fzfxhistoryfiles)
+  - [FzfxHistoryFiles(VW)](#fzfxhistoryfilesvw)
 - [Config](#config)
 - [Credit](#credit)
 
@@ -281,7 +281,7 @@ https://github.com/linrongbin16/fzfx.vim/assets/6496887/4bc44577-345c-4b71-bd2f-
 https://github.com/linrongbin16/fzfx.vim/assets/6496887/1864fde1-0cba-40d2-8e53-b72140fb7675
 
 - `FzfxBuffers` is almost the same with (`Fzf`)`Buffers`, except it's using `ctrl-d`
-  to delete buffers:
+  to delete buffers.
 
 ### FzfxLiveGrep(UVW)
 
@@ -305,7 +305,7 @@ https://github.com/linrongbin16/fzfx.vim/assets/6496887/24f936fe-50cc-48fe-b8e5-
      input `fzf -- -g '*.lua'` will search on lua files.
 
 - `FzfxLiveGrep(U)V` is a variant of `FzfxLiveGrep(U)`, except it searches by
-  visual selection:
+  visual selection.
 
 - `FzfxLiveGrep(U)W` is a variant of `FzfxLiveGrep(U)`, except it searches by
   cursor word, e.g. `expand('<cword>')`.
@@ -319,11 +319,15 @@ https://github.com/linrongbin16/fzfx.vim/assets/6496887/e4b3e4b9-9b38-4fd7-bb8b-
 - `FzfxBranches` can search git branches, and use `ENTER` to switch to the
   selected branch.
 
-### FzfxHistoryFiles
+### FzfxHistoryFiles(VW)
 
 ![FzfxHistoryFiles-v1](https://github.com/linrongbin16/fzfx.vim/assets/6496887/b0b05f0e-b593-4703-a6c0-078343eeb745)
 
 - `FzfxHistoryFiles` is almost the same with (`Fzf`)`History`, except it add highlight colors and last modified time.
+
+- `FzfxHistoryFilesV` is a variant of `FzfxHistoryFiles`, except it searches by visual selection.
+
+- `FzfxHistoryFilesW` is a variant of `FzfxHistoryFiles`, except it searches by cursor word.
 
 ## Config
 
