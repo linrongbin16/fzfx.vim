@@ -743,6 +743,13 @@ function! fzfx#vim#history_files(query, fullscreen)
 endfunction
 
 function! s:commands_nvim030(query, fullscreen)
+endfunction
+
+" commands
+function! fzfx#vim#commands(query, fullscreen)
+    if !has('nvim')
+        return fzf#vim#commands(a:fullscreen)
+    endif
     let vim_commands_previewer=s:fzfx_bin.'vim_commands_previewer'
     let spec = { 'options': [
                 \   '--query', a:query,
@@ -756,16 +763,6 @@ function! s:commands_nvim030(query, fullscreen)
     end
     " call s:debug('spec:'.string(spec))
     return fzf#vim#commands(spec, a:fullscreen)
-endfunction
-
-" commands
-function! fzfx#vim#commands(query, fullscreen)
-    if !has('nvim')
-        return fzf#vim#commands(a:fullscreen)
-    endif
-    if !has('nvim-0.3.0')
-        return s:commands_nvim030(a:query, a:fullscreen)
-    endif
 endfunction
 
 let &cpo = s:cpo_save
