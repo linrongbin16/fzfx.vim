@@ -216,7 +216,7 @@ let $_FZFX_RESUME_LIVE_GREP_CACHE = s:fzfx_resume_live_grep_cache
 let $_FZFX_RESUME_FILES_CACHE = s:fzfx_resume_files_cache
 
 " ignored filetype
-let s:fzfx_ignored_history_filetypes = get(g:, 'fzfx_ignored_history_filetypes', {'NvimTree':1, 'neo-tree':1, 'CHADTree':1, 'undotree':1, 'vista':1})
+let s:fzfx_ignored_history_filetypes = get(g:, 'fzfx_ignored_history_filetypes', {'NvimTree':1, 'neo-tree':1, 'CHADTree':1, 'undotree':1, 'vista':1, 'qf':1})
 
 " ======== utils ========
 
@@ -765,6 +765,14 @@ function! fzfx#vim#history_files(query, fullscreen)
                 \ ],
                 \ 'placeholder':  '{1}'}
     return fzf#run(fzf#wrap('history-files', fzf#vim#with_preview(spec), a:fullscreen))
+endfunction
+
+" commands
+function! fzfx#vim#commands(query, fullscreen)
+    redir => cout
+    silent command
+    redir END
+    let commands_list = split(cout, "\n")
 endfunction
 
 let &cpo = s:cpo_save

@@ -21,6 +21,13 @@ command! -bang FzfxResumeFiles call fzfx#vim#resume_files(<bang>0)
 " deprecated
 command! -bang -nargs=? -complete=dir FzfxUnrestrictedFiles call fzfx#vim#unrestricted_files(<q-args>, <bang>0)
 
+" ======== history files ========
+command! -bang -nargs=* FzfxHistoryFiles call fzfx#vim#history_files(<q-args>, <bang>0)
+" find visual
+command! -bang -range FzfxHistoryFilesV call fzfx#vim#history_files(fzfx#vim#_visual_select(), <bang>0)
+" find word
+command! -bang -range FzfxHistoryFilesW call fzfx#vim#history_files(expand('<cword>'), <bang>0)
+
 " ======== buffers ========
 command! -bar -bang -nargs=? -complete=dir FzfxBuffers call fzfx#vim#buffers(<q-args>, <bang>0)
 
@@ -46,12 +53,8 @@ command! -bang FzfxUnrestrictedGrepWord call fzfx#vim#unrestricted_grep_word(<ba
 " ======== git ========
 command! -bang -nargs=* FzfxBranches call fzfx#vim#branches(<q-args>, <bang>0)
 
-" ======== history files ========
-command! -bang -nargs=* FzfxHistoryFiles call fzfx#vim#history_files(<q-args>, <bang>0)
-" find visual
-command! -bang -range FzfxHistoryFilesV call fzfx#vim#history_files(fzfx#vim#_visual_select(), <bang>0)
-" find word
-command! -bang -range FzfxHistoryFilesW call fzfx#vim#history_files(expand('<cword>'), <bang>0)
+" ======== commands ========
+command! -bang -nargs=* -complete=command FzfxCommands call fzfx#vim#commands(<q-args>, <bang>0)
 
 let s:cpo_save = &cpo
 set cpo&vim

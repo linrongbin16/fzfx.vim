@@ -331,10 +331,12 @@ https://github.com/linrongbin16/fzfx.vim/assets/6496887/e4b3e4b9-9b38-4fd7-bb8b-
 
 ## Config
 
-There're some global variables you can speicify to config:
+Here're some global variables that you can speicify:
 
 ```vim
 """ ======== find/grep commands ========
+" enable debug
+let g:_fzfx_enable_debug = 0
 
 " live grep
 let g:fzfx_grep_command = 'rg --column --line-number --no-heading --color=always --smart-case'
@@ -364,6 +366,7 @@ let g:fzfx_ignored_history_filetypes = {
     \ 'undotree': 1,
     \ 'diff': 1,
     \ 'vista': 1,
+    \ 'qf': 1,
     \ }
 
 """ ======== resume last search ========
