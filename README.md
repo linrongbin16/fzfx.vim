@@ -357,7 +357,7 @@ let g:fzfx_live_grep_rg_mode_action = 'ctrl-r'
 let g:fzfx_buffers_close_action = 'ctrl-d'
 
 " history files
-let g:fzfx_disabled_history_filetypes = {
+let g:fzfx_ignored_history_filetypes = {
     \ 'NvimTree': 1,
     \ 'neo-tree': 1,
     \ 'CHADTree': 1,
