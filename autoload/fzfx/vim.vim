@@ -564,7 +564,7 @@ function! s:history_files_compare(a, b, cwd_path, home_path)
     "   2. user home
     "   3. other folder outside of user home
     " then sort by:
-    "   1. last modified time, if getftime exists
+    "   1. latest modified time
     "   2. full path length
     let full_a = expand(a:a)
     let full_b = expand(a:b)
@@ -703,12 +703,12 @@ function! s:history_files_format(idx, val, today_y, today_mon, today_d, today_h,
             else
                 let datetime = time
             endif
-            return s:_history_files_render(a:val).':'.call(s:cyan_ref, [datetime, 'Constant'])
+            return printf('%s\t%s', s:_history_files_render(a:val), call(s:cyan_ref, [datetime, 'Constant']))
         else
-            return s:_history_files_render(a:val).':'.call(s:cyan_ref, ['?', 'Constant'])
+            return printf('%s\t%s', s:_history_files_render(a:val), call(s:cyan_ref, ['?', 'Constant']))
         endif
     else
-        return s:_history_files_render(a:val).':'.call(s:cyan_ref, ['?', 'Constant'])
+        return printf('%s\t\%s', s:_history_files_render(a:val), call(s:cyan_ref, ['?', 'Constant']))
     endif
 endfunction
 
@@ -761,7 +761,7 @@ function! fzfx#vim#history_files(query, fullscreen)
                 \ 'sink*': {lines -> s:history_files_sink(lines)},
                 \ 'options': [
                 \   '--multi',
-                \   '--delimiter=:',
+                \   '--tabstop=1',
                 \   '--prompt', 'History Files> ',
                 \   '--header-lines', !empty(expand('%')),
                 \   s:expect_keys("enter", "double-click"),
