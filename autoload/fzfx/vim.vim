@@ -25,7 +25,7 @@ else
     let s:vim='vim'
 endif
 
-let s:_fzfx_enable_debug = get(g:, '_fzfx_enable_debug', 1)
+let s:_fzfx_enable_debug = get(g:, '_fzfx_enable_debug', 0)
 let $_FZFX_ENABLE_DEBUG = s:_fzfx_enable_debug
 
 function! s:exception(msg)
@@ -786,6 +786,7 @@ function! fzfx#vim#commands(query, fullscreen)
     let preview_window_keys = copy(preview_window_opts)
 
     let spec = { 'options': [
+                \   '--query', a:query,
                 \   '--preview', vim_commands_previewer.' {}',
                 \   '--preview-window', preview_window,
                 \   s:expect_keys(["enter", "double-click"]),
@@ -794,7 +795,7 @@ function! fzfx#vim#commands(query, fullscreen)
     if &ambiwidth ==# 'double'
         let spec.options += ['--no-unicode']
     end
-    call s:debug('spec:'.string(spec))
+    " call s:debug('spec:'.string(spec))
     return fzf#vim#commands(spec, a:fullscreen)
 endfunction
 
