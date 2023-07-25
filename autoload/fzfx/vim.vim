@@ -178,6 +178,8 @@ let s:default_action = {
             \ 'ctrl-v': 'vsplit'
             \ }
 
+let s:default_preview_window = ['', 'ctrl-/']
+
 " cache
 
 let s:default_cache_dir = '~/.cache/vim/fzfx.vim'
@@ -246,15 +248,15 @@ function! s:trim_lines(lines)
 endfunction
 
 " --expect=...
-function! s:expect_keys(...)
-    let keys_list = keys(get(g:, 'fzf_action', s:default_action))
-    for k in a:000
+function! s:expect_keys(keys_list)
+    let key_results = keys(get(g:, 'fzf_action', s:default_action))
+    for k in a:keys_list
         let k2 = tolower(s:trim(k))
         if len(k2) > 0
-            call add(keys_list, k2)
+            call add(key_results, k2)
         endif
     endfor
-    return "--expect=".join(keys_list, ',')
+    return "--expect=".join(key_results, ',')
 endfunction
 
 " cache
@@ -482,7 +484,7 @@ function! fzfx#vim#buffers(query, fullscreen)
                 \ 'options': [
                 \   '--header', close_buffer_header,
                 \   '--prompt', 'Buffers> ',
-                \   s:expect_keys(close_key),
+                \   s:expect_keys([close_key]),
                 \ ],
                 \ 'placeholder': '{1}'
                 \ }
@@ -526,6 +528,8 @@ function! fzfx#vim#branches(query, fullscreen)
         let initial_command = s:fzfx_git_branch_command
     endif
 
+    let preview_window_opts = get(g:, 'fzf_preview_window', s:default_preview_window)
+    let preview_window_keys = copy(preview_window_opts)
     let spec = {
                 \ 'source': initial_command,
                 \ 'sink*': {lines -> s:branches_sink(lines)},
@@ -534,8 +538,9 @@ function! fzfx#vim#branches(query, fullscreen)
                 \   '--delimiter=:',
                 \   '--prompt', 'Branches> ',
                 \   '--preview', git_branches_previewer.' {}',
+                \   '--preview-window', preview_window_opts,
                 \   '--header', git_branch_header,
-                \   s:expect_keys("enter", "double-click"),
+                \   s:expect_keys(["enter", "double-click"] + map(preview_window_keys, 'v:val.":toggle-preview"')),
                 \ ]}
     return fzf#run(fzf#wrap('branches', fzf#vim#with_preview(spec), a:fullscreen))
 endfunction
@@ -761,7 +766,7 @@ function! fzfx#vim#history_files(query, fullscreen)
                 \   '--query', a:query,
                 \   '--prompt', 'History Files> ',
                 \   '--header-lines', !empty(expand('%')),
-                \   s:expect_keys("enter", "double-click"),
+                \   s:expect_keys(["enter", "double-click"]),
                 \ ],
                 \ 'placeholder':  '{1}'}
     return fzf#run(fzf#wrap('history-files', fzf#vim#with_preview(spec), a:fullscreen))
@@ -770,9 +775,17 @@ endfunction
 " commands
 function! fzfx#vim#commands(query, fullscreen)
     let vim_commands_previewer=s:fzfx_bin.'vim_commands_previewer'
+    let preview_window_opts = get(g:, 'fzf_preview_window', s:default_preview_window)
+    let preview_window_keys = copy(preview_window_opts)
+    call remove(preview_window_keys, 0)
     let spec = { 'options': [
                 \   '--preview', vim_commands_previewer.' {}',
+                \   '--preview-window', preview_window_opts,
+                \   s:expect_keys(["enter", "double-click"] + map(preview_window_keys, 'v:val.":toggle-preview"')),
                 \ ]}
+    if &ambiwidth ==# 'double'
+        let spec.options += ['--no-unicode']
+    end
     return fzf#vim#commands(spec, a:fullscreen)
 endfunction
 
