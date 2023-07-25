@@ -521,12 +521,7 @@ endfunction
 function! fzfx#vim#branches(query, fullscreen)
     let git_branch_header=':: Press '.call(s:magenta_ref, ['ENTER', 'Special']).' to switch branch'
     let git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
-    if len(a:query) > 0
-        let command_fmt = s:fzfx_git_branch_command.' --list %s'
-        let initial_command = printf(command_fmt, shellescape(a:query))
-    else
-        let initial_command = s:fzfx_git_branch_command
-    endif
+    let initial_command = s:fzfx_git_branch_command
 
     let preview_window_opts = copy(get(g:, 'fzf_preview_window', s:default_preview_window))
     let preview_window = preview_window_opts[0]
@@ -539,6 +534,7 @@ function! fzfx#vim#branches(query, fullscreen)
                 \ 'options': [
                 \   '--no-multi',
                 \   '--delimiter=:',
+                \   '--query', a:query,
                 \   '--prompt', 'Branches> ',
                 \   '--preview', git_branches_previewer.' {}',
                 \   '--preview-window', preview_window,
