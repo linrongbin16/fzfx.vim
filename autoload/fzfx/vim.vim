@@ -303,7 +303,7 @@ endfunction
 
 function! s:cache_set_object(key, value)
     let j = json_encode(a:value)
-    call s:cache_set(a:key, j)
+    return s:cache_set(a:key, j)
 endfunction
 
 
@@ -375,7 +375,7 @@ function! fzfx#vim#live_grep(query, fullscreen, opts)
                 \ ]}
     let spec = fzf#vim#with_preview(spec)
     call s:cache_set_object(s:fzfx_resume_live_grep_opts_cache, a:opts)
-    call fzf#vim#grep(initial_command, spec, a:fullscreen)
+    return fzf#vim#grep(initial_command, spec, a:fullscreen)
 endfunction
 
 " resume grep
@@ -388,38 +388,38 @@ function! fzfx#vim#resume_live_grep(fullscreen)
     if s:cache_has(s:fzfx_resume_live_grep_opts_cache)
         let opts = s:cache_get_object(s:fzfx_resume_live_grep_opts_cache)
     endif
-    call fzfx#vim#live_grep(query, a:fullscreen, opts)
+    return fzfx#vim#live_grep(query, a:fullscreen, opts)
 endfunction
 
 " deprecated
 function! fzfx#vim#unrestricted_live_grep(query, fullscreen)
     call s:warning("'FzfxUnrestrictedLiveGrep' is deprecated, use 'FzfxLiveGrepU'!")
-    call fzfx#vim#live_grep(a:query, a:fullscreen, {'unrestricted': 1})
+    return fzfx#vim#live_grep(a:query, a:fullscreen, {'unrestricted': 1})
 endfunction
 " deprecated
 function! fzfx#vim#live_grep_visual(fullscreen)
     call s:warning("'FzfxLiveGrepVisual' is deprecated, use 'FzfxLiveGrepV'!")
     let query=fzfx#vim#_visual_select()
-    call fzfx#vim#live_grep(query, a:fullscreen, {'unrestricted': 0})
+    return fzfx#vim#live_grep(query, a:fullscreen, {'unrestricted': 0})
 endfunction
 
 " deprecated
 function! fzfx#vim#unrestricted_live_grep_visual(fullscreen)
     call s:warning("'FzfxUnrestrictedLiveGrepVisual' is deprecated, use 'FzfxLiveGrepUV'!")
     let query=fzfx#vim#_visual_select()
-    call fzfx#vim#live_grep(query, a:fullscreen, {'unrestricted': 1})
+    return fzfx#vim#live_grep(query, a:fullscreen, {'unrestricted': 1})
 endfunction
 
 " deprecated
 function! fzfx#vim#grep_word(fullscreen)
     call s:warning("'FzfxGrepWord' is deprecated, use 'FzfxLiveGrepW'!")
-    call fzfx#vim#live_grep(expand('<cword>'), a:fullscreen, {'unrestricted': 0})
+    return fzfx#vim#live_grep(expand('<cword>'), a:fullscreen, {'unrestricted': 0})
 endfunction
 
 " deprecated
 function! fzfx#vim#unrestricted_grep_word(fullscreen)
     call s:warning("'FzfxUnrestrictedGrepWord' is deprecated, use 'FzfxLiveGrepUW'!")
-    call fzfx#vim#live_grep(expand('<cword>'), a:fullscreen, {'unrestricted': 1})
+    return fzfx#vim#live_grep(expand('<cword>'), a:fullscreen, {'unrestricted': 1})
 endfunction
 
 " files
@@ -434,7 +434,7 @@ function! fzfx#vim#files(query, fullscreen, opts)
     let spec = fzf#vim#with_preview(spec)
     call s:cache_set(s:fzfx_resume_files_cache, a:query)
     call s:cache_set_object(s:fzfx_resume_files_opts_cache, a:opts)
-    call fzf#vim#files('', spec, a:fullscreen)
+    return fzf#vim#files('', spec, a:fullscreen)
 endfunction
 
 " resume files
@@ -449,13 +449,13 @@ function! fzfx#vim#resume_files(fullscreen)
         let opts = s:cache_get_object(s:fzfx_resume_files_opts_cache)
         call s:debug("resume_files-2, opts:".string(opts))
     endif
-    call fzfx#vim#files(query, a:fullscreen, opts)
+    return fzfx#vim#files(query, a:fullscreen, opts)
 endfunction
 
 " deprecated
 function! fzfx#vim#unrestricted_files(query, fullscreen)
     call s:warning("'FzfxUnrestrictedFiles' is deprecated, use 'FzfxFilesU'!")
-    call fzfx#vim#files(a:query, a:fullscreen, {'unrestricted':1})
+    return fzfx#vim#files(a:query, a:fullscreen, {'unrestricted':1})
 endfunction
 
 " buffers
@@ -464,17 +464,19 @@ function! s:buffers_sink(lines, query, fullscreen)
     if len(a:lines) < 2
         return
     endif
+    normal! m'
     let b = matchstr(a:lines[1], '\[\zs[0-9]*\ze\]')
-    let bufname=split(a:lines[1])[-1]
+    let bufname = split(a:lines[1])[-1]
     let action = a:lines[0]
     " echo "lines0.5:".string(a:lines).",b:".b."(".string(bufname).")"
     if action ==? s:fzfx_buffers_close_action
         execute 'bdelete' b
         " echo "lines2:".string(a:lines).",bdelete:".b."(".bufname.")"
-        call fzfx#vim#buffers(a:query, a:fullscreen)
+        return fzfx#vim#buffers(a:query, a:fullscreen)
     else
-        call call(s:bufopen_ref, [a:lines])
+        return call(s:bufopen_ref, [a:lines])
     endif
+    normal! ^zvzz
 endfunction
 
 function! fzfx#vim#buffers(query, fullscreen)
@@ -483,12 +485,12 @@ function! fzfx#vim#buffers(query, fullscreen)
     let spec = { 'sink*': {lines -> s:buffers_sink(lines, a:query, a:fullscreen)},
                 \ 'options': [
                 \   '--header', close_buffer_header,
-                \   '--prompt', 'Buffer> ',
+                \   '--prompt', 'Buffers> ',
                 \   s:expect_keys(close_key),
                 \ ],
                 \ 'placeholder': '{1}'
                 \ }
-    call fzf#vim#buffers(a:query, fzf#vim#with_preview(spec), a:fullscreen)
+    return fzf#vim#buffers(a:query, fzf#vim#with_preview(spec), a:fullscreen)
 endfunction
 
 " gbranches
@@ -506,11 +508,16 @@ endfunction
 
 function! s:gitbranches_sink(lines) abort
     " echo "lines:".string(a:lines)
-    let action=a:lines[0]
+    if len(a:lines) < 2
+        return
+    endif
+    normal! m'
+    let action = a:lines[0]
     if action==?'enter' || action==?'double-click'
         let branch = s:parse_gitbranch(a:lines[1])
         execute '!git checkout '.branch
     endif
+    normal! ^zvzz
 endfunction
 
 function! fzfx#vim#gitbranches(query, fullscreen)
@@ -534,12 +541,12 @@ function! fzfx#vim#gitbranches(query, fullscreen)
                 \   '--header', git_branch_header,
                 \   s:expect_keys("enter", "double-click"),
                 \ ]}
-    call fzf#run(fzf#wrap('branches', fzf#vim#with_preview(spec), a:fullscreen))
+    return fzf#run(fzf#wrap('branches', fzf#vim#with_preview(spec), a:fullscreen))
 endfunction
 
 function! fzfx#vim#branches(query, fullscreen)
     call s:warning("'FzfxBranches' is deprecated, use 'FzfxGBranches'!")
-    call fzfx#vim#gitbranches(a:query, a:fullscreen)
+    return fzfx#vim#gitbranches(a:query, a:fullscreen)
 endfunction
 
 " history files
@@ -711,7 +718,19 @@ function! s:history_files_format(idx, val, today_y, today_mon, today_d, today_h,
 endfunction
 
 function! s:history_files_sink(lines)
-    call s:debug("lines:".string(a:lines))
+    call s:debug('lines:'.string(a:lines))
+    if len(a:lines) < 2
+        return
+    endif
+    normal! m'
+    let cmd = call(s:action_for_ref, [a:lines[0]])
+    if !empty(cmd) && stridx('edit', cmd) < 0
+        execute 'silent' cmd
+    endif
+
+    let keys = split(a:lines[1], ':')
+    execute 'edit' keys[0]
+    normal! ^zvzz
 endfunction
 
 function! fzfx#vim#history_files(query, fullscreen)
@@ -750,6 +769,7 @@ function! fzfx#vim#history_files(query, fullscreen)
                 \   '--delimiter=:',
                 \   '--prompt', 'History Files> ',
                 \   '--header-lines', !empty(expand('%')),
+                \   s:expect_keys("enter", "double-click"),
                 \ ],
                 \ 'placeholder':  '{1}'}
     return fzf#run(fzf#wrap('history-files', fzf#vim#with_preview(spec), a:fullscreen))
