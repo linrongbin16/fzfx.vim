@@ -731,6 +731,7 @@ function! fzfx#vim#history_files(query, fullscreen)
                 \ 'source': recent_files,
                 \ 'sink*': {lines -> s:history_files_sink(lines)},
                 \ 'options': [
+                \   '--ansi',
                 \   '--multi',
                 \   '--tabstop=1',
                 \   '--query', a:query,
