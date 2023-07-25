@@ -25,8 +25,8 @@ content=$(fzfx_trim "$content")
 
 lua_function="<Lua function>"
 lua_source="<Lua "
-vim_call_colon=":call "
-vim_call="call "
+vim_call_colon=" :call "
+vim_call=" call "
 
 lua_function_rest=${content#*$lua_function}
 lua_source_rest=${lua_function_rest#*$lua_source}
@@ -72,14 +72,14 @@ else
         if [ $_FZFX_ENABLE_DEBUG -gt 0 ]; then
             echo "DEBUG \$vim_call_colon_rest:[$vim_call_colon_rest]"
         fi
-        echo "$vim_call_colon_rest" | $BATNAME --style="${BAT_STYLE:-numbers}" --color=always --language=vim
+        echo ":call $vim_call_colon_rest" | $BATNAME --style="${BAT_STYLE:-numbers}" --color=always --language=vim
     else
         vim_call_rest=${content#*$vim_call}
         if [ ${#vim_call_rest} -gt 0 ] && [ "$vim_call_rest" != "$content" ]; then
             if [ $_FZFX_ENABLE_DEBUG -gt 0 ]; then
                 echo "DEBUG \$vim_call_rest:[$vim_call_rest]"
             fi
-            echo "$vim_call_rest" | $BATNAME --style="${BAT_STYLE:-numbers}" --color=always --language=vim
+            echo "call $vim_call_rest" | $BATNAME --style="${BAT_STYLE:-numbers}" --color=always --language=vim
         else
             if [ $_FZFX_ENABLE_DEBUG -gt 0 ]; then
                 echo "DEBUG \$content2:[$content]"
