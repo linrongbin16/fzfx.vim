@@ -378,7 +378,9 @@ https://github.com/linrongbin16/fzfx.vim/assets/6496887/e4b3e4b9-9b38-4fd7-bb8b-
 
 ### FzfxCommands(VW)
 
-- `FzfxCommands(VW)` is almost the same with (`Fzf`)`Commands`, except it improved lua function defined commands for Neovim.
+https://github.com/linrongbin16/fzfx.vim/assets/6496887/c67c404e-06c7-4e00-b10e-d2cc9d0e8966
+
+- `FzfxCommands(VW)` is almost the same with (`Fzf`)`Commands`, except it can preview lua function defined commands for Neovim.
 
 ## Config
 
