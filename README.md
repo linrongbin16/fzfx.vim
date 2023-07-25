@@ -44,18 +44,12 @@ Why another fzf-based finder? actually there's a reason:
 
 ### Rust commands
 
-Recommand to install [rust](https://www.rust-lang.org/), then install [ripgrep](https://github.com/BurntSushi/ripgrep) and [fd](https://github.com/sharkdp/fd) via cargo:
+Recommand to install [rust](https://www.rust-lang.org/), then install [ripgrep](https://github.com/BurntSushi/ripgrep), [fd](https://github.com/sharkdp/fd), [bat](https://github.com/sharkdp/bat) via cargo:
 
 ```bash
 cargo install ripgrep
 cargo install fd-find
-```
-
-Optionally install [bat](https://github.com/sharkdp/bat) and [git-delta](https://dandavison.github.io/delta/installation.html) for better preview:
-
-```bash
 cargo install --locked bat
-cargo install git-delta
 ```
 
 ### Git, mingw & coreutils (for Windows)
