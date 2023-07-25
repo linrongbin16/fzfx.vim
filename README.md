@@ -4,6 +4,7 @@
 
 E(x)tended fzf commands missing in fzf.vim.
 
+- [Comparison](#comparison)
 - [Requirement](#requirement)
   - [Rust commands](#rust-commands)
   - [Git, mingw & coreutils (for Windows)](#git-mingw--coreutils-for-windows)
@@ -21,6 +22,20 @@ E(x)tended fzf commands missing in fzf.vim.
   - [FzfxHistoryFiles(VW)](#fzfxhistoryfilesvw)
 - [Config](#config)
 - [Credit](#credit)
+
+## Comparison
+
+Why another fzf-based finder? actually there's a reason:
+
+|                     | Support Windows? | Support VIM? | Performance?                                                                                                                                                            | Support grep by filetypes? | Support passing raw rg options?                                                                                 |
+| ------------------- | ---------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| fzf-lua             | yes              | no           | high, even more smooth with fully async UI operation                                                                                                                    | yes                        | no                                                                                                              |
+| fzf.vim             | no               | yes          | high                                                                                                                                                                    | no                         | no                                                                                                              |
+| telescope.nvim      | yes              | no           | poor, still has latency in seconds in super big repository even installed [telescope-fzf-native](https://github.com/nvim-telescope/telescope-fzf-native.nvim) extension | yes                        | yes, with [telescope-live-grep-args](https://github.com/nvim-telescope/telescope-live-grep-args.nvim) extension |
+| fzfx.vim (this one) | yes              | yes          | high                                                                                                                                                                    | yes                        | yes                                                                                                             |
+
+- For people using macOS+neovim, you can choose [fzf-lua](https://github.com/ibhagwan/fzf-lua).
+- For people working on small repository and don't have performance issue, you can choose [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim).
 
 ## Requirement
 
