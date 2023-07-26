@@ -481,7 +481,7 @@ endfunction
 function! fzfx#vim#branches(query, fullscreen)
     let git_branch_header=':: Press '.call(s:magenta_ref, ['ENTER', 'Special']).' to switch branch'
     let git_branches_previewer=s:fzfx_bin.'git_branches_previewer'
-    let initial_command = s:fzfx_git_branch_command
+    let initial_command = printf('%s | grep -i "*" && %s | grep -i -v "*"', s:fzfx_git_branch_command, s:fzfx_git_branch_command)
 
     let spec = {
                 \ 'source': initial_command,
