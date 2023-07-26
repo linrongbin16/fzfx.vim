@@ -178,8 +178,6 @@ let s:default_action = {
             \ 'ctrl-v': 'vsplit'
             \ }
 
-let s:default_preview_window = ['', 'ctrl-/']
-
 " cache
 
 let s:default_cache_dir = '~/.cache/vim/fzfx.vim'
@@ -302,19 +300,6 @@ endfunction
 function! s:cache_set_object(key, value)
     let j = json_encode(a:value)
     return s:cache_set(a:key, j)
-endfunction
-
-" preview window
-function! s:preview_window_opts()
-    let pw_opts = copy(get(g:, 'fzf_preview_window', s:default_preview_window))
-    return pw_opts[0]
-endfunction
-
-function! s:preview_window_keys()
-    let pw_opts = copy(get(g:, 'fzf_preview_window', s:default_preview_window))
-    call remove(pw_opts, 0)
-    let pw_keys = copy(pw_opts)
-    return join(map(pw_keys, 'v:val.":toggle-preview"'), ',')
 endfunction
 
 " ======== implementations ========
@@ -506,13 +491,13 @@ function! fzfx#vim#branches(query, fullscreen)
                 \   '--no-multi',
                 \   '--delimiter=:',
                 \   '--query', a:query,
+                \   '--header-lines', 1,
                 \   '--prompt', 'Branches> ',
-                \   '--preview', git_branches_previewer.' {}',
-                \   '--preview-window', s:preview_window_opts(),
                 \   '--header', git_branch_header,
                 \   s:expect_keys(["enter", "double-click"]),
-                \   '--bind', s:preview_window_keys()
                 \ ]}
+    let spec = fzf#vim#with_preview(spec)
+    let spec['options'] += ['--preview', git_branches_previewer.' {}']
     return fzf#run(fzf#wrap('branches', spec, a:fullscreen))
 endfunction
 
@@ -755,14 +740,10 @@ function! fzfx#vim#commands(query, fullscreen)
     let vim_commands_previewer=s:fzfx_bin.'vim_commands_previewer'
     let spec = { 'options': [
                 \   '--query', a:query,
-                \   '--preview', vim_commands_previewer.' {}',
-                \   '--preview-window', s:preview_window_opts(),
                 \   s:expect_keys(["enter", "double-click"]),
-                \   '--bind', s:preview_window_keys()
                 \ ]}
-    if &ambiwidth ==# 'double'
-        let spec.options += ['--no-unicode']
-    end
+    let spec = fzf#vim#with_preview(spec)
+    let spec['options'] += ['--preview', vim_commands_previewer.' {}']
     " call s:debug('spec:'.string(spec))
     return fzf#vim#commands(spec, a:fullscreen)
 endfunction
