@@ -491,6 +491,7 @@ function! fzfx#vim#branches(query, fullscreen)
                 \   '--no-multi',
                 \   '--delimiter=:',
                 \   '--query', a:query,
+                \   '--header-lines', 1,
                 \   '--prompt', 'Branches> ',
                 \   '--header', git_branch_header,
                 \   s:expect_keys(["enter", "double-click"]),
