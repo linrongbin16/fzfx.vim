@@ -2,7 +2,7 @@
 
 # fzfx.vim
 
-E(x)tended fzf commands missing in fzf.vim. Yet another (Neo)VIM fzf plugin focused on better usability and tiny improvements.
+E(x)tended fzf commands missing in fzf.vim, focused on better usability and tiny improvements.
 
 - [Requirement](#requirement)
   - [Rust commands](#rust-commands)
