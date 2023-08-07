@@ -2,6 +2,11 @@
 
 # fzfx.vim
 
+***DEPRECATE: this plugin is no longer actively developed, I created the next generation [fzfx.nvim](https://github.com/linrongbin16/fzfx.nvim), written with lua and drop the support for VIM.
+
+Sepecial thanks to Bram, VIM changed my life, VIM long live.
+***
+
 E(x)tended fzf commands missing in fzf.vim, focused on better usability and tiny improvements.
 
 - [Requirement](#requirement)
